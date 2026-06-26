@@ -3,7 +3,9 @@ import json
 import logging
 
 from . import config
+from amon_hen.common.filesystem import setup_environment
 from amon_hen.common.http import safe_json, http_get
+from amon_hen.common.log_config import setup_logging
 
 # Logging setup
 logger = logging.getLogger(__name__)
@@ -208,5 +210,20 @@ def adp_scraper():
     return results
 
 
-if __name__ == "__main__":
-    adp_scraper()
+def run():
+    """
+    Execute the adp_scraper workflow.
+    """
+    # Setup logging
+    setup_logging()
+
+    # Ensure environment is correctly setup
+    setup_environment(directories=config.DIRS, files=config.FILES)
+
+    logger.debug("Starting adp_scraper")
+
+    results = adp_scraper()
+
+    logger.debug("Stopping adp_scraper")
+
+    return results
