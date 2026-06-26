@@ -21,6 +21,7 @@ PLURAL_PHRASES = [
     "were awarded",
     "are being awarded",
     "will compete",
+    "will each be awarded",
 ]
 
 # Phrases that indicate a single company is contracted
