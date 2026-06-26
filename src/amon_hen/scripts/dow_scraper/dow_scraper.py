@@ -178,7 +178,7 @@ def get_companies(daily_url):
         # Something not picked up
         logger.debug("Unclassified content in p %s.", str(i + 1))
 
-        companies[branch].append(["ERROR in p", str(i + 1)])
+        companies[branch].append(["ERROR in p " + str(i + 1)])
 
     return companies
 
