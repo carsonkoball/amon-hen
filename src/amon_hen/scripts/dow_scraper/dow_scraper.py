@@ -4,7 +4,9 @@ import logging
 from bs4 import BeautifulSoup
 
 from . import config
+from amon_hen.common.filesystem import setup_environment
 from amon_hen.common.http import http_get
+from amon_hen.common.log_config import setup_logging
 
 # Logging setup
 logger = logging.getLogger(__name__)
@@ -185,12 +187,12 @@ def dow_scraper():
     """
     Get the daily contract page and return the companies on it.
     """
-    response = {"daily_url": None, "companies": None}
+    results = {"daily_url": None, "companies": None}
 
     daily_url = config.DAILY_URL if config.DAILY_URL else get_daily_url()
 
     if daily_url is None:
-        return response
+        return results
 
     companies = get_companies(daily_url)
 
@@ -203,11 +205,26 @@ def dow_scraper():
             for company in winner:
                 logger.info("    %s", company)
 
-    response["daily_url"] = daily_url
-    response["companies"] = companies
+    results["daily_url"] = daily_url
+    results["companies"] = companies
 
-    return response
+    return results
 
 
-if __name__ == "__main__":
-    dow_scraper()
+def run():
+    """
+    Execute the dow_scraper workflow.
+    """
+    # Setup logging
+    setup_logging()
+
+    # Ensure environment is correctly setup
+    setup_environment(directories=config.DIRS, files=config.FILES)
+
+    logger.debug("Starting adp_scraper")
+
+    results = dow_scraper()
+
+    logger.debug("Stopping adp_scraper")
+
+    return results
