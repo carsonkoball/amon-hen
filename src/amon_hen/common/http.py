@@ -105,6 +105,13 @@ def http_post(url, **kwargs):
     return _request("POST", url, **kwargs)
 
 
+def http_head(url, **kwargs):
+    """
+    Convenience wrapper for HEAD requests.
+    """
+    return _request("HEAD", url, **kwargs)
+
+
 def safe_json(response):
     """
     Safely parse JSON from a requests response.
