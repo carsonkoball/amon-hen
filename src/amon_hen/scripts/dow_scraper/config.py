@@ -18,17 +18,18 @@ DAILY_URL = None
 # Phrases that indicate multiple companies are contracted
 PLURAL_PHRASES = [
     "are awarded",
-    "were awarded",
     "are being awarded",
-    "will compete",
+    "are sharing",
+    "were awarded",
     "will each be awarded",
+    "will compete",
 ]
 
 # Phrases that indicate a single company is contracted
 SINGULAR_PHRASES = [
+    "has been added as an awardee",
     "has been awarded",
-    "was awarded",
     "is awarded",
     "is being awarded",
-    "has been added as an awardee",
+    "was awarded",
 ]
