@@ -12,7 +12,7 @@ VERSIONS_DIR = (
 )
 
 LOG_FILE = LOG_DIR / "logs.log"
-INDEX_FILE = lambda netloc_id: WEBSITE_DIR(netloc_id) / "index.json"
+INDEX_FILE = lambda netloc_id: WEBSITE_DIR(netloc_id) / "index.jsonl"
 METADATA_FILE = (
     lambda netloc_id, url_hash: TRACKED_FILE_DIR(netloc_id, url_hash) / "metadata.json"
 )
@@ -28,4 +28,4 @@ CONTENT_FILE = (
 
 DIRS = {"BASE_DIR": BASE_DIR, "DATA_DIR": DATA_DIR, "LOG_DIR": LOG_DIR}
 
-FILES = {"LOG_FILE": LOG_FILE}
+FILES = {"LOG_FILE": (LOG_FILE, "")}

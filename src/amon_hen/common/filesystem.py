@@ -17,16 +17,14 @@ def ensure_dir(path: Path) -> None:
         logger.debug("Created directory: %s", path)
 
 
-def ensure_file(path: Path) -> None:
+def ensure_file(path: Path, default_content: str = "") -> None:
     """
     Creates a valid file given the path if it does not already exist.
     """
     ensure_dir(path.parent)
 
     if not path.exists():
-        content = ""
-
-        path.write_text(content)
+        path.write_text(default_content)
 
         logger.debug("Created file: %s", path)
 
@@ -45,6 +43,6 @@ def setup_environment(
 
     # File setup
     for file in files.values():
-        ensure_file(file)
+        ensure_file(file[0], file[1])
 
     logger.debug("Files set up")

@@ -120,7 +120,9 @@ class FileCrawler(Crawler):
 
         # Create files if they don't already exist
         ensure_file(config.INDEX_FILE(identity["netloc_id"]))
-        ensure_file(config.METADATA_FILE(identity["netloc_id"], identity["url_hash"]))
+        ensure_file(
+            config.METADATA_FILE(identity["netloc_id"], identity["url_hash"]), "{}"
+        )
         ensure_file(
             config.METADATA_HISTORY_FILE(identity["netloc_id"], identity["url_hash"])
         )
@@ -139,17 +141,10 @@ class FileCrawler(Crawler):
         """
         metadata = {"content_hash": None}
 
-        # Determine if the file is new or has been updated from a previous version
-        if (
-            config.METADATA_FILE(identity["netloc_id"], identity["url_hash"])
-            .stat()
-            .st_size
-            > 0
-        ):
-            with open(
-                config.METADATA_FILE(identity["netloc_id"], identity["url_hash"]), "r"
-            ) as file:
-                metadata = json.load(file)
+        with open(config.METADATA_FILE(identity["netloc_id"], identity["url_hash"]), "r", encoding="utf-8") as file:
+            metadata = json.load(file)
+                
+        metadata.setdefault("content_hash", None)
 
         return metadata
 
@@ -278,7 +273,6 @@ def run():
     logger.debug("Starting file_scraper")
 
     results = file_tracker()
-    print(results)
 
     logger.debug("Stopping file_scraper")
 

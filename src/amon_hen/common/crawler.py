@@ -1,4 +1,5 @@
 import time
+from typing import Any
 from urllib.parse import urljoin, urldefrag, urlparse, quote
 
 from bs4 import BeautifulSoup

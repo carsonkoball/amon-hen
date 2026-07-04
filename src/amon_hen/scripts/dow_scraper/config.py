@@ -9,7 +9,7 @@ LOG_FILE = LOG_DIR / "logs.log"
 
 DIRS = {"BASE_DIR": BASE_DIR, "DATA_DIR": DATA_DIR, "LOG_DIR": LOG_DIR}
 
-FILES = {"LOG_FILE": LOG_FILE}
+FILES = {"LOG_FILE": (LOG_FILE, "")}
 
 # Base URLs
 INDEX_URL = "https://www.war.gov/News/Contracts/"
