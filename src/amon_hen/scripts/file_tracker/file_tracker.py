@@ -20,12 +20,12 @@ logger = logging.getLogger(__name__)
 
 class FileCrawler(Crawler):
     """
-    Extends the base Crawler class to process and track files.
+    Extend the base Crawler class to process and track files.
     """
 
     def __init__(self, exhaustive_search=True, allowed_extensions=None):
         """
-        Initializes the instance with the provided configuration values.
+        Initialize a FileCrawler with the specified search behavior and allowed file extensions.
         """
         super().__init__()
 
@@ -38,7 +38,7 @@ class FileCrawler(Crawler):
 
     def set_allowed_extensions(self, allowed_extensions):
         """
-        Updates extension lists to search for.
+        Update list of extensions to search for.
         """
         self.allowed_extensions = set(allowed_extensions)
         self.allowed_extension_mimes = {
@@ -48,7 +48,7 @@ class FileCrawler(Crawler):
 
     def _non_exhaustive_discard(self, parsed_link):
         """
-        Determines whether an inputted parsed link should be considered for crawling.
+        Determine whether an inputted parsed link should be considered for crawling.
         """
         # Exhaustive search keeps all links
         if self.EXHAUSTIVE_SEARCH:
@@ -69,7 +69,7 @@ class FileCrawler(Crawler):
 
     def _normalize_url(self, url):
         """
-        Normalizes an inputted url for consistency.
+        Normalize an inputted url for consistency.
         """
         url_parts = urlsplit(url)
         normalized_url = urlunsplit(
@@ -85,6 +85,9 @@ class FileCrawler(Crawler):
         return normalized_url
 
     def _extract_identity(self, response, content_type):
+        """
+        Retrieve information from inputted response for analysis.
+        """
         normalized_url = self._normalize_url(response.url)
         parsed_url = urlparse(normalized_url)
         content = response.content
@@ -107,6 +110,9 @@ class FileCrawler(Crawler):
         return identity
 
     def _ensure_environment(self, identity):
+        """
+        Validate the existence of relevant directories and files.
+        """
         # Create directories if they don't already exist
         ensure_dir(config.WEBSITE_DIR(identity["netloc_id"]))
         ensure_dir(config.TRACKED_FILE_DIR(identity["netloc_id"], identity["url_hash"]))
@@ -128,9 +134,10 @@ class FileCrawler(Crawler):
         )
 
     def _load_metadata(self, identity):
-        metadata = {
-            "content_hash": None
-        }
+        """
+        Retrieve metadata from last file record.
+        """
+        metadata = {"content_hash": None}
 
         # Determine if the file is new or has been updated from a previous version
         if (
@@ -148,7 +155,7 @@ class FileCrawler(Crawler):
 
     def _process_response(self, response):
         """
-        Processes a downloaded response by:
+        Process a downloaded response by:
         - Determining whether it represents a tracked file
         - Detecting content changes
         - Updating metadata and archiving new versions
@@ -239,6 +246,9 @@ class FileCrawler(Crawler):
             self.results.append(result)
 
     def crawl(self, *args, **kwargs):
+        """
+        Extend the base crawl method to manage results from crawling process.
+        """
         self.results = []
         super().crawl(*args, **kwargs)
         return self.results
@@ -251,7 +261,7 @@ def file_tracker():
 
     crawler = FileCrawler(exhaustive_search=False, allowed_extensions={".png"})
     results = crawler.crawl(base_url="https://www.castellumus.com/", max_depth=1)
-    
+
     return results
 
 

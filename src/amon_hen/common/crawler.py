@@ -10,10 +10,13 @@ from amon_hen.common.http import http_get
 
 class Crawler:
     """
-    Base class for implementing crawlers that traverse and process data sources.
+    Base class for implementing a crawler that traverse and process data sources.
     """
 
     def __init__(self):
+        """
+        Initialize a Crawler with the specified search behavior and target URL.
+        """
         self.base_url = ""
         self.base_url_hostname = ""
         self.share_host = False
@@ -21,6 +24,9 @@ class Crawler:
         self.visited = set()
 
     def _crawl(self, url, depth=0):
+        """
+        Recursively traverse links in the website.
+        """
         # Base case - URL is already visited
         if url in self.visited:
             return
@@ -30,7 +36,6 @@ class Crawler:
             return
 
         self.visited.add(url)
-        # time.sleep(2)
         response = http_get(url)
 
         # Processing function
@@ -45,6 +50,9 @@ class Crawler:
                 self._crawl(link, depth + 1)
 
     def _is_html(self, response):
+        """
+        Identify whether or not a downloaded response is of type HTML.
+        """
         content_type = response.headers.get("Content-Type").lower()
 
         if config_crawler.EXTENSION_INFO[".html"]["mime"] in content_type:
@@ -53,6 +61,9 @@ class Crawler:
         return False
 
     def _filter_links(self, links):
+        """
+        Remove links that do not meet criteria from list of candidate links.
+        """
         filtered_links = []
 
         for link in links:
@@ -90,6 +101,9 @@ class Crawler:
         return filtered_links
 
     def _extract_links(self, response):
+        """
+        Retrieve all href and src links from web page.
+        """
         soup = BeautifulSoup(response.text, "html.parser")
 
         links = []
@@ -106,12 +120,21 @@ class Crawler:
         return links
 
     def _process_response(self, response):
+        """
+        Process a crawl response.
+        """
         pass
 
     def _non_exhaustive_discard(self, link):
-        return True
+        """
+        Determine whether or not a link should be discarded in a non-exhaustive search.
+        """
+        return False
 
     def crawl(self, base_url, max_depth=0, share_host=False):
+        """
+        Initiate the crawling process.
+        """
         self.base_url = base_url
         self.base_url_hostname = urlparse(base_url).hostname
         self.max_depth = max_depth
