@@ -24,9 +24,6 @@ def ensure_file(path):
     if not path.exists():
         content = ""
 
-        if path.suffix == ".json":
-            content = "{}"
-
         path.write_text(content)
 
         logger.debug("Created file: %s", path)
