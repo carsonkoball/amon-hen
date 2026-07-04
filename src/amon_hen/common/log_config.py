@@ -3,8 +3,9 @@ import sys
 
 
 def setup_logging(
-    format="%(asctime)s | %(name)s | %(levelname)s | %(message)s", level=logging.INFO
-):
+    format: str = "%(asctime)s | %(name)s | %(levelname)s | %(message)s",
+    level: int = logging.INFO,
+) -> None:
     """
     Logging helper to manage logs across scripts.
     """

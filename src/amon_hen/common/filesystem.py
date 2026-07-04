@@ -5,9 +5,9 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 
-def ensure_dir(path):
+def ensure_dir(path: Path) -> None:
     """
-    Creates a directory given the path if it does not exist.
+    Creates a directory given the path if it does not already exist.
     """
     if not path.exists():
         path.mkdir(parents=True, exist_ok=True)
@@ -15,9 +15,9 @@ def ensure_dir(path):
         logger.debug("Created directory: %s", path)
 
 
-def ensure_file(path):
+def ensure_file(path: Path) -> None:
     """
-    Creates a valid file given the path if it doesn't exist.
+    Creates a valid file given the path if it does not already exist.
     """
     ensure_dir(path.parent)
 
@@ -29,7 +29,9 @@ def ensure_file(path):
         logger.debug("Created file: %s", path)
 
 
-def setup_environment(directories, files):
+def setup_environment(
+    directories: Mapping[str, Path], files: Mapping[str, Path]
+) -> None:
     """
     Convenience wrapper to create script environment.
     """
@@ -37,10 +39,10 @@ def setup_environment(directories, files):
     for directory in directories.values():
         ensure_dir(directory)
 
-    logger.debug("Directories setup")
+    logger.debug("Directories set up")
 
     # File setup
     for file in files.values():
         ensure_file(file)
 
-    logger.debug("Files setup")
+    logger.debug("Files set up")

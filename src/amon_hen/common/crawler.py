@@ -13,17 +13,17 @@ class Crawler:
     Base class for implementing a crawler that traverse and process data sources.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initialize a Crawler with the specified search behavior and target URL.
         """
-        self.base_url = ""
-        self.base_url_hostname = ""
-        self.share_host = False
-        self.max_depth = 0
-        self.visited = set()
+        self.base_url: str = ""
+        self.base_url_hostname: str = ""
+        self.share_host: bool = False
+        self.max_depth: int = 0
+        self.visited: set[str] = set()
 
-    def _crawl(self, url, depth=0):
+    def _crawl(self, url: str, depth: int = 0) -> None:
         """
         Recursively traverse links in the website.
         """
@@ -36,7 +36,10 @@ class Crawler:
             return
 
         self.visited.add(url)
+
         response = http_get(url)
+        if response is None:
+            return
 
         # Processing function
         self._process_response(response)
@@ -49,7 +52,7 @@ class Crawler:
             for link in links:
                 self._crawl(link, depth + 1)
 
-    def _is_html(self, response):
+    def _is_html(self, response: requests.Response) -> bool:
         """
         Identify whether or not a downloaded response is of type HTML.
         """
@@ -60,11 +63,11 @@ class Crawler:
 
         return False
 
-    def _filter_links(self, links):
+    def _filter_links(self, links: list[str]) -> list[str]:
         """
         Remove links that do not meet criteria from list of candidate links.
         """
-        filtered_links = []
+        filtered_links: list[str] = []
 
         for link in links:
             # Convert relative link to absolute link
@@ -100,13 +103,13 @@ class Crawler:
 
         return filtered_links
 
-    def _extract_links(self, response):
+    def _extract_links(self, response: requests.Response) -> list[str]:
         """
         Retrieve all href and src links from web page.
         """
         soup = BeautifulSoup(response.text, "html.parser")
 
-        links = []
+        links: list[str] = []
 
         links.extend(
             quote(tag["href"].replace("\\", "/"), safe=":/?=&")
@@ -119,19 +122,21 @@ class Crawler:
 
         return links
 
-    def _process_response(self, response):
+    def _process_response(self, response: requests.Response) -> None:
         """
         Process a crawl response.
         """
         pass
 
-    def _non_exhaustive_discard(self, link):
+    def _non_exhaustive_discard(self, link: Any) -> bool:
         """
         Determine whether or not a link should be discarded in a non-exhaustive search.
         """
         return False
 
-    def crawl(self, base_url, max_depth=0, share_host=False):
+    def crawl(
+        self, base_url: str, max_depth: int = 0, share_host: bool = False
+    ) -> set[str]:
         """
         Initiate the crawling process.
         """

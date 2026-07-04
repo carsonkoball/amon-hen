@@ -3,6 +3,7 @@ import time
 
 import requests
 
+# Logging setup
 logger = logging.getLogger(__name__)
 
 # Shared session for connection pooling
@@ -31,7 +32,11 @@ RETRY_STATUS_CODES = {
 }
 
 
-def _request(method, url, **kwargs):
+def _request(
+    method: str,
+    url: str,
+    **kwargs: Any,
+) -> requests.Response | None:
     """
     Internal HTTP request helper with:
     - Automatic retries on exception errors
@@ -91,28 +96,28 @@ def _request(method, url, **kwargs):
     return response
 
 
-def http_get(url, **kwargs):
+def http_get(url: str, **kwargs: Any) -> requests.Response | None:
     """
     Convenience wrapper for GET requests.
     """
     return _request("GET", url, **kwargs)
 
 
-def http_post(url, **kwargs):
+def http_post(url: str, **kwargs: Any) -> requests.Response | None:
     """
     Convenience wrapper for POST requests.
     """
     return _request("POST", url, **kwargs)
 
 
-def http_head(url, **kwargs):
+def http_head(url: str, **kwargs: Any) -> requests.Response | None:
     """
     Convenience wrapper for HEAD requests.
     """
     return _request("HEAD", url, **kwargs)
 
 
-def safe_json(response):
+def safe_json(response: requests.Response) -> Any:
     """
     Safely parse JSON from a requests response.
     Returns parsed JSON or None if invalid.
