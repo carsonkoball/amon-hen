@@ -1,5 +1,7 @@
+from collections.abc import Mapping
 import logging
 from pathlib import Path
+from typing import Any
 
 # Logging setup
 logger = logging.getLogger(__name__)
