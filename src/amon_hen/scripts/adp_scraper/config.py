@@ -18,7 +18,11 @@ DIRS = {
     "LOG_DIR": LOG_DIR,
 }
 
-FILES = {"ACTIVE_FILE": (ACTIVE_FILE, "{}"), "REMOVED_FILE": (REMOVED_FILE, ""), "LOG_FILE": (LOG_FILE, "")}
+FILES = {
+    "ACTIVE_FILE": (ACTIVE_FILE, "{}"),
+    "REMOVED_FILE": (REMOVED_FILE, ""),
+    "LOG_FILE": (LOG_FILE, ""),
+}
 
 # Company ADP information
 CID = "244ae70f-13c8-4ab6-b68a-c2964191a80a"

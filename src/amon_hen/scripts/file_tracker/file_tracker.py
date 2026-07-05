@@ -141,9 +141,13 @@ class FileCrawler(Crawler):
         """
         metadata = {"content_hash": None}
 
-        with open(config.METADATA_FILE(identity["netloc_id"], identity["url_hash"]), "r", encoding="utf-8") as file:
+        with open(
+            config.METADATA_FILE(identity["netloc_id"], identity["url_hash"]),
+            "r",
+            encoding="utf-8",
+        ) as file:
             metadata = json.load(file)
-                
+
         metadata.setdefault("content_hash", None)
 
         return metadata
