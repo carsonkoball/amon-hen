@@ -15,13 +15,20 @@ Monitors the ADP Career Center for a user-specified company.
 - Tracks removed job postings
 - Archives job postings locally
 
+### blue_list_tracker
+Monitors the DCMA Blue UAS Cleared Drone List.
+- Tracks new listings
+- Tracks removed listings
+- Tracks listing modifications
+- Archives listings locally
+
 ### dow_scraper
 Monitors the Department of War (DoW) daily contract announcements page.
 - Parses awarded company names
 
 ### file_tracker
 Searches websites for files with user-specified extensions (e.g. .pdf, .csv, .png).
-- Tracks changes to file contents
+- Tracks file content modifications
 - Archives discovered files locally
 
 ### Common Utilities
@@ -51,6 +58,11 @@ amon-hen/
 │           │   ├── __init__.py
 │           │   ├── __main__.py
 │           │   └── adp_scraper.py
+│           ├── blue_list_tracker/
+│           │   ├── config.py
+│           │   ├── __init__.py
+│           │   ├── __main__.py
+│           │   └── blue_list_tracker.py
 │           ├── dow_scraper/
 │           │   ├── config.py
 │           │   ├── __init__.py
