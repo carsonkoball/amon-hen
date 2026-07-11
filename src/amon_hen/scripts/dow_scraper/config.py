@@ -13,7 +13,6 @@ FILES = {"LOG_FILE": (LOG_FILE, "")}
 
 # Base URLs
 INDEX_URL = "https://www.war.gov/News/Contracts/"
-DAILY_URL = None
 
 # Phrases that indicate multiple companies are contracted
 PLURAL_PHRASES = [

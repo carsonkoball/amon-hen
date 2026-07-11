@@ -32,16 +32,17 @@ def split_on_phrases(paragraph, phrases):
     return []
 
 
-def get_daily_url():
+def get_daily_url(contract_date=None):
     """
     Find today's contract page URL if it exists.
     """
 
-    # Use date from config.py, otherwise use today's date
-    today = date.today()
-    day = str(today.day)
-    month = today.strftime("%B")
-    year = str(today.year)
+    # Use date from contract_date argument, otherwise use today's date
+    if contract_date is None:
+        contract_date = date.today()
+    day = str(contract_date.day)
+    month = contract_date.strftime("%B")
+    year = str(contract_date.year)
 
     response = http_get(config.INDEX_URL)
 
@@ -183,13 +184,13 @@ def get_companies(daily_url):
     return companies
 
 
-def dow_scraper():
+def dow_scraper(contract_date=None):
     """
     Get the daily contract page and return the companies on it.
     """
     results = {"daily_url": None, "companies": None}
 
-    daily_url = config.DAILY_URL if config.DAILY_URL else get_daily_url()
+    daily_url = get_daily_url(contract_date)
 
     if daily_url is None:
         return results
@@ -211,7 +212,7 @@ def dow_scraper():
     return results
 
 
-def run():
+def run(contract_date=None):
     """
     Execute the dow_scraper workflow.
     """
@@ -222,8 +223,9 @@ def run():
     setup_environment(directories=config.DIRS, files=config.FILES)
 
     logger.debug("Starting dow_scraper")
+    logger.debug("Argument contract_date: %s", contract_date)
 
-    results = dow_scraper()
+    results = dow_scraper(contract_date)
 
     logger.debug("Stopping dow_scraper")
 
