@@ -221,10 +221,10 @@ def run():
     # Ensure environment is correctly setup
     setup_environment(directories=config.DIRS, files=config.FILES)
 
-    logger.debug("Starting adp_scraper")
+    logger.debug("Starting dow_scraper")
 
     results = dow_scraper()
 
-    logger.debug("Stopping adp_scraper")
+    logger.debug("Stopping dow_scraper")
 
     return results
