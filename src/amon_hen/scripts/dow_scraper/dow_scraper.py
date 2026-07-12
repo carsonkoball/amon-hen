@@ -138,7 +138,7 @@ def get_companies(daily_url):
         if p.text[:11] == "CORRECTION:":
             logger.debug("Correction in p %s.", str(i + 1))
 
-            companies[branch].append(["corr" + p.text.split(". ")[0]])
+            companies[branch].append([p.text.split(". ")[0]])
 
             continue
         # Update
