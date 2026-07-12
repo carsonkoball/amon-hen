@@ -40,13 +40,13 @@ def get_daily_url(contract_date=None):
     # Use date from contract_date argument, otherwise use today's date
     if contract_date is None:
         contract_date = date.today()
-        
+
     day = str(contract_date.day)
     month = contract_date.strftime("%B")
     year = str(contract_date.year)
 
     search_url = config.SEARCH_URL.format(day=day, month=month, year=year)
-    
+
     response = http_get(search_url, headers=config.SEARCH_HEADERS)
 
     if response is None or not response.ok:
@@ -62,11 +62,11 @@ def get_daily_url(contract_date=None):
         soup = BeautifulSoup(data, "html.parser")
 
         daily_url = soup.find("listing-titles-only")
-        
+
         # Daily contract URL found
         if daily_url:
             daily_url = daily_url["article-url"]
-        
+
             logger.debug(
                 "%s %s, %s contract URL found: %s",
                 month,
