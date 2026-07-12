@@ -46,7 +46,7 @@ def get_daily_url(contract_date=None):
     year = str(contract_date.year)
 
     search_url = config.SEARCH_URL.format(day=day, month=month, year=year)
-
+    print("search_url:", search_url)
     response = http_get(search_url, headers=config.SEARCH_HEADERS)
 
     if response is None or not response.ok:

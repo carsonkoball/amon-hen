@@ -12,9 +12,7 @@ DIRS = {"BASE_DIR": BASE_DIR, "DATA_DIR": DATA_DIR, "LOG_DIR": LOG_DIR}
 FILES = {"LOG_FILE": (LOG_FILE, "")}
 
 # Base URL
-SEARCH_URL = (
-    'https://www.war.gov/News/Contracts/?Search="Contracts+for+{month}+{day}%2c+{year}"'
-)
+SEARCH_URL = "https://www.war.gov/News/Contracts/StartDate/{year}-{month}-{day}/EndDate/{year}-{month}-{day}/"
 
 # Base headers
 SEARCH_HEADERS = {
