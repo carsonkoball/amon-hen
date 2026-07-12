@@ -38,4 +38,5 @@ SINGULAR_PHRASES = [
     "is awarded",
     "is being awarded",
     "was awarded",
+    "will be awarded",
 ]
