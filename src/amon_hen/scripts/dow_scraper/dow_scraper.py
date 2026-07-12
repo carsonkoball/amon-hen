@@ -34,20 +34,23 @@ def split_on_phrases(paragraph, phrases):
 
 def get_daily_url(contract_date=None):
     """
-    Find today's contract page URL if it exists.
+    Find daily contract page URL if it exists.
     """
 
     # Use date from contract_date argument, otherwise use today's date
     if contract_date is None:
         contract_date = date.today()
+        
     day = str(contract_date.day)
     month = contract_date.strftime("%B")
     year = str(contract_date.year)
 
-    response = http_get(config.INDEX_URL)
+    search_url = config.SEARCH_URL.format(day=day, month=month, year=year)
+    
+    response = http_get(search_url, headers=config.SEARCH_HEADERS)
 
     if response is None or not response.ok:
-        logger.error("Failed to fetch page: %s", config.INDEX_URL)
+        logger.error("Failed to fetch page: %s", search_url)
 
         return None
 
@@ -58,28 +61,26 @@ def get_daily_url(contract_date=None):
 
         soup = BeautifulSoup(data, "html.parser")
 
-        daily_url = soup.find("listing-titles-only")["article-url"]
-        daily_url_components = daily_url.rstrip("/").split("-")
-        daily_url_day = daily_url_components[-2]
-        daily_url_month = daily_url_components[-3].capitalize()
-        daily_url_year = daily_url_components[-1]
-
-        # Today's contract URL found
-        if daily_url_day == day and daily_url_month == month and daily_url_year == year:
+        daily_url = soup.find("listing-titles-only")
+        
+        # Daily contract URL found
+        if daily_url:
+            daily_url = daily_url["article-url"]
+        
             logger.debug(
                 "%s %s, %s contract URL found: %s",
-                daily_url_month,
-                daily_url_day,
-                daily_url_year,
+                month,
+                day,
+                year,
                 daily_url,
             )
 
             return daily_url
-        # Today's contract URL not found
+        # Daily contract URL not found
         logger.info("%s %s, %s contract URL not found.", month, day, year)
 
         return None
-    # Some error ocurred while getting today's contract URL
+    # Some error ocurred while getting daily contract URL
     except Exception as e:
         logger.exception(
             "Error while attempting to find %s %s, %s contract URL: %s.",
