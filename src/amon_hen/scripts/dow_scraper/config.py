@@ -25,6 +25,7 @@ PLURAL_PHRASES = [
     "are awarded",
     "are being awarded",
     "are sharing",
+    "have been awarded",
     "have each been awarded",
     "were awarded",
     "will each be awarded",
