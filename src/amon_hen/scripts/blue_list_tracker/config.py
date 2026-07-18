@@ -8,6 +8,7 @@ LOG_DIR = DATA_DIR / "logs"
 LOG_FILE = LOG_DIR / "logs.log"
 
 LISTINGS_DIR = DATA_DIR / "listings"
+ACTIVE_LISTINGS_FILE = LISTINGS_DIR / "active_listings.json"
 INDEX_FILE = LISTINGS_DIR / "index.jsonl"
 LISTING_DIR = lambda uxs_core_id: LISTINGS_DIR / uxs_core_id
 METADATA_FILE = lambda uxs_core_id: LISTING_DIR(uxs_core_id) / "metadata.json"

@@ -101,17 +101,29 @@ def save_listing(listing, timestamp):
     )
 
 
-def get_stored_listing_ids():
+def load_stored_listing_ids():
     """
     Return all locally stored listing IDs.
     """
-    listings_dir = config.LISTINGS_DIR
+    active_listings_path = config.ACTIVE_LISTINGS_FILE
 
-    stored_listing_ids = [
-        listing.name for listing in listings_dir.iterdir() if listing.is_dir()
-    ]
+    with open(active_listings_path, "r", encoding="utf-8") as file:
+        stored_listing_ids = set(json.load(file))
 
     return stored_listing_ids
+
+
+def save_active_listing_ids(listing_ids):
+    """
+    Save listing IDs of seen listings into active listings file.
+    """
+    active_listings_path = config.ACTIVE_LISTINGS_FILE
+    temporary_file_path = active_listings_path.with_suffix(".tmp")
+
+    with open(temporary_file_path, "w", encoding="utf-8") as file:
+        json.dump(listing_ids, file)
+
+    temporary_file_path.replace(active_listings_path)
 
 
 def save_to_index(listing):
@@ -239,13 +251,19 @@ def blue_list_tracker():
         # Save metadata
         save_metadata(metadata, listing_id)
 
-    stored_listing_ids = get_stored_listing_ids()
-    stored_listing_ids = set(stored_listing_ids)
+    logger.debug(
+        "Seen %d active listings",
+        len(seen_listing_ids),
+    )
+
+    stored_listing_ids = load_stored_listing_ids()
 
     logger.debug(
         "Found %d stored listings",
         len(stored_listing_ids),
     )
+
+    save_active_listing_ids(seen_listing_ids)
 
     removed_listing_ids = stored_listing_ids - seen_listing_ids
 
