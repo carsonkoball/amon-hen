@@ -273,7 +273,10 @@ def run(base_url, max_depth=1, exhaustive_search=True, allowed_extensions=list()
     # Setup logging
     setup_logging()
 
-    logger.debug("Starting file_scraper")
+    logger.debug("Argument base_url %s", base_url)
+    logger.debug("Argument max_depth: %s", max_depth)
+    logger.debug("Argument exhaustive_search: %s", exhaustive_search)
+    logger.debug("Argument allowed_extensions: %s", allowed_extensions)
 
     results = file_tracker(base_url, max_depth, exhaustive_search, allowed_extensions)
 
