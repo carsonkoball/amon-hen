@@ -5,6 +5,7 @@ Named after *Amon Hen*, a location in J.R.R. Tolkien's *The Lord of the Rings*. 
 
 ## Table of Contents
 -   [Tools Overview](#tools-overview)
+-   [User Interface](#user-interface)
 -   [Structure](#structure)
 -   [Installation](#installation)
 
@@ -34,12 +35,19 @@ Searches websites for files with user-specified extensions (e.g. .pdf, .csv, .pn
 ### Common Utilities
 #### crawler
 Automated web crawler
+
 #### filesystem
 Filesystem operations
+
 #### http
 HTTP request helpers
+
 #### log_config
 Logging configuration
+
+## User Interface
+### amon_hen_ui
+Browser-based user interface
 
 ## Structure
 ```
@@ -54,25 +62,48 @@ amon-hen/
 │       │   └── log_config.py
 │       └── scripts/
 │           ├── adp_scraper/
-│           │   ├── config.py
 │           │   ├── __init__.py
 │           │   ├── __main__.py
+│           │   ├── config.py
 │           │   └── adp_scraper.py
 │           ├── blue_list_tracker/
-│           │   ├── config.py
 │           │   ├── __init__.py
 │           │   ├── __main__.py
+│           │   ├── config.py
 │           │   └── blue_list_tracker.py
 │           ├── dow_scraper/
-│           │   ├── config.py
 │           │   ├── __init__.py
 │           │   ├── __main__.py
+│           │   ├── config.py
 │           │   └── dow_scraper.py
 │           └── file_tracker/
-│               ├── config.py
 │               ├── __init__.py
 │               ├── __main__.py
+│               ├── config.py
 │               └── file_tracker.py
+├── ui/
+│   ├── handlers/
+│   │   ├── __init__.py
+│   │   ├── adp_scraper.py
+│   │   ├── blue_list_tracker.py
+│   │   ├── dow_scraper.py
+│   │   └── file_tracker.py
+│   ├── routes/
+│   │   ├── __init__.py
+│   │   └── scripts.py
+│   ├── static/
+│   │   └── style.css
+│   ├── templates/
+│   │   ├── base.html
+│   │   ├── dashboard.html
+│   │   ├── adp_scraper.html
+│   │   ├── blue_list_tracker.html
+│   │   ├── dow_scraper.html
+│   │   └── file_tracker.html
+│   ├── config.py
+│   ├── amon_hen_ui.py
+│   ├── requirements.in
+│   └── requirements.txt
 ├── .gitignore
 ├── LICENSE
 ├── pyproject.toml
@@ -89,6 +120,7 @@ amon-hen/
 git clone https://github.com/carsonkoball/amon-hen.git
 cd amon-hen
 ```
+
 ### 2. Create virtual environment (recommended)
 **Linux / macOS:**
 ```bash
@@ -105,7 +137,8 @@ venv\Scripts\activate.bat
 python -m venv venv
 venv\Scripts\Activate.ps1
 ```
-### 3. Install dependencies and package
+
+### 3. Install core dependencies and package
 **User:**
 ```shell
 pip install -r requirements.txt
@@ -115,4 +148,10 @@ pip install -e .
 ```shell
 pip install -r requirements-dev.txt
 pip install -e .
+```
+
+### 4. Install UI dependencies (optional)
+```shell
+cd ui
+pip install -r requirements.txt
 ```
