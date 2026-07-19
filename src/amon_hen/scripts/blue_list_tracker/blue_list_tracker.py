@@ -107,6 +107,8 @@ def load_stored_listing_ids():
     """
     active_listings_path = config.ACTIVE_LISTINGS_FILE
 
+    ensure_file(active_listings_path, "{}")
+
     with open(active_listings_path, "r", encoding="utf-8") as file:
         stored_listing_ids = set(json.load(file))
 
@@ -121,7 +123,7 @@ def save_active_listing_ids(listing_ids):
     temporary_file_path = active_listings_path.with_suffix(".tmp")
 
     with open(temporary_file_path, "w", encoding="utf-8") as file:
-        json.dump(listing_ids, file)
+        json.dump(list(listing_ids), file)
 
     temporary_file_path.replace(active_listings_path)
 
