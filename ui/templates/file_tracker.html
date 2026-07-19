@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Amon Hen UI - {{ title }}
+{% endblock %}
+
+{% block content %}
+	<section>
+		<div class="section-title">
+			<h2>Input Parameters</h2>
+		</div>
+		<div class="section-content">
+			<form method="POST">
+				<div class="parameter">
+					<label for="base_url">Base URL</label><br>
+					<input
+						type="text"
+						id="base_url"
+						name="base_url"
+						value=""
+					>
+				</div>
+				<div class="parameter">
+					<label for="max_depth">Maximum Depth</label><br>
+					<input
+						type="number"
+						id="max_depth"
+						name="max_depth"
+						min=0
+						max=100
+						value="1"
+					>
+				</div>
+				<div class="parameter">
+					<label for="exhaustive_search">Exhaustive Search</label><br>
+					<input
+						type="checkbox"
+						id="exhaustive_search"
+						name="exhaustive_search"
+						checked
+					>
+				</div>
+				<div class="parameter">
+					<legend>Allowed Extensions</legend>
+					<label>
+						<input type="checkbox" name="allowed_extensions" value=".html">
+						.html
+					</label>
+					<label>
+						<input type="checkbox" name="allowed_extensions" value=".bmp">
+						.bmp
+					</label>
+					<label>
+						<input type="checkbox" name="allowed_extensions" value=".gif">
+						.gif
+					</label>
+					<label>
+						<input type="checkbox" name="allowed_extensions" value=".jpeg">
+						.jpeg
+					</label>
+					<label>
+						<input type="checkbox" name="allowed_extensions" value=".jpg">
+						.jpg
+					</label>
+					<label>
+						<input type="checkbox" name="allowed_extensions" value=".png">
+						.png
+					</label>
+					<label>
+						<input type="checkbox" name="allowed_extensions" value=".svg">
+						.svg
+					</label>
+					<label>
+						<input type="checkbox" name="allowed_extensions" value=".webp">
+						.webp
+					</label>
+					<label>
+						<input type="checkbox" name="allowed_extensions" value=".doc">
+						.doc
+					</label>
+					<label>
+						<input type="checkbox" name="allowed_extensions" value=".docx">
+						.docx
+					</label>
+					<label>
+						<input type="checkbox" name="allowed_extensions" value=".odt">
+						.odt
+					</label>
+					<label>
+						<input type="checkbox" name="allowed_extensions" value=".pdf">
+						.pdf
+					</label>
+					<label>
+						<input type="checkbox" name="allowed_extensions" value=".rtf">
+						.rtf
+					</label>
+					<label>
+						<input type="checkbox" name="allowed_extensions" value=".txt">
+						.txt
+					</label>
+				</div>
+				<button type="submit">
+					Run
+				</button>
+			</form>
+		</div>
+	</section>
+	<section>
+		<div class="section-title">
+			<h2>Output</h2>
+		</div>
+		<div class="section-content">
+			{% if results is none %}
+			
+				<p>No output yet.</p>
+			
+			{% elif results %}
+				
+				<ul>
+				{% for result in results %}
+				
+					{% if result["old_file"] is none and result["new_file"] %}
+						<li>New File: {{ result["new_file"] }}</li>
+					{% elif result["old_file"] and result["new_file"] is none %}
+						<li>Removed File: {{ result["old_file"] }}</li>
+					{% else %}
+						<li>Modified File: {{ result["new_file"] }}</li>
+					{% endif %}
+				
+				{% endfor %}
+				</ul>
+
+			{% elif results == [] %}
+				
+				<p>No changes found. </p>
+			
+			{% else %}
+
+				<p>Error.</p>
+
+			{% endif %}
+		</div>
+	</section>
+{% endblock %}

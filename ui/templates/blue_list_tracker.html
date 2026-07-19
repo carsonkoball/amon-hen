@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Amon Hen UI - {{ title }}
+{% endblock %}
+
+{% block content %}
+	<section>
+		<div class="section-title">
+			<h2>Input Parameters</h2>
+		</div>
+		<div class="section-content">
+			<form method="POST">
+				<button type="submit">
+					Run
+				</button>
+			</form>
+		</div>
+	</section>
+	<section>
+		<div class="section-title">
+			<h2>Output</h2>
+		</div>
+		<div class="section-content">
+			{% if new_listings is none and removed_listings is none and relisted_listings is none and modified_listings is none %}
+			
+				<p>No output yet.</p>
+				
+			{% elif new_listings == [] and removed_listings == [] and relisted_listings == [] and modified_listings == [] %}
+			
+				<p>No changes found.</p>
+				
+			{% elif new_listings or removed_listings or relisted_listings or modified_listings %}
+			
+				{% if new_listings %}
+				
+					<p>New Listings:</p>
+					<ul>
+						{% for listing in new_listings %}
+							<li>{{ listing }}</li>
+						{% endfor %}
+					</ul>
+					
+				{% endif %}
+				
+				{% if removed_listings %}
+				
+					<p>Removed Listings:</p>
+					<ul>
+						{% for listing in removed_listings %}
+							<li>{{ listing }}</li>
+						{% endfor %}
+					</ul>
+					
+				{% endif %}
+				
+				{% if relisted_listings %}
+				
+					<p>Re-Listed Listings:</p>
+					<ul>
+						{% for listing in relisted_listings %}
+							<li>{{ listing }}</li>
+						{% endfor %}
+					</ul>
+					
+				{% endif %}
+				
+				{% if modified_listings %}
+				
+					<p>Modified Listings:</p>
+					<ul>
+						{% for listing in modified_listings %}
+							<li>{{ listing }}</li>
+						{% endfor %}
+					</ul>
+					
+				{% endif %}
+			
+			{% else %}
+
+				<p>Error.</p>
+
+			{% endif %}
+		</div>
+	</section>
+{% endblock %}

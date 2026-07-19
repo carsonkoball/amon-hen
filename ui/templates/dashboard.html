@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Amon Hen UI - {{ title }}
+{% endblock %}
+
+{% block content %}
+	<section>
+		<div class="section-title">
+			<h2>Tools</h2>
+		</div>
+		<div class="section-content">
+			<ul class="script-list">
+				{% for script in scripts %}
+				<li>
+					<div>
+						<h2><a href="{{ url_for('scripts.script_page', slug=script.slug) }}">{{ script.name }}</a></h2>
+						<p>{{ script.description }}</p>
+					</div>
+				</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</section>
+{% endblock %}

@@ -1,0 +1,58 @@
+html {
+	background-color: rgb(220, 220, 220);
+	color: rgb(60, 65, 66);
+	font-family: monospace;
+}
+
+body {
+	margin: 2rem;
+}
+
+.script-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem 2rem;
+}
+
+@media (max-width: 700px) {
+    .script-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+li:empty {
+  visibility: hidden;
+}
+
+section {
+	outline: 1px black solid;
+	margin: 2rem 0;
+}
+
+.section-title {
+	outline: 1px black solid;
+	padding: 1rem;
+}
+
+.section-title h2 {
+	margin: 0;
+}
+
+.section-content {
+	padding: 1rem;
+}
+
+.parameter {
+	display: block;
+	margin: 1rem 0;
+}
+
+.parameter label {
+	display: inline-flex;
+	align-items: center;
+	margin-bottom: 1rem;
+}
+
+.parameter legend {
+	margin-bottom: 1rem;
+}

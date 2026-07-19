@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Amon Hen UI - {{ title }}
+{% endblock %}
+
+{% block content %}
+	<section>
+		<div class="section-title">
+			<h2>Input Parameters</h2>
+		</div>
+		<div class="section-content">
+			<form method="POST">
+				<div class="parameter">
+					<label for="contract_date">Contract Date</label><br>
+					<input
+						type="date"
+						id="contract_date"
+						name="contract_date"
+						value="{{ contract_date.isoformat()  }}"
+					>
+				</div>
+				<button type="submit">
+					Run
+				</button>
+			</form>
+		</div>
+	</section>
+	<section>
+		<div class="section-title">
+			<h2>Output</h2>
+		</div>
+		<div class="section-content">
+			{% if results is none %}
+			
+				<p> No output yet. </p>
+			
+			{% elif results["daily_url"] is none %}
+			
+				<p>{{ contract_date.strftime("%B") }} {{ contract_date.day }}, {{ contract_date.year }} contract URL not found.</p>
+				
+			{% elif results and results["companies"] %}
+
+				{% for branch, winners in results["companies"].items() %}
+
+					<h3>{{ branch }}</h3>
+
+					<ul>
+					{% for winner in winners %}
+						{% for company in winner %}
+							<li>{{ company }}</li>
+						{% endfor %}
+						{% if winners[-1] != winner %}
+							<li></li>
+						{% endif %}
+					{% endfor %}
+					</ul>
+
+				{% endfor %}
+
+			{% else %}
+
+				<p>Error.</p>
+
+			{% endif %}
+		</div>
+	</section>
+{% endblock %}
