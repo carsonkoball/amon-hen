@@ -220,9 +220,6 @@ def run(contract_date=None):
     # Setup logging
     setup_logging()
 
-    # Ensure environment is correctly setup
-    setup_environment(directories=config.DIRS, files=config.FILES)
-
     logger.debug("Starting dow_scraper")
     logger.debug("Argument contract_date: %s", contract_date)
 

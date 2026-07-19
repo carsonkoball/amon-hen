@@ -3,6 +3,13 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from platformdirs import user_data_dir, user_log_dir
+
+APP_NAME = "amon-hen"
+
+DATA_ROOT = Path(user_data_dir(APP_NAME, appauthor=False))
+LOG_ROOT = Path(user_log_dir(APP_NAME, appauthor=False))
+
 # Logging setup
 logger = logging.getLogger(__name__)
 
@@ -59,3 +66,23 @@ def setup_environment(
     logger.debug("Files set up")
 
     return directories_results, files_results
+
+
+def get_script_data_dir(script_name: str) -> Path:
+    """
+    Returns the data directory for a script, creating it if necessary.
+    """
+    path = DATA_ROOT / "data" / script_name
+    ensure_dir(path)
+
+    return path
+
+
+def get_script_log_dir(script_name: str) -> Path:
+    """
+    Returns the log directory for a script, creating it if necessary.
+    """
+    path = LOG_ROOT / script_name
+    ensure_dir(path)
+
+    return path

@@ -314,9 +314,6 @@ def run():
     # Setup logging
     setup_logging()
 
-    # Ensure environment is correctly setup
-    setup_environment(directories=config.DIRS, files=config.FILES)
-
     logger.debug("Starting blue_list_tracker")
 
     results = blue_list_tracker()

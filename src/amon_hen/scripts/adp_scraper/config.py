@@ -1,38 +1,26 @@
 from pathlib import Path
-import time
+
+from amon_hen.common.filesystem import get_script_data_dir, get_script_log_dir
+
+SCRIPT_NAME = __package__.split(".")[-1]
 
 # Storage
-BASE_DIR = Path(__file__).resolve().parent
-DATA_DIR = BASE_DIR / "data"
+DATA_DIR = get_script_data_dir(SCRIPT_NAME)
+LOG_DIR = get_script_log_dir(SCRIPT_NAME)
+
 ARCHIVE_DIR = DATA_DIR / "archive"
-LOG_DIR = DATA_DIR / "logs"
 
 ACTIVE_FILE = DATA_DIR / "active_jobs.json"
 REMOVED_FILE = DATA_DIR / "removed_jobs.jsonl"
-LOG_FILE = LOG_DIR / "logs.log"
 
-DIRS = {
-    "BASE_DIR": BASE_DIR,
-    "DATA_DIR": DATA_DIR,
-    "ARCHIVE_DIR": ARCHIVE_DIR,
-    "LOG_DIR": LOG_DIR,
-}
+DIRS = {"ARCHIVE_DIR": ARCHIVE_DIR}
 
-FILES = {
-    "ACTIVE_FILE": (ACTIVE_FILE, "{}"),
-    "REMOVED_FILE": (REMOVED_FILE, ""),
-    "LOG_FILE": (LOG_FILE, ""),
-}
-
-# Company ADP information
-CID = "244ae70f-13c8-4ab6-b68a-c2964191a80a"
-CCID = "19000101_000001"
+FILES = {"ACTIVE_FILE": (ACTIVE_FILE, "{}"), "REMOVED_FILE": (REMOVED_FILE, "")}
 
 # Query settings
 N_TOP = 999
-TIMESTAMP = time.time()
 
 # Base URLs
-INDEX_URL = f"https://workforcenow.adp.com/mascsr/default/careercenter/public/events/staffing/v1/job-requisitions?cid={CID}&timeStamp={TIMESTAMP}&ccId={CCID}&lang=en_US&ccId={CCID}&locale=en_US&$top={N_TOP}"
-JOB_URL = "https://workforcenow.adp.com/mascsr/default/careercenter/public/events/staffing/v1/job-requisitions/{job_url_id}?cid={cid}&timeStamp={timestamp}&ccId={ccid}&lang=en_US&ccId={ccid}&locale=en_US"
-POSTING_URL = f"https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid={CID}&ccId={CCID}&lang=en_US&jobId="
+INDEX_URL_TEMPLATE = "https://workforcenow.adp.com/mascsr/default/careercenter/public/events/staffing/v1/job-requisitions?cid={cid}&timeStamp={timestamp}&ccId={ccid}&lang=en_US&ccId={ccid}&locale=en_US&$top={n_top}"
+JOB_URL_TEMPLATE = "https://workforcenow.adp.com/mascsr/default/careercenter/public/events/staffing/v1/job-requisitions/{job_url_id}?cid={cid}&timeStamp={timestamp}&ccId={ccid}&lang=en_US&ccId={ccid}&locale=en_US"
+POSTING_URL_TEMPLATE = "https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid={cid}&ccId={ccid}&lang=en_US&jobId={job_id}"

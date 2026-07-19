@@ -1,15 +1,12 @@
 from pathlib import Path
 
+from amon_hen.common.filesystem import get_script_data_dir, get_script_log_dir
+
+SCRIPT_NAME = __package__.split(".")[-1]
+
 # Storage
-BASE_DIR = Path(__file__).resolve().parent
-DATA_DIR = BASE_DIR / "data"
-LOG_DIR = DATA_DIR / "logs"
-
-LOG_FILE = LOG_DIR / "logs.log"
-
-DIRS = {"BASE_DIR": BASE_DIR, "DATA_DIR": DATA_DIR, "LOG_DIR": LOG_DIR}
-
-FILES = {"LOG_FILE": (LOG_FILE, "")}
+DATA_DIR = get_script_data_dir(SCRIPT_NAME)
+LOG_DIR = get_script_log_dir(SCRIPT_NAME)
 
 # Base URL
 SEARCH_URL = "https://www.war.gov/News/Contracts/StartDate/{year}-{month}-{day}/EndDate/{year}-{month}-{day}/"

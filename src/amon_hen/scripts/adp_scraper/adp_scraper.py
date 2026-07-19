@@ -1,6 +1,7 @@
 from datetime import datetime
 import json
 import logging
+import time
 
 from . import config
 from amon_hen.common.filesystem import setup_environment
@@ -42,11 +43,14 @@ def append_removed_jobs(jobs):
             logger.debug("Added %s to %s", job["title"], config.REMOVED_FILE)
 
 
-def scrape_jobs():
+def scrape_jobs(cid, ccid):
     """
     Identify listed jobs and relevant information.
     """
-    response = http_get(config.INDEX_URL)
+    index_url = config.INDEX_URL_TEMPLATE.format(
+        cid=cid, ccid=ccid, timestamp=time.time(), n_top=config.N_TOP
+    )
+    response = http_get(index_url)
 
     data = safe_json(response)
     if data is None:
@@ -55,13 +59,18 @@ def scrape_jobs():
     jobs = []
 
     for job in data["jobRequisitions"]:
+        posting_url = config.POSTING_URL_TEMPLATE.format(
+            cid=cid,
+            ccid=ccid,
+            job_id=job["customFieldGroup"]["stringFields"][0]["stringValue"],
+        )
+
         job_entry = {
             "title": job["requisitionTitle"],
-            "link": config.POSTING_URL
-            + job["customFieldGroup"]["stringFields"][0]["stringValue"],
+            "link": posting_url,
             "date_posted": job["postDate"],
             "date_removed": "Not yet removed.",
-            "location": job["requisitionLocations"][0]["nameCode"]["shortName"],
+            "location": job["requisitionLocations"][0]["nameCode"].get("shortName"),
             "adp_id": job["itemID"],
             "company_id": job["clientRequisitionID"],
             "link_id": job["customFieldGroup"]["stringFields"][0]["stringValue"],
@@ -71,15 +80,12 @@ def scrape_jobs():
     return jobs
 
 
-def archive_posting(job):
+def archive_posting(job, cid, ccid):
     """
     Archive a posting page into an .html file.
     """
-    posting_url = config.JOB_URL.format(
-        job_url_id=job["link_id"],
-        cid=config.CID,
-        timestamp=config.TIMESTAMP,
-        ccid=config.CCID,
+    posting_url = config.JOB_URL_TEMPLATE.format(
+        job_url_id=job["link_id"], cid=cid, ccid=ccid, timestamp=time.time()
     )
     response = http_get(posting_url)
 
@@ -97,9 +103,7 @@ def archive_posting(job):
             output += (
                 f"<p>{data['customFieldGroup']['stringFields'][5]['stringValue']}</p>"
             )
-        output += (
-            f"<span>{data['requisitionLocations'][0]['nameCode']['shortName']}</span>"
-        )
+        output += f"<span>{data['requisitionLocations'][0]['nameCode'].get('shortName')}</span>"
         output += "</div>"
         output += "<div>"
         output += "<p>Salary Range:</p>"
@@ -133,14 +137,14 @@ def archive_posting(job):
         return False
 
 
-def sync_jobs():
+def sync_jobs(cid, ccid):
     """
     Update active and removed job listings.
     """
     results = {"new_jobs": None, "removed_jobs": None}
 
     # Current scrape
-    scraped_jobs = scrape_jobs()
+    scraped_jobs = scrape_jobs(cid, ccid)
 
     if scraped_jobs is None:
         return results
@@ -164,7 +168,7 @@ def sync_jobs():
     # Archive new job postings in /archive folder
     for job_id in new_ids:
         job = scraped_by_id[job_id]
-        archive_posting(job)
+        archive_posting(job, cid, ccid)
 
     # Add removed jobs to removed_jobs.json file
     removed_jobs = [active_by_id[job_id] for job_id in removed_ids]
@@ -185,11 +189,11 @@ def sync_jobs():
     return results
 
 
-def adp_scraper():
+def adp_scraper(cid, ccid):
     """
     Find newly added and newly removed job postings and return them.
     """
-    results = sync_jobs()
+    results = sync_jobs(cid, ccid)
 
     if results is None:
         return results
@@ -210,7 +214,7 @@ def adp_scraper():
     return results
 
 
-def run():
+def run(cid, ccid):
     """
     Execute the adp_scraper workflow.
     """
@@ -221,8 +225,10 @@ def run():
     setup_environment(directories=config.DIRS, files=config.FILES)
 
     logger.debug("Starting adp_scraper")
+    logger.debug("Argument cid: %s", cid)
+    logger.debug("Argument ccid: %s", ccid)
 
-    results = adp_scraper()
+    results = adp_scraper(cid, ccid)
 
     logger.debug("Stopping adp_scraper")
 

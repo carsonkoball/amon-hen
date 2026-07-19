@@ -12,6 +12,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--date",
         type=lambda x: date.fromisoformat(x),
+        required=False,
         help="Contract date (YYYY-MM-DD). Defaults to today.",
     )
 

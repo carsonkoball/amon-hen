@@ -253,30 +253,29 @@ class FileCrawler(Crawler):
         return self.results
 
 
-def file_tracker():
+def file_tracker(base_url, max_depth, exhaustive_search, allowed_extensions):
     """
     Find file changes and return them.
     """
 
-    crawler = FileCrawler(exhaustive_search=False, allowed_extensions={".png"})
-    results = crawler.crawl(base_url="https://www.castellumus.com/", max_depth=1)
+    crawler = FileCrawler(
+        exhaustive_search=exhaustive_search, allowed_extensions=allowed_extensions
+    )
+    results = crawler.crawl(base_url=base_url, max_depth=max_depth)
 
     return results
 
 
-def run():
+def run(base_url, max_depth=1, exhaustive_search=True, allowed_extensions=list()):
     """
     Execute the file_tracker workflow.
     """
     # Setup logging
     setup_logging()
 
-    # Ensure environment is correctly setup
-    setup_environment(directories=config.DIRS, files=config.FILES)
-
     logger.debug("Starting file_scraper")
 
-    results = file_tracker()
+    results = file_tracker(base_url, max_depth, exhaustive_search, allowed_extensions)
 
     logger.debug("Stopping file_scraper")
 
