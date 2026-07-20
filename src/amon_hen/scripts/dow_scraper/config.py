@@ -21,6 +21,7 @@ SEARCH_HEADERS = {
 PLURAL_PHRASES = [
     "are awarded",
     "are being awarded",
+    "are modified in",
     "are sharing",
     "have been awarded",
     "have each been awarded",
