@@ -168,7 +168,7 @@ class FileCrawler(Crawler):
 
         # Identity information
         identity = self._extract_identity(response, content_type)
-
+        print(identity)
         # Environment setup
         self._ensure_environment(identity)
 
@@ -190,12 +190,8 @@ class FileCrawler(Crawler):
             # Change is due to file update from previous version
             else:
                 # Update result
-                result["old_file"] = config.CONTENT_FILE(
-                    identity["netloc_id"],
-                    identity["url_hash"],
-                    metadata["content_hash"],
-                    metadata["extension"],
-                )
+                result["old_file"] = identity["normalized_url"]
+
                 # Update metadata history file with previous metadata information
                 with open(
                     config.METADATA_HISTORY_FILE(
@@ -207,12 +203,7 @@ class FileCrawler(Crawler):
                     file.write(json.dumps(metadata) + "\n")
 
             # Update results
-            result["new_file"] = config.CONTENT_FILE(
-                identity["netloc_id"],
-                identity["url_hash"],
-                identity["content_hash"],
-                identity["extension"],
-            )
+            result["new_file"] = identity["normalized_url"]
 
             # Update metadata
             metadata["content_hash"] = identity["content_hash"]
