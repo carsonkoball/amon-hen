@@ -45,6 +45,9 @@ HTTP request helpers
 #### log_config
 Logging configuration
 
+### tracker
+Structured data monitoring
+
 ## User Interface
 ### amon_hen_ui
 Browser-based user interface
@@ -59,7 +62,8 @@ amon-hen/
 │       │   ├── crawler.py
 │       │   ├── filesystem.py
 │       │   ├── http.py
-│       │   └── log_config.py
+│       │   ├── log_config.py
+│       │   └── tracker.py
 │       └── scripts/
 │           ├── adp_scraper/
 │           │   ├── __init__.py
