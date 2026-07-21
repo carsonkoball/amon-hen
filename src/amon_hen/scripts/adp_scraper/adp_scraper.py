@@ -1,215 +1,172 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 import logging
-import time
 
 from . import config
-from amon_hen.common.filesystem import setup_environment
+from amon_hen.common.filesystem import ensure_file
 from amon_hen.common.http import safe_json, http_get
 from amon_hen.common.log_config import setup_logging
+from amon_hen.common.tracker import Tracker
 
 # Logging setup
 logger = logging.getLogger(__name__)
 
 
-def load_active_jobs():
+def _get_postings(external_job_id, cid, ccid):
     """
-    Load currently active jobs.
+    Initiate GET request for either a specified company's postings page or a specified job posting page and return the response in JSON format.
     """
-    with config.ACTIVE_FILE.open("r", encoding="utf-8") as file:
-        logger.debug("Read from: %s", config.ACTIVE_FILE)
-
-        return json.load(file)
-
-
-def save_active_jobs(jobs):
-    """
-    Overwrite active_jobs.json with the latest active jobs.
-    """
-    with config.ACTIVE_FILE.open("w", encoding="utf-8") as file:
-        json.dump(jobs, file, indent=2)
-
-        logger.debug("Overwrote: %s", config.ACTIVE_FILE)
-
-
-def append_removed_jobs(jobs):
-    """
-    Append removed jobs to removed_jobs.jsonl.
-    """
-    with config.REMOVED_FILE.open("a", encoding="utf-8") as f:
-        for job in jobs:
-            f.write(json.dumps(job) + "\n")
-
-            logger.debug("Added %s to %s", job["title"], config.REMOVED_FILE)
-
-
-def scrape_jobs(cid, ccid):
-    """
-    Identify listed jobs and relevant information.
-    """
-    index_url = config.INDEX_URL_TEMPLATE.format(
-        cid=cid, ccid=ccid, timestamp=time.time(), n_top=config.N_TOP
-    )
-    response = http_get(index_url)
-
-    data = safe_json(response)
-    if data is None:
-        return None
-
-    jobs = []
-
-    for job in data["jobRequisitions"]:
-        posting_url = config.POSTING_URL_TEMPLATE.format(
+    if external_job_id:
+        url = config.POSTING_URL_TEMPLATE.format(
             cid=cid,
             ccid=ccid,
-            job_id=job["customFieldGroup"]["stringFields"][0]["stringValue"],
+            external_job_id=external_job_id,
+            timestamp=datetime.now(),
+        )
+    else:
+        url = config.POSTINGS_URL_TEMPLATE.format(
+            cid=cid,
+            ccid=ccid,
+            timestamp=datetime.now(),
+            n_top=config.N_TOP,
         )
 
-        job_entry = {
-            "title": job["requisitionTitle"],
-            "link": posting_url,
-            "date_posted": job["postDate"],
-            "date_removed": "Not yet removed.",
-            "location": job["requisitionLocations"][0]["nameCode"].get("shortName"),
-            "adp_id": job["itemID"],
-            "company_id": job["clientRequisitionID"],
-            "link_id": job["customFieldGroup"]["stringFields"][0]["stringValue"],
-        }
-        jobs.append(job_entry)
+    response = http_get(url=url)
 
-    return jobs
+    data = safe_json(response=response)
+
+    return data
 
 
-def archive_posting(job, cid, ccid):
+def _append_to(entry, path):
     """
-    Archive a posting page into an .html file.
+    Save an entry to an append-only JSONL file.
     """
-    posting_url = config.JOB_URL_TEMPLATE.format(
-        job_url_id=job["link_id"], cid=cid, ccid=ccid, timestamp=time.time()
-    )
-    response = http_get(posting_url)
-
-    data = safe_json(response)
-    if data is None:
-        return False
-
-    output = ""
-    # Build the html archive file
-    try:
-        output += f"<div><h2>{data['requisitionTitle']}</h2></div>"
-        output += "<div>"
-        output += f"<p>{data['workLevelCode']['shortName']}<p>"
-        if "stringValue" in data["customFieldGroup"]["stringFields"][5]:
-            output += (
-                f"<p>{data['customFieldGroup']['stringFields'][5]['stringValue']}</p>"
-            )
-        output += f"<span>{data['requisitionLocations'][0]['nameCode'].get('shortName')}</span>"
-        output += "</div>"
-        output += "<div>"
-        output += "<p>Salary Range:</p>"
-        output += f"<p>{data['customFieldGroup']['stringFields'][6]['stringValue']}</p>"
-        output += "</div>"
-        output += "<div>"
-        output += data["requisitionDescription"]
-        output += "</div>"
-    except (KeyError, IndexError):
-        logger.error("Malformed job entry: %s.", job["title"])
-
-        return False
-
-    try:
-        with open(
-            config.ARCHIVE_DIR / (data["itemID"] + ".html"), "w", encoding="utf-8"
-        ) as file:
-            file.write(output)
-
-            logger.debug(
-                "%s posting successfully archived (%s.html).",
-                job["title"],
-                job["adp_id"],
-            )
-
-            return True
-        # Exception failure case
-    except Exception as e:
-        logger.error("%s posting failed to archive: %s.", job["title"], str(e))
-
-        return False
+    with open(path, "a", encoding="utf-8") as file:
+        file.write(json.dumps(obj=entry) + "\n")
 
 
-def sync_jobs(cid, ccid):
+def _load_active(cid):
     """
-    Update active and removed job listings.
+    Load IDs from the active.json file.
     """
-    results = {"new_jobs": None, "removed_jobs": None}
+    postings_active_path = config.POSTINGS_ACTIVE_FILE(cid=cid)
+    ensure_file(path=postings_active_path, default_content="[]")
 
-    # Current scrape
-    scraped_jobs = scrape_jobs(cid, ccid)
+    with open(file=postings_active_path, mode="r", encoding="utf-8") as file:
+        previous_active = set(json.load(file))
 
-    if scraped_jobs is None:
-        return results
-
-    # Previous active jobs
-    active_jobs = load_active_jobs()
-
-    # Create lookup dictionaries
-    active_by_id = {job["adp_id"]: job for job in active_jobs}
-
-    scraped_by_id = {job["adp_id"]: job for job in scraped_jobs}
-
-    # Create sets for comparisons
-    active_ids = set(active_by_id.keys())
-    scraped_ids = set(scraped_by_id.keys())
-
-    # Compute changes
-    new_ids = scraped_ids - active_ids
-    removed_ids = active_ids - scraped_ids
-
-    # Archive new job postings in /archive folder
-    for job_id in new_ids:
-        job = scraped_by_id[job_id]
-        archive_posting(job, cid, ccid)
-
-    # Add removed jobs to removed_jobs.json file
-    removed_jobs = [active_by_id[job_id] for job_id in removed_ids]
-
-    now = datetime.now()
-    for job in removed_jobs:
-        job["date_removed"] = now.isoformat()
-
-    if removed_jobs:
-        append_removed_jobs(removed_jobs)
-
-    # Save latest snapshot
-    save_active_jobs(scraped_jobs)
-
-    results["new_jobs"] = [scraped_by_id[job_id] for job_id in new_ids]
-    results["removed_jobs"] = removed_jobs
-
-    return results
+    return previous_active
 
 
-def adp_scraper(cid, ccid):
+def _save_active(current_active, cid):
+    """
+    Save IDs to the active.json file.
+    """
+    postings_active_path = config.POSTINGS_ACTIVE_FILE(cid=cid)
+
+    with open(file=postings_active_path, mode="w", encoding="utf-8") as file:
+        json.dump(obj=sorted(current_active), fp=file, indent=2)
+
+
+def _initialize_company(cid, ccid):
+    """
+    Add company to company index if needed.
+    """
+    if not config.COMPANY_DIR(cid=cid).exists():
+        url = config.COMPANY_URL_TEMPLATE.format(
+            cid=cid, ccid=ccid, timestamp=datetime.now()
+        )
+
+        response = http_get(url=url)
+
+        data = safe_json(response=response)
+
+        company_name = data["meta"]["customFieldGroup"]["stringFields"][7][
+            "stringValue"
+        ]
+
+        entry = {"cid": cid, "company_name": company_name}
+        _append_to(entry=entry, path=config.COMPANIES_INDEX_FILE)
+
+
+def _adp_scraper(cid, ccid, tracker):
     """
     Find newly added and newly removed job postings and return them.
     """
-    results = sync_jobs(cid, ccid)
+    results = []
 
-    if results is None:
-        return results
-    new_jobs = results["new_jobs"]
-    removed_jobs = results["removed_jobs"]
+    _initialize_company(cid=cid, ccid=ccid)
 
-    # Log the new job postings
-    logger.info("%d new job postings.", len(new_jobs))
+    postings_data = _get_postings(external_job_id=None, cid=cid, ccid=ccid)
 
-    for job in new_jobs:
-        logger.info("New job posting: %s", job["title"])
+    current_active = set()
 
-    # Log the removed job postings
-    logger.info("%d removed job postings.", len(removed_jobs))
-    for job in removed_jobs:
-        logger.info("Removed job posting: %s", job["title"])
+    # Every listing found in current search
+    for posting in postings_data["jobRequisitions"][:1]:
+        external_job_id = posting["customFieldGroup"]["stringFields"][0]["stringValue"]
+
+        current_active.add(external_job_id)
+
+        data = _get_postings(external_job_id=external_job_id, cid=cid, ccid=ccid)
+
+        # Remove "CurrentServerDateTime" to prevent hash discrepancies on every scan
+        del data["customFieldGroup"]["dateFields"][1]
+
+        posting_path = config.POSTING_DIR(cid=cid, external_job_id=external_job_id)
+
+        result = tracker.track(data=data, path=posting_path)
+
+        # Modified listing
+        if result.has_changed:
+            results.append(result)
+
+            # New listing
+            if result.is_new:
+                # Mark as newly added in index
+                postings_index_file_path = config.POSTINGS_INDEX_FILE(cid=cid)
+
+                entry = {
+                    "time": datetime.now(timezone.utc)
+                    .isoformat(timespec="seconds")
+                    .replace("+00:00", "Z"),
+                    "external_job_id": external_job_id,
+                    "requisition_title": result.new_data["requisitionTitle"],
+                    "event": "added",
+                }
+
+                _append_to(entry=entry, path=postings_index_file_path)
+
+    # Load previously active postings
+    previous_active = _load_active(cid=cid)
+
+    # Save current active postings
+    _save_active(current_active=current_active, cid=cid)
+
+    # Determine removed postings
+    removed = previous_active - current_active
+
+    # Every listing found to be removed
+    for external_job_id in removed:
+        posting_path = config.POSTING_DIR(cid=cid, external_job_id=external_job_id)
+
+        result = tracker.track(data=None, path=posting_path)
+
+        # Mark as removed in index
+        postings_index_file_path = config.POSTINGS_INDEX_FILE(cid=cid)
+
+        entry = {
+            "time": datetime.now(tz=timezone.utc)
+            .isoformat(timespec="seconds")
+            .replace("+00:00", "Z"),
+            "external_job_id": external_job_id,
+            "requisition_title": result.old_data["requisitionTitle"],
+            "event": "removed",
+        }
+
+        _append_to(entry=entry, path=postings_index_file_path)
+
+        results.append(result)
 
     return results
 
@@ -221,14 +178,13 @@ def run(cid, ccid):
     # Setup logging
     setup_logging()
 
-    # Ensure environment is correctly setup
-    setup_environment(directories=config.DIRS, files=config.FILES)
+    tracker = Tracker()
 
     logger.debug("Starting adp_scraper")
     logger.debug("Argument cid: %s", cid)
     logger.debug("Argument ccid: %s", ccid)
 
-    results = adp_scraper(cid, ccid)
+    results = _adp_scraper(cid=cid, ccid=ccid, tracker=tracker)
 
     logger.debug("Stopping adp_scraper")
 
