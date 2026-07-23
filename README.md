@@ -23,7 +23,7 @@ Monitors the DCMA Blue UAS Cleared Drone List.
 - Tracks listing modifications
 - Archives listings locally
 
-### dow_scraper
+### dow_parser
 Monitors the Department of War (DoW) daily contract announcements page.
 - Parses awarded company names
 
@@ -75,11 +75,11 @@ amon-hen/
 │           │   ├── __main__.py
 │           │   ├── config.py
 │           │   └── blue_list_tracker.py
-│           ├── dow_scraper/
+│           ├── dow_parser/
 │           │   ├── __init__.py
 │           │   ├── __main__.py
 │           │   ├── config.py
-│           │   └── dow_scraper.py
+│           │   └── dow_parser.py
 │           └── file_tracker/
 │               ├── __init__.py
 │               ├── __main__.py
@@ -90,7 +90,7 @@ amon-hen/
 │   │   ├── __init__.py
 │   │   ├── adp_tracker.py
 │   │   ├── blue_list_tracker.py
-│   │   ├── dow_scraper.py
+│   │   ├── dow_parser.py
 │   │   └── file_tracker.py
 │   ├── routes/
 │   │   ├── __init__.py
@@ -102,7 +102,7 @@ amon-hen/
 │   │   ├── dashboard.html
 │   │   ├── adp_tracker.html
 │   │   ├── blue_list_tracker.html
-│   │   ├── dow_scraper.html
+│   │   ├── dow_parser.html
 │   │   └── file_tracker.html
 │   ├── config.py
 │   ├── amon_hen_ui.py
