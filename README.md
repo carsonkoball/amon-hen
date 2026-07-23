@@ -45,7 +45,7 @@ HTTP request helpers
 #### log_config
 Logging configuration
 
-### tracker
+#### tracker
 Structured data monitoring
 
 ## User Interface
