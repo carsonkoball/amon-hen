@@ -1,6 +1,6 @@
 import argparse
 
-from .adp_scraper import run
+from .adp_tracker import run
 
 if __name__ == "__main__":
     # CLI arguments

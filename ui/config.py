@@ -1,9 +1,9 @@
 # Scripts
 SCRIPTS = [
     {
-        "name": "ADP Scraper",
+        "name": "ADP Tracker",
         "description": "Monitors the ADP Career Center for a user-specified company.",
-        "slug": "adp_scraper",
+        "slug": "adp_tracker",
     },
     {
         "name": "Blue List Tracker",

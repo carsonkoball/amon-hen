@@ -90,7 +90,7 @@ def _initialize_company(cid, ccid):
         _append_to(entry=entry, path=config.COMPANIES_INDEX_FILE)
 
 
-def _adp_scraper(cid, ccid, tracker):
+def _adp_tracker(cid, ccid, tracker):
     """
     Find newly added and newly removed job postings and return them.
     """
@@ -173,19 +173,19 @@ def _adp_scraper(cid, ccid, tracker):
 
 def run(cid, ccid):
     """
-    Execute the adp_scraper workflow.
+    Execute the adp_tracker workflow.
     """
     # Setup logging
     setup_logging()
 
     tracker = Tracker()
 
-    logger.debug("Starting adp_scraper")
+    logger.debug("Starting adp_tracker")
     logger.debug("Argument cid: %s", cid)
     logger.debug("Argument ccid: %s", ccid)
 
-    results = _adp_scraper(cid=cid, ccid=ccid, tracker=tracker)
+    results = _adp_tracker(cid=cid, ccid=ccid, tracker=tracker)
 
-    logger.debug("Stopping adp_scraper")
+    logger.debug("Stopping adp_tracker")
 
     return results
