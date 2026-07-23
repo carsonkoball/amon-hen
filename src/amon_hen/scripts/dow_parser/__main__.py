@@ -1,7 +1,7 @@
 import argparse
 from datetime import date
 
-from .dow_scraper import run
+from .dow_parser import run
 
 if __name__ == "__main__":
     # CLI arguments

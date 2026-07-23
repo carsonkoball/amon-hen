@@ -185,7 +185,7 @@ def get_companies(daily_url):
     return companies
 
 
-def dow_scraper(contract_date=None):
+def dow_parser(contract_date=None):
     """
     Get the daily contract page and return the companies on it.
     """
@@ -215,16 +215,16 @@ def dow_scraper(contract_date=None):
 
 def run(contract_date=None):
     """
-    Execute the dow_scraper workflow.
+    Execute the dow_parser workflow.
     """
     # Setup logging
     setup_logging()
 
-    logger.debug("Starting dow_scraper")
+    logger.debug("Starting dow_parser")
     logger.debug("Argument contract_date: %s", contract_date)
 
-    results = dow_scraper(contract_date)
+    results = dow_parser(contract_date)
 
-    logger.debug("Stopping dow_scraper")
+    logger.debug("Stopping dow_parser")
 
     return results

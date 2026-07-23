@@ -2,7 +2,7 @@ from datetime import date
 
 from flask import render_template, request
 
-from amon_hen.scripts import dow_scraper
+from amon_hen.scripts import dow_parser
 
 
 def handle(script):
@@ -13,10 +13,10 @@ def handle(script):
     if request.method == "POST":
         contract_date = date.fromisoformat(request.form["contract_date"])
 
-        results = dow_scraper.run(contract_date)
+        results = dow_parser.run(contract_date)
 
     return render_template(
-        "dow_scraper.html",
+        "dow_parser.html",
         title=script["name"],
         description=script["description"],
         back_link_visibility="visible",

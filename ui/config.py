@@ -11,9 +11,9 @@ SCRIPTS = [
         "slug": "blue_list_tracker",
     },
     {
-        "name": "DoW Scraper",
+        "name": "DoW Parser",
         "description": "Monitors the Department of War (DoW) daily contract announcements page.",
-        "slug": "dow_scraper",
+        "slug": "dow_parser",
     },
     {
         "name": "File Tracker",

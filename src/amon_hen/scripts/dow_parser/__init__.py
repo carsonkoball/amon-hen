@@ -1,3 +1,3 @@
-from .dow_scraper import run
+from .dow_parser import run
 
 __all__ = ["run"]
