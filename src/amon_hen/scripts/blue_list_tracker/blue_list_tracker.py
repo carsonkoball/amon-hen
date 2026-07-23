@@ -7,16 +7,19 @@ from . import config
 from amon_hen.common.filesystem import ensure_dir, ensure_file, setup_environment
 from amon_hen.common.http import http_get
 from amon_hen.common.log_config import setup_logging
+from amon_hen.common.tracker import Tracker
 
 # Logging seup
 logger = logging.getLogger(__name__)
 
 
-def get_listings():
+def _get_listings():
     """
     Initiate GET request for DCMA blue list and return the response in JSON format.
     """
     logger.debug("Fetching DCMA blue list...")
+
+    timestamp = datetime.now()
 
     response = http_get(config.LISTINGS_URL)
 
@@ -24,285 +27,113 @@ def get_listings():
 
     logger.debug("Retrieved %d listings", len(listings))
 
-    return listings
+    return listings, timestamp
 
 
-def load_metadata(listing_id):
+def _append_to(entry, path):
     """
-    Load metadata file for listing into dictionary if it exists.
-    If it doesn't exist, create a new metadata file and return empty dictionary.
+    Save an entry to an append-only JSONL file.
     """
-    listing_dir_path = config.LISTING_DIR(listing_id)
-    metadata_file_path = config.METADATA_FILE(listing_id)
-
-    ensure_dir(listing_dir_path)
-    existed = ensure_file(metadata_file_path, "{}")
-
-    if not existed:
-        logger.debug("Created metadata for listing %s", listing_id)
-
-    metadata = {}
-    with open(metadata_file_path, "r", encoding="utf-8") as file:
-        metadata = json.load(file)
-
-    return metadata, existed
+    with open(path, "a", encoding="utf-8") as file:
+        file.write(json.dumps(obj=entry) + "\n")
 
 
-def save_metadata(metadata, listing_id):
+def _save_active(current_active):
     """
-    Save metadata dictionary into metadata file for listing.
+    Save IDs to the active.json file.
     """
-    metadata_file_path = config.METADATA_FILE(listing_id)
-    temporary_file_path = metadata_file_path.with_suffix(".tmp")
+    listings_active_path = config.LISTINGS_ACTIVE_FILE
 
-    with open(temporary_file_path, "w", encoding="utf-8") as file:
-        json.dump(metadata, file, indent=2)
-
-    temporary_file_path.replace(metadata_file_path)
+    with open(file=listings_active_path, mode="w", encoding="utf-8") as file:
+        json.dump(obj=sorted(current_active), fp=file, indent=2)
 
 
-def load_listing(listing_id):
+def _load_active():
     """
-    Load listing file into dictionary.
+    Load IDs from the active.json file.
     """
-    metadata, _ = load_metadata(listing_id)
+    listings_active_path = config.LISTINGS_ACTIVE_FILE
+    ensure_file(path=listings_active_path, default_content="[]")
 
-    timestamp = metadata["last_updated"]
-    listing_file_path = config.LISTING_FILE(listing_id, timestamp)
+    with open(file=listings_active_path, mode="r", encoding="utf-8") as file:
+        previous_active = set(json.load(file))
 
-    listing = {}
-    with open(listing_file_path, "r", encoding="utf-8") as file:
-        listing = json.load(file)
-
-    return listing
+    return previous_active
 
 
-def save_listing(listing, timestamp):
-    """
-    Save listing dictionary into listing file.
-    """
-    listing_id = listing["UXSCore"]["mad_uxscoreid"]
-
-    versions_dir_path = config.VERSIONS_DIR(listing_id)
-    listing_file_path = config.LISTING_FILE(listing_id, timestamp)
-    temporary_file_path = listing_file_path.with_suffix(".tmp")
-
-    ensure_dir(versions_dir_path)
-
-    with open(temporary_file_path, "w", encoding="utf-8") as file:
-        json.dump(listing, file, indent=2)
-
-    temporary_file_path.replace(listing_file_path)
-
-    logger.debug(
-        "Saved listing %s at %s",
-        listing_id,
-        timestamp,
-    )
-
-
-def load_stored_listing_ids():
-    """
-    Return all locally stored listing IDs.
-    """
-    active_listings_path = config.ACTIVE_LISTINGS_FILE
-
-    ensure_file(active_listings_path, "{}")
-
-    with open(active_listings_path, "r", encoding="utf-8") as file:
-        stored_listing_ids = set(json.load(file))
-
-    return stored_listing_ids
-
-
-def save_active_listing_ids(listing_ids):
-    """
-    Save listing IDs of seen listings into active listings file.
-    """
-    active_listings_path = config.ACTIVE_LISTINGS_FILE
-    temporary_file_path = active_listings_path.with_suffix(".tmp")
-
-    with open(temporary_file_path, "w", encoding="utf-8") as file:
-        json.dump(list(listing_ids), file)
-
-    temporary_file_path.replace(active_listings_path)
-
-
-def save_to_index(listing):
-    """
-    Save essential listing information into index file.
-    """
-    index_file_path = config.INDEX_FILE
-
-    ensure_file(index_file_path)
-
-    manufacturer = listing["manufacturer"]["mad_id"]
-    product_type = listing["UXSCore"]["mad_coretype"]
-    product_name = listing["UXSCore"]["mad_id"]
-    listing_id = listing["UXSCore"]["mad_uxscoreid"]
-
-    with open(index_file_path, "a", encoding="utf-8") as file:
-        index_entry = {
-            "manufacturer": manufacturer,
-            "product_type": product_type,
-            "product_name": product_name,
-            "listing_id": listing_id,
-        }
-        file.write(json.dumps(index_entry) + "\n")
-
-    logger.debug(
-        "Indexed new listing %s | %s | %s at %s",
-        manufacturer,
-        product_type,
-        product_name,
-        listing_id,
-    )
-
-
-def blue_list_tracker():
+def blue_list_tracker(tracker):
     """
     Find blue list changes and return them.
     """
     results = []
 
-    listings = get_listings()
+    listings, timestamp = _get_listings()
 
-    timestamp = datetime.now(UTC).strftime("%Y-%m-%dT%H-%M-%S.%fZ")
-
-    seen_listing_ids = set()
-
-    # Counts for logging
-    new_count = 0
-    updated_count = 0
-    removed_count = 0
-    reactivated_count = 0
+    current_active = set()
 
     for listing in listings:
-        result = {"old_listing": None, "new_listing": None}
-
         listing_id = listing["UXSCore"]["mad_uxscoreid"]
-        listing_string = json.dumps(listing, sort_keys=True)
-        listing_hash = sha256(listing_string.encode("utf-8")).hexdigest()
 
-        seen_listing_ids.add(listing_id)
+        current_active.add(listing_id)
 
-        metadata, existed = load_metadata(listing_id)
+        listing_path = config.LISTING_DIR(listing_id)
 
-        # Listing has changed
-        if not existed or listing_hash != metadata["listing_hash"]:
-            # Newly seen listing
-            if not existed:
-                # Update index
-                save_to_index(listing)
+        result = tracker.track(data=listing, path=listing_path)
 
-                # Update metadata
-                metadata["first_seen"] = timestamp
-
-                logger.info(
-                    "New listing discovered: %s",
-                    listing_id,
-                )
-
-                new_count += 1
-            # Updated listing
-            else:
-                # Update result
-                result["old_listing"] = load_listing(listing_id)
-
-                logger.info(
-                    "Listing updated: %s",
-                    listing_id,
-                )
-
-                updated_count += 1
-            # Save listing
-            save_listing(listing, timestamp)
-
-            # Update metadata
-            metadata["is_active"] = True
-            metadata["last_updated"] = timestamp
-            metadata["listing_id"] = listing_id
-            metadata["listing_hash"] = listing_hash
-
-            # Update result
-            result["new_listing"] = listing
-
-            # Update results
-            results.append(result)
-        # An inactive listing becomes active again
-        elif metadata["is_active"] is False:
-            # Update metadata
-            metadata["is_active"] = True
-
-            # Update result
-            result["new_listing"] = listing
-            result["old_listing"] = listing
-
-            # Update results
+        # Modified listing
+        if result.has_changed:
             results.append(result)
 
-            logger.info(
-                "Listing reactivated: %s",
-                listing_id,
-            )
+            # New listing
+            if result.is_new:
+                # Mark as newly added in history
+                listings_history_file_path = config.LISTINGS_HISTORY_FILE
 
-            reactivated_count += 1
-        # Update metadata
-        metadata["last_seen"] = timestamp
+                entry = config.HISTORY_ENTRY(
+                    timestamp=timestamp.strftime("%Y-%m-%dT%H-%M-%S.%fZ"),
+                    listing_id=listing_id,
+                    listing_info={
+                        "manufacturer": result.new_data["manufacturer"]["mad_id"],
+                        "product_type": result.new_data["UXSCore"]["mad_coretype"],
+                        "product_name": result.new_data["UXSCore"]["mad_id"],
+                    },
+                    event="added",
+                )
 
-        # Save metadata
-        save_metadata(metadata, listing_id)
+                _append_to(entry=entry, path=listings_history_file_path)
 
-    logger.debug(
-        "Seen %d active listings",
-        len(seen_listing_ids),
-    )
+    # Load previously active listings
+    previous_active = _load_active()
 
-    stored_listing_ids = load_stored_listing_ids()
+    # Save current active listings
+    _save_active(current_active=current_active)
 
-    logger.debug(
-        "Found %d stored listings",
-        len(stored_listing_ids),
-    )
+    # Determine removed listings
+    removed = previous_active - current_active
 
-    save_active_listing_ids(seen_listing_ids)
+    # Every listing found to be removed
+    for listing_id in removed:
+        listing_path = config.LISTING_DIR(listing_id)
 
-    removed_listing_ids = stored_listing_ids - seen_listing_ids
+        result = tracker.track(data=None, path=listing_path)
 
-    # Listings no longer shown
-    for listing_id in removed_listing_ids:
-        result = {"old_listing": None, "new_listing": None}
+        # Mark as removed in history
+        listings_history_file_path = config.LISTINGS_HISTORY_FILE
 
-        # Get local listing
-        listing = load_listing(listing_id)
-
-        # Update metadata
-        metadata, _ = load_metadata(listing_id)
-        metadata["is_active"] = False
-
-        # Save metadata
-        save_metadata(metadata, listing_id)
-
-        # Update result
-        result["old_listing"] = listing
-
-        # Update results
-        results.append(result)
-
-        logger.info(
-            "Listing removed: %s",
-            listing_id,
+        entry = config.HISTORY_ENTRY(
+            timestamp=timestamp.strftime("%Y-%m-%dT%H-%M-%S.%fZ"),
+            listing_id=listing_id,
+            listing_info={
+                "manufacturer": result.old_data["manufacturer"]["mad_id"],
+                "product_type": result.old_data["UXSCore"]["mad_coretype"],
+                "product_name": result.old_data["UXSCore"]["mad_id"],
+            },
+            event="added",
         )
 
-        removed_count += 1
+        _append_to(entry=entry, path=listings_history_file_path)
 
-    logger.info(
-        "Changes: %d new, %d updated, %d removed, %d reactivated",
-        new_count,
-        updated_count,
-        removed_count,
-        reactivated_count,
-    )
+        results.append(result)
 
     return results
 
@@ -314,9 +145,11 @@ def run():
     # Setup logging
     setup_logging()
 
+    tracker = Tracker()
+
     logger.debug("Starting blue_list_tracker")
 
-    results = blue_list_tracker()
+    results = blue_list_tracker(tracker=tracker)
 
     logger.debug("Stopping blue_list_tracker")
 
