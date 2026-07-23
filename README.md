@@ -10,7 +10,7 @@ Named after *Amon Hen*, a location in J.R.R. Tolkien's *The Lord of the Rings*. 
 -   [Installation](#installation)
 
 ## Tools Overview
-### adp_scraper
+### adp_tracker
 Monitors the ADP Career Center for a user-specified company.
 - Tracks new job postings
 - Tracks removed job postings
@@ -65,11 +65,11 @@ amon-hen/
 │       │   ├── log_config.py
 │       │   └── tracker.py
 │       └── scripts/
-│           ├── adp_scraper/
+│           ├── adp_tracker/
 │           │   ├── __init__.py
 │           │   ├── __main__.py
 │           │   ├── config.py
-│           │   └── adp_scraper.py
+│           │   └── adp_tracker.py
 │           ├── blue_list_tracker/
 │           │   ├── __init__.py
 │           │   ├── __main__.py
@@ -88,7 +88,7 @@ amon-hen/
 ├── ui/
 │   ├── handlers/
 │   │   ├── __init__.py
-│   │   ├── adp_scraper.py
+│   │   ├── adp_tracker.py
 │   │   ├── blue_list_tracker.py
 │   │   ├── dow_scraper.py
 │   │   └── file_tracker.py
@@ -100,7 +100,7 @@ amon-hen/
 │   ├── templates/
 │   │   ├── base.html
 │   │   ├── dashboard.html
-│   │   ├── adp_scraper.html
+│   │   ├── adp_tracker.html
 │   │   ├── blue_list_tracker.html
 │   │   ├── dow_scraper.html
 │   │   └── file_tracker.html
