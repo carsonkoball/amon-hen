@@ -20,6 +20,7 @@ SEARCH_HEADERS = {
 # Phrases that indicate multiple companies are contracted
 PLURAL_PHRASES = [
     "are awarded",
+    "are each awarded",
     "are being awarded",
     "are modified in",
     "are sharing",
