@@ -12,6 +12,7 @@ from amon_hen.common.log_config import setup_logging
 # Logging setup
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class Synopsis:
     current_form_link: str | None
@@ -24,30 +25,40 @@ class Synopsis:
     status: str
     status_date: str
     application_data: dict | None
-    
+
     @property
     def get_code(self) -> str:
-        return self.file_number.split('-')[2]
-    
+        return self.file_number.split("-")[2]
+
     @property
     def get_type(self) -> str:
         return config.APPLICATION_CODE_MAP[self.get_code]
-        
+
     @property
     def as_dict(self) -> dict:
         return asdict(self)
-        
+
+
 def _process_conventional_form(form, code):
     soup = BeautifulSoup(markup=form, features="html.parser")
-    
+
     result = {}
-    
+
     if code == "CM":
-        result["Modification For"] = soup.find(title="Modification For").find(class_="small-content").text.strip()
-    
+        result["Modification For"] = (
+            soup.find(title="Modification For")
+            .find(class_="small-content")
+            .text.strip()
+        )
+
     if code == "CN" or code == "CM":
-        result["Estimated Duration"] = " ".join(soup.find(title="Estimated Duration").find(class_="small-content").text.strip().split())
-        
+        result["Estimated Duration"] = " ".join(
+            soup.find(title="Estimated Duration")
+            .find(class_="small-content")
+            .text.strip()
+            .split()
+        )
+
         manufacturers = []
         manufacturer_entries = (
             soup.find(title="Manufacturer").find("table").find_all(recursive=False)[2:]
@@ -85,72 +96,108 @@ def _process_conventional_form(form, code):
                         "Mobile": entry[5].text.strip(),
                     }
                     stations.append(station)
-            
+
         result["Station Location"] = stations
     else:
-        renewal_entry = soup.find(title = "Renewal Info").find_all(class_="small-content")
-        
+        renewal_entry = soup.find(title="Renewal Info").find_all(class_="small-content")
+
         renewal_information = {
             "File Number": renewal_entry[0].text.strip(),
             "Date Issued": renewal_entry[1].text.strip(),
-            "Location": renewal_entry[3].text.strip()
+            "Location": renewal_entry[3].text.strip(),
         }
-        
+
         result["Renewal Information"] = renewal_information
-        result["Changes Made"] = soup.find(title="Changes Made").find(class_="small-content").text.strip()
-    
+        result["Changes Made"] = (
+            soup.find(title="Changes Made").find(class_="small-content").text.strip()
+        )
+
     return result
-    
+
+
 def _process_program_form(form, code):
     soup = BeautifulSoup(markup=form, features="html.parser")
-    
+
     result = {}
-    
-    clinical_trial_entry = soup.find("label", attrs={"for": "hospital"}).parent.parent.find_all("td")[1].text.strip()
-    result["Involving Clinical Testing Trials"] = True if clinical_trial_entry == "YES" else False
-    
-    result["Narrative Comment"] = soup.find("label", attrs={"for": "comment_text"}).parent.parent.find_all("td")[1].text.strip()
-    
+
+    clinical_trial_entry = (
+        soup.find("label", attrs={"for": "hospital"})
+        .parent.parent.find_all("td")[1]
+        .text.strip()
+    )
+    result["Involving Clinical Testing Trials"] = (
+        True if clinical_trial_entry == "YES" else False
+    )
+
+    result["Narrative Comment"] = (
+        soup.find("label", attrs={"for": "comment_text"})
+        .parent.parent.find_all("td")[1]
+        .text.strip()
+    )
+
     result["Location Information"] = {
-        "State": soup.find("label", attrs={"for": "state"}).parent.parent.find_all("td")[1].text.strip(),
-        "City": soup.find("label", attrs={"for": "city"}).parent.parent.find_all("td")[1].text.strip()
+        "State": soup.find("label", attrs={"for": "state"})
+        .parent.parent.find_all("td")[1]
+        .text.strip(),
+        "City": soup.find("label", attrs={"for": "city"})
+        .parent.parent.find_all("td")[1]
+        .text.strip(),
     }
 
     return result
-    
+
+
 def _process_medical_testing_form(form, code):
     soup = BeautifulSoup(markup=form, features="html.parser")
-    
+
     result = {}
-    
-    result["Narrative Comment"] = soup.find("label", attrs={"for": "comment_text"}).parent.parent.find_all("td")[1].text.strip()
-    
+
+    result["Narrative Comment"] = (
+        soup.find("label", attrs={"for": "comment_text"})
+        .parent.parent.find_all("td")[1]
+        .text.strip()
+    )
+
     result["Location Information"] = {
-        "State": soup.find("label", attrs={"for": "state"}).parent.parent.find_all("td")[1].text.strip(),
-        "City": soup.find("label", attrs={"for": "city"}).parent.parent.find_all("td")[1].text.strip()
+        "State": soup.find("label", attrs={"for": "state"})
+        .parent.parent.find_all("td")[1]
+        .text.strip(),
+        "City": soup.find("label", attrs={"for": "city"})
+        .parent.parent.find_all("td")[1]
+        .text.strip(),
     }
 
     return result
-        
+
+
 def _process_compliance_testing_form(form, code):
     soup = BeautifulSoup(markup=form, features="html.parser")
-    
+
     result = {}
-    
-    result["Narrative Comment"] = soup.find("label", attrs={"for": "comment_text"}).parent.parent.find_all("td")[1].text.strip()
-    
+
+    result["Narrative Comment"] = (
+        soup.find("label", attrs={"for": "comment_text"})
+        .parent.parent.find_all("td")[1]
+        .text.strip()
+    )
+
     result["Location Information"] = {
-        "State": soup.find("label", attrs={"for": "state"}).parent.parent.find_all("td")[1].text.strip(),
-        "City": soup.find("label", attrs={"for": "city"}).parent.parent.find_all("td")[1].text.strip()
+        "State": soup.find("label", attrs={"for": "state"})
+        .parent.parent.find_all("td")[1]
+        .text.strip(),
+        "City": soup.find("label", attrs={"for": "city"})
+        .parent.parent.find_all("td")[1]
+        .text.strip(),
     }
 
     return result
+
 
 def _process_sta_form(form):
     soup = BeautifulSoup(markup=form, features="html.parser")
 
     result = {}
-    
+
     result["Explanation"] = (
         soup.find(title="Why Necessary").find(class_="small-content").text.strip()
     )
@@ -203,7 +250,7 @@ def _process_sta_form(form):
                     "Mobile": entry[5].text.strip(),
                 }
                 stations.append(station)
-        
+
     result["Station Location"] = stations
 
     return result
@@ -211,6 +258,13 @@ def _process_sta_form(form):
 
 def _get_form(form_link):
     response = http_get(form_link)
+
+    if response is None or not response.ok:
+        logger.error("Failed to fetch form page: %s", form_link)
+
+        return None
+
+    logger.debug("Form page %s found", form_link)
 
     return response.text
 
@@ -226,18 +280,34 @@ def _parse_search(data):
 
     for listing in listings:
         values = listing.find_all("td")
-        
+
         result = Synopsis(
-            current_form_link = config.ELS_URL + values[1].find_all("a")[1]["href"] if values[1].text.strip() != "Not Available" else None,
-            exhibits_link = config.ELS_URL + values[2].find("a")["href"] if values[2].text.strip() != "N/A" else None,
-            notes_link = config.ELS_URL + values[3].find("a")["href"] if values[3].text.strip() != "N/A" else None,
-            grant_link = config.ELS_URL + values[5].find("a")["href"] if values[4].text.strip() != "N/A" else None,
-            file_number = values[6].text.strip(),
-            applicant_name = values[8].text.strip(),
-            receipt_date = values[9].text.strip(),
-            status = values[10].text.strip(),
-            status_date = values[11].text.strip(),
-            application_data = None
+            current_form_link=(
+                config.ELS_URL + values[1].find_all("a")[1]["href"]
+                if values[1].text.strip() != "Not Available"
+                else None
+            ),
+            exhibits_link=(
+                config.ELS_URL + values[2].find("a")["href"]
+                if values[2].text.strip() != "N/A"
+                else None
+            ),
+            notes_link=(
+                config.ELS_URL + values[3].find("a")["href"]
+                if values[3].text.strip() != "N/A"
+                else None
+            ),
+            grant_link=(
+                config.ELS_URL + values[5].find("a")["href"]
+                if values[4].text.strip() != "N/A"
+                else None
+            ),
+            file_number=values[6].text.strip(),
+            applicant_name=values[8].text.strip(),
+            receipt_date=values[9].text.strip(),
+            status=values[10].text.strip(),
+            status_date=values[11].text.strip(),
+            application_data=None,
         )
 
         search_results.append(result)
@@ -263,30 +333,57 @@ def _get_search(search_date):
 
 def _fcc_els_parser(search_date):
     data = _get_search(search_date=search_date)
-    
+
     results = _parse_search(data=data)
 
     for result in results:
         listing_code = result.get_code
-        listing_form_link =  result.current_form_link
+        listing_form_link = result.current_form_link
         current_form = _get_form(listing_form_link) if listing_form_link else None
-        
+
+        logger.debug(
+            "Processing %s form (Number %s)...", result.get_type, result.file_number
+        )
+
         match listing_code:
             case "CN" | "CM" | "CR":
-                processed_form = _process_conventional_form(form=current_form, code=listing_code)
+                processed_form = _process_conventional_form(
+                    form=current_form, code=listing_code
+                )
             case "PN" | "PM" | "PR":
-                processed_form = _process_program_form(form=current_form, code=listing_code)
+                processed_form = _process_program_form(
+                    form=current_form, code=listing_code
+                )
             case "MN" | "MM" | "MR":
-                processed_form = _process_medical_testing_form(form=current_form, code=listing_code)
+                processed_form = _process_medical_testing_form(
+                    form=current_form, code=listing_code
+                )
             case "TN" | "TM" | "TR":
-                processed_form = _process_compliance_testing_form(form=current_form, code=listing_code)
+                processed_form = _process_compliance_testing_form(
+                    form=current_form, code=listing_code
+                )
             case "ST":
-                processed_form = _process_sta_form(form=current_form) 
+                processed_form = _process_sta_form(form=current_form)
             case "AU" | "TU":
                 processed_form = None
-        
+
+        logger.debug(
+            "Processed %s form (Number %s)", result.get_type, result.file_number
+        )
+
         result.application_data = processed_form
-            
+
+    # Log the applications
+    logger.info("%d applications found.", len(results))
+
+    for result in results:
+        logger.info(
+            "Type: %s Applicant Name: %s File Number: %s",
+            result.get_type,
+            result.applicant_name,
+            result.file_number,
+        )
+
     return results
 
 
