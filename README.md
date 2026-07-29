@@ -23,6 +23,13 @@ Monitors the DCMA Blue UAS Cleared Drone List.
 - Tracks listing modifications
 - Archives listings locally
 
+### diu_pathway_tracker
+Monitors the Defense Innovation Unit (DIU) solicitation pathways page.
+- Tracks new pathways
+- Tracks removed pathways
+- Tracks pathway modifications
+- Archives pathways locally
+
 ### dow_parser
 Monitors the Department of War (DoW) daily contract announcements page.
 - Parses awarded company names
@@ -79,6 +86,11 @@ amon-hen/
 │           │   ├── __main__.py
 │           │   ├── config.py
 │           │   └── blue_list_tracker.py
+│           ├── diu_pathway_tracker/
+│           │   ├── __init__.py
+│           │   ├── __main__.py
+│           │   ├── config.py
+│           │   └── diu_pathway_tracker.py
 │           ├── dow_parser/
 │           │   ├── __init__.py
 │           │   ├── __main__.py
