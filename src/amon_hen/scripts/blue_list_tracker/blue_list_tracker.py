@@ -128,7 +128,7 @@ def blue_list_tracker(tracker):
                 "product_type": result.old_data["UXSCore"]["mad_coretype"],
                 "product_name": result.old_data["UXSCore"]["mad_id"],
             },
-            event="added",
+            event="removed",
         )
 
         _append_to(entry=entry, path=listings_history_file_path)
