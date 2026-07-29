@@ -27,6 +27,10 @@ Monitors the DCMA Blue UAS Cleared Drone List.
 Monitors the Department of War (DoW) daily contract announcements page.
 - Parses awarded company names
 
+### fcc_els_parser
+Monitors the Federal Communications Commission (FCC) Experimental Licensing System (ELS) application page.
+- Parses application information
+
 ### file_tracker
 Searches websites for files with user-specified extensions (e.g. .pdf, .csv, .png).
 - Tracks file content modifications
@@ -80,6 +84,11 @@ amon-hen/
 │           │   ├── __main__.py
 │           │   ├── config.py
 │           │   └── dow_parser.py
+│           ├── fcc_els_parser/
+│           │   ├── __init__.py
+│           │   ├── __main__.py
+│           │   ├── config.py
+│           │   └── fcc_els_parser.py
 │           └── file_tracker/
 │               ├── __init__.py
 │               ├── __main__.py
