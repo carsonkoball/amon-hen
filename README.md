@@ -14,6 +14,7 @@ Named after *Amon Hen*, a location in J.R.R. Tolkien's *The Lord of the Rings*. 
 Monitors the ADP Career Center for a user-specified company.
 - Tracks new job postings
 - Tracks removed job postings
+- Tracks job posting modifications
 - Archives job postings locally
 
 ### blue_list_tracker
