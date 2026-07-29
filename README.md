@@ -1,7 +1,7 @@
 # amon-hen
 A collection of tools for monitoring data sources to support investment research.
 
-Named after *Amon Hen*, a location in J.R.R. Tolkien's *The Lord of the Rings*.  The name is Sindarin and is usually translated as "Hill of Sight", but more literally "Hill of the Eye", *from amon* ("hill") and *hen* ("eye"). See [Amon Hen on Tolkien Gateway.](https://tolkiengateway.net/wiki/Amon_Hen)
+Named after *Amon Hen*, a location in J.R.R. Tolkien's *The Lord of the Rings*.  The name is Sindarin and is usually translated as "Hill of Sight", but more literally "Hill of the Eye", from *amon* ("hill") and *hen* ("eye"). See [Amon Hen on Tolkien Gateway.](https://tolkiengateway.net/wiki/Amon_Hen)
 
 ## Table of Contents
 -   [Tools Overview](#tools-overview)
@@ -197,3 +197,4 @@ pip install -r requirements.txt
 ### New Additions
 	- Add FedRAMP tracker capability
 	- Add LinkedIn tracker capability
+	- Add Case Studies section
