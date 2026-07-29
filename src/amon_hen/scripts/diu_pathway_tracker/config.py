@@ -24,6 +24,7 @@ CCAO_ACTIVE_FILE = CCAO_DIR / "active.json"
 LISTINGS_URL = "https://www.diu.mil/work-with-us/open-solicitations"
 PATHWAY_URL = "https://www.diu.mil/work-with-us/submit-solution/{pathway_id}"
 
+
 # Data
 def HISTORY_ENTRY(timestamp, pathway_id, pathway_info, event):
     return {
