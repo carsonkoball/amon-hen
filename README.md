@@ -8,6 +8,7 @@ Named after *Amon Hen*, a location in J.R.R. Tolkien's *The Lord of the Rings*. 
 -   [User Interface](#user-interface)
 -   [Structure](#structure)
 -   [Installation](#installation)
+-	[Future Work](#future-work)
 
 ## Tools Overview
 ### adp_tracker
@@ -181,3 +182,18 @@ pip install -e .
 cd ui
 pip install -r requirements.txt
 ```
+
+## Future Work
+### Fixes/Modifications
+	- Add comments to fcc_els_parser
+	- Add comments to diu_pathway_tracker
+	- Add logging to fcc_els_parser
+	- Add logging to diu_pathway_tracker
+	- Update file_tracker to implement Tracker system
+	- Update UI with existing tools
+	- Add fcc_els_parser to UI
+	- Add diu_pathway_tracker to UI
+	
+### New Additions
+	- Add FedRAMP tracker capability
+	- Add LinkedIn tracker capability
