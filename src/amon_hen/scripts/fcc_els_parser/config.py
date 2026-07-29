@@ -79,9 +79,9 @@ APPLICATION_CODE_MAP = {
     "TN": "Compliance Testing New",
     "TM": "Compliance Testing Modification",
     "TR": "Compliance Testing Renewal",
-    # Special Temporary Authority
-    "ST": "Special Temporary Authority",
     # Administrative actions
     "AU": "Assignment of License",
     "TU": "Transfer of Control",
+    # Special Temporary Authority
+    "ST": "Special Temporary Authority",
 }

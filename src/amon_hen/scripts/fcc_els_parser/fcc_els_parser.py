@@ -40,6 +40,9 @@ class Synopsis:
 
 
 def _process_conventional_form(form, code):
+    """
+    Retrieve relevant information from the Conventional Form type.
+    """
     soup = BeautifulSoup(markup=form, features="html.parser")
 
     result = {}
@@ -115,7 +118,10 @@ def _process_conventional_form(form, code):
     return result
 
 
-def _process_program_form(form, code):
+def _process_program_form(form):
+    """
+    Retrieve relevant information from the Process Program Form type.
+    """
     soup = BeautifulSoup(markup=form, features="html.parser")
 
     result = {}
@@ -147,7 +153,10 @@ def _process_program_form(form, code):
     return result
 
 
-def _process_medical_testing_form(form, code):
+def _process_medical_testing_form(form):
+    """
+    Retrieve relevant information from the Medical Testing Form type.
+    """
     soup = BeautifulSoup(markup=form, features="html.parser")
 
     result = {}
@@ -170,7 +179,10 @@ def _process_medical_testing_form(form, code):
     return result
 
 
-def _process_compliance_testing_form(form, code):
+def _process_compliance_testing_form(form):
+    """
+    Retrieve relevant information from the Compliance Testing Form type.
+    """
     soup = BeautifulSoup(markup=form, features="html.parser")
 
     result = {}
@@ -194,6 +206,9 @@ def _process_compliance_testing_form(form, code):
 
 
 def _process_sta_form(form):
+    """
+    Retrieve relevant information from the Special Temporary Authority Form type.
+    """
     soup = BeautifulSoup(markup=form, features="html.parser")
 
     result = {}
@@ -256,7 +271,32 @@ def _process_sta_form(form):
     return result
 
 
+def _process_administrative_action_form(form):
+    """
+    Retrieve relevant information from the Transfer of Control Form type.
+    """
+    soup = BeautifulSoup(markup=form, features="html.parser")
+
+    result = []
+
+    transfers = soup.find(id="offTblBdy").find_all("tr")
+
+    for transfer in transfers:
+        entry = {
+            "Filing": config.ELS_URL + transfer.find("td").find("a")["href"],
+            "File Number": transfer.find_all("td")[2].text.strip(),
+            "Transferee Name": transfer.find_all("td")[3].text.strip(),
+        }
+
+        result.append(entry)
+
+    return result
+
+
 def _get_form(form_link):
+    """
+    Initiate GET request for specified form link and return response as text.
+    """
     response = http_get(form_link)
 
     if response is None or not response.ok:
@@ -270,14 +310,22 @@ def _get_form(form_link):
 
 
 def _parse_search(data):
+    """
+    Parse information from each listing found on the ELS table.
+    """
     soup = BeautifulSoup(markup=data, features="html.parser")
 
     listings = soup.find(attrs={"name": "rsTable"})
+
+    if listings is None:
+        return []
+
     listings = listings.find("tbody")
     listings = listings.find_all("tr", recursive=False)
 
     search_results = []
 
+    # Gather information from each row in the ELS table
     for listing in listings:
         values = listing.find_all("td")
 
@@ -299,7 +347,7 @@ def _parse_search(data):
             ),
             grant_link=(
                 config.ELS_URL + values[5].find("a")["href"]
-                if values[4].text.strip() != "N/A"
+                if values[5].text.strip() != "N/A"
                 else None
             ),
             file_number=values[6].text.strip(),
@@ -316,10 +364,19 @@ def _parse_search(data):
 
 
 def _get_search(search_date):
+    """
+    Initiate an ELS search using a given receipt date.
+    """
+    logger.debug(
+        "Fetching ELS applications using %s receipt date...",
+        search_date.strftime("%m/%d/%Y"),
+    )
+
     search_date_string = search_date.strftime("%m/%d/%Y")
 
     payload = copy.deepcopy(config.ELS_PAYLOAD)
 
+    # Search by receipt date
     payload["receipt_date_from"] = search_date_string
     payload["receipt_date_to"] = search_date_string
 
@@ -332,10 +389,14 @@ def _get_search(search_date):
 
 
 def _fcc_els_parser(search_date):
+    """
+    Get the daily ELS page and return relevant information on it.
+    """
     data = _get_search(search_date=search_date)
 
     results = _parse_search(data=data)
 
+    # Parse every application listing found in the search
     for result in results:
         listing_code = result.get_code
         listing_form_link = result.current_form_link
@@ -345,27 +406,22 @@ def _fcc_els_parser(search_date):
             "Processing %s form (Number %s)...", result.get_type, result.file_number
         )
 
+        # Different application types have different information that needs to be parsed separately
         match listing_code:
             case "CN" | "CM" | "CR":
                 processed_form = _process_conventional_form(
                     form=current_form, code=listing_code
                 )
             case "PN" | "PM" | "PR":
-                processed_form = _process_program_form(
-                    form=current_form, code=listing_code
-                )
+                processed_form = _process_program_form(form=current_form)
             case "MN" | "MM" | "MR":
-                processed_form = _process_medical_testing_form(
-                    form=current_form, code=listing_code
-                )
+                processed_form = _process_medical_testing_form(form=current_form)
             case "TN" | "TM" | "TR":
-                processed_form = _process_compliance_testing_form(
-                    form=current_form, code=listing_code
-                )
+                processed_form = _process_compliance_testing_form(form=current_form)
+            case "AU" | "TU":
+                processed_form = _process_administrative_action_form(form=current_form)
             case "ST":
                 processed_form = _process_sta_form(form=current_form)
-            case "AU" | "TU":
-                processed_form = None
 
         logger.debug(
             "Processed %s form (Number %s)", result.get_type, result.file_number
@@ -373,8 +429,8 @@ def _fcc_els_parser(search_date):
 
         result.application_data = processed_form
 
-    # Log the applications
-    logger.info("%d applications found.", len(results))
+    # Log the found applications
+    logger.info("%d applications found for %s.", len(results), search_date)
 
     for result in results:
         logger.info(
@@ -392,7 +448,7 @@ def run(search_date):
     Execute the fcc_els_parser workflow.
     """
     # Setup logging
-    setup_logging(level=logging.DEBUG)
+    setup_logging()
 
     logger.debug("Starting fcc_els_parser")
     logger.debug("Argument search_date: %s", search_date)
