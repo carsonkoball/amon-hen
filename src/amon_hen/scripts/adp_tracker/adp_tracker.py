@@ -103,7 +103,7 @@ def _adp_tracker(cid, ccid, tracker):
     current_active = set()
 
     # Every listing found in current search
-    for posting in postings_data["jobRequisitions"][:1]:
+    for posting in postings_data["jobRequisitions"]:
         external_job_id = posting["customFieldGroup"]["stringFields"][0]["stringValue"]
 
         current_active.add(external_job_id)
