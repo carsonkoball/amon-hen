@@ -168,6 +168,24 @@ def _adp_tracker(cid, ccid, tracker):
 
         results.append(result)
 
+    # Log the listings
+    for result in results:
+        if result.is_new:
+            logger.info(
+                "listing added: %s",
+                result.new_data["customFieldGroup"]["stringFields"][0]["stringValue"],
+            )
+        elif result.has_changed:
+            logger.info(
+                "listing modified: %s",
+                result.new_data["customFieldGroup"]["stringFields"][0]["stringValue"],
+            )
+        else:
+            logger.info(
+                "listing removed: %s",
+                result.new_data["customFieldGroup"]["stringFields"][0]["stringValue"],
+            )
+
     return results
 
 
