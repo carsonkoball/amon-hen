@@ -135,6 +135,27 @@ def blue_list_tracker(tracker):
 
         results.append(result)
 
+    # Log the listings
+    for result in results:
+        if result.is_new:
+            logger.info(
+                "%s added: %s",
+                result.new_data["UXSCore"]["mad_coretype"].lower(),
+                result.new_data["UXSCore"]["mad_uxscoreid"],
+            )
+        elif result.has_changed:
+            logger.info(
+                "%s modified: %s",
+                result.new_data["UXSCore"]["mad_coretype"].lower(),
+                result.new_data["UXSCore"]["mad_uxscoreid"],
+            )
+        else:
+            logger.info(
+                "%s removed: %s",
+                result.old_data["UXSCore"]["mad_coretype"].lower(),
+                result.old_data["UXSCore"]["mad_uxscoreid"],
+            )
+
     return results
 
 
