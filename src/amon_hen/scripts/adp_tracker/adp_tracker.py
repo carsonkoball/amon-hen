@@ -183,7 +183,7 @@ def _adp_tracker(cid, ccid, tracker):
         else:
             logger.info(
                 "listing removed: %s",
-                result.new_data["customFieldGroup"]["stringFields"][0]["stringValue"],
+                result.old_data["customFieldGroup"]["stringFields"][0]["stringValue"],
             )
 
     return results
