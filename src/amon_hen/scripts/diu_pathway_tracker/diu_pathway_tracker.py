@@ -88,7 +88,7 @@ def _get_pathway_ids():
     return cso_pathway_ids, ccao_pathway_ids, timestamp
 
 
-def _process_pathway(pathway_id):
+def _process_pathway(pathway_id, is_cso_pathway):
     """
     Retrieve relevant pathway information.
     """
@@ -101,6 +101,10 @@ def _process_pathway(pathway_id):
     response = http_get(config.PATHWAY_URL.format(pathway_id=pathway_id))
 
     soup = BeautifulSoup(markup=response.text, features="html.parser")
+
+    result["id"] = pathway_id
+
+    result["type"] = "CSO" if is_cso_pathway else "CCAO"
 
     result["title"] = soup.find("h1").text.strip()
 
@@ -138,7 +142,7 @@ def _diu_pathway_tracker(tracker):
             else config.CCAO_PATHWAY_DIR(pathway_id)
         )
 
-        pathway, timestamp = _process_pathway(pathway_id)
+        pathway, timestamp = _process_pathway(pathway_id, is_cso_pathway)
 
         result = tracker.track(data=pathway, path=pathway_path)
 
@@ -205,6 +209,23 @@ def _diu_pathway_tracker(tracker):
         )
 
         results.append(result)
+
+    # Log the pathways
+    for result in results:
+        if result.is_new:
+            logger.info(
+                "%s pathway added: %s", result.new_data["type"], result.new_data["id"]
+            )
+        elif result.has_changed:
+            logger.info(
+                "%s pathway modified: %s",
+                result.new_data["type"],
+                result.new_data["id"],
+            )
+        else:
+            logger.info(
+                "%s pathway removed: %s", result.old_data["type"], result.old_data["id"]
+            )
 
     return results
 
