@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "amon-hen"
 version = "0.1.0"
-description = "Collection of job scrapers"
+description = "A collection of tools for monitoring data sources to support investment research."
 requires-python = ">=3.11"
 
 [tool.setuptools]
