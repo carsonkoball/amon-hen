@@ -185,12 +185,12 @@ pip install -r requirements.txt
 
 ## Future Work
 ### Fixes/Modifications
-	- Update file_tracker to implement Tracker system
-	- Update UI with existing tools
-	- Add fcc_els_parser to UI
-	- Add diu_pathway_tracker to UI
+- Update file_tracker to implement Tracker system
+- Update UI with existing tools
+- Add fcc_els_parser to UI
+- Add diu_pathway_tracker to UI
 	
 ### New Additions
-	- Add FedRAMP tracker capability
-	- Add LinkedIn tracker capability
-	- Add Case Studies section
+- Add FedRAMP tracker capability
+- Add LinkedIn tracker capability
+- Add Case Studies section
