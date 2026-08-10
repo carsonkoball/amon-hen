@@ -185,10 +185,6 @@ pip install -r requirements.txt
 
 ## Future Work
 ### Fixes/Modifications
-	- Add comments to fcc_els_parser
-	- Add comments to diu_pathway_tracker
-	- Add logging to fcc_els_parser
-	- Add logging to diu_pathway_tracker
 	- Update file_tracker to implement Tracker system
 	- Update UI with existing tools
 	- Add fcc_els_parser to UI
