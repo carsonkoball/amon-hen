@@ -17,5 +17,5 @@ def handle(script):
         title=script["name"],
         description=script["description"],
         back_link_visibility="visible",
-        results=results
+        results=results,
     )
