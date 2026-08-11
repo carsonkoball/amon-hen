@@ -17,7 +17,7 @@
 						type="text"
 						id="cid"
 						name="cid"
-						value=""
+						value="{{ cid }}"
 						required
 					>
 				</div>
@@ -27,7 +27,7 @@
 						type="text"
 						id="ccid"
 						name="ccid"
-						value=""
+						value="{{ ccid }}"
 						required
 					>
 				</div>
@@ -42,42 +42,51 @@
 			<h2>Output</h2>
 		</div>
 		<div class="section-content">
-			{% if new_jobs is none and removed_jobs is none %}
+			{% if results is none %}
 			
-				<p> No output yet. </p>
-			
-			{% elif new_jobs == [] and removed_jobs == [] %}
-			
-				<p>No changes found.</p>
+				<p>No output yet.<p>
 				
-			{% elif new_jobs or removed_jobs %}
-
-				{% if new_jobs %}
+			{% elif results == [] %}
+			
+				<p>No changes found</p>
 				
-					<p>New Job Listings:</p>
-					<ul>
-						{% for listing in new_jobs %}
-							<li><a href={{ listing["link"] }}>{{ listing["title"] }}</a></li>
-						{% endfor %}
-					</ul>
+			{% else %} 
+			
+				{% for result in results %}
+				
+					{% if result.is_new %}
 					
-				{% endif %}
-				
-				{% if removed_jobs %}
-				
-					<p>Removed Job Listings:</p>
-					<ul>
-						{% for listing in removed_jobs %}
-							<li>{{ listing["title"] }}</li>
-						{% endfor %}
-					</ul>
+						<p><b>New Job Listing:</b></p>
+						<ul>
+							<li><p><b>ID:</b> {{ result.new_data["customFieldGroup"]["stringFields"][0]["stringValue"] }}</p></li>
+							<li><p><b>Title:</b> {{ result.new_data["requisitionTitle"] }}</p></li>
+							<li><p><b>Post Date:</b> {{ result.new_data["postDate"] }}</p></li>
+							<li><p><b>Link:</b> <a href='https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid={{ cid }}&ccId={{ ccid }}&lang=en_US&jobId={{ result.new_data["customFieldGroup"]["stringFields"][0]["stringValue"] }}' target="_blank">https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid={{ cid }}&ccId={{ ccid }}&lang=en_US&jobId={{ result.new_data["customFieldGroup"]["stringFields"][0]["stringValue"] }}</a></p></li>
+						</ul>
+						
+					{% elif result.has_changed %}
 					
-				{% endif %}
-
-			{% else %}
-
-				<p>Error.</p>
-
+						<p><b>Modified Job Listing:</b></p>
+						<ul>
+							<li><p><b>ID:</b> {{ result.new_data["customFieldGroup"]["stringFields"][0]["stringValue"] }}</p></li>
+							<li><p><b>Title:</b> {{ result.new_data["requisitionTitle"] }}</p></li>
+							<li><p><b>Post Date:</b> {{ result.new_data["postDate"] }}</p></li>
+							<li><p><b>Link:</b> <a href='https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid={{ cid }}&ccId={{ ccid }}&lang=en_US&jobId={{ result.new_data["customFieldGroup"]["stringFields"][0]["stringValue"] }}' target="_blank">https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid={{ cid }}&ccId={{ ccid }}&lang=en_US&jobId={{ result.new_data["customFieldGroup"]["stringFields"][0]["stringValue"] }}</a></p></li>
+						</ul>
+						
+					{% else %}
+					
+						<p><b>Removed Job Listing:</b></p>
+						<ul>
+							<li><p><b>ID:</b> {{ result.old_data["customFieldGroup"]["stringFields"][0]["stringValue"] }}</p></li>
+							<li><p><b>Title:</b> {{ result.old_data["requisitionTitle"] }}</p></li>
+							<li><p><b>Post Date:</b> {{ result.old_data["postDate"] }}</p></li>
+						</ul>
+						
+					{% endif %}
+					
+				{% endfor %}
+				
 			{% endif %}
 		</div>
 	</section>
