@@ -42,6 +42,8 @@ def _append_to(entry, path):
     """
     Save an entry to an append-only JSONL file.
     """
+    ensure_file(path)
+    
     with open(path, "a", encoding="utf-8") as file:
         file.write(json.dumps(obj=entry) + "\n")
 
