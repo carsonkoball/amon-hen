@@ -2,12 +2,12 @@
 SCRIPTS = [
     {
         "name": "ADP Tracker",
-        "description": "Monitors the ADP Career Center for a user-specified company.",
+        "description": "Monitors the Automatic Data Processing, Inc. (ADP) Career Center for a user-specified company.",
         "slug": "adp_tracker",
     },
     {
         "name": "Blue List Tracker",
-        "description": "Monitors the DCMA Blue UAS Cleared Drone List.",
+        "description": "Monitors the Defense Contract Management Agency (DCMA) Blue Unmanned Aircraft Systems (UAS) Cleared Drone List.",
         "slug": "blue_list_tracker",
     },
     {

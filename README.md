@@ -12,14 +12,14 @@ Named after *Amon Hen*, a location in J.R.R. Tolkien's *The Lord of the Rings*. 
 
 ## Tools Overview
 ### adp_tracker
-Monitors the ADP Career Center for a user-specified company.
+Monitors the Automatic Data Processing, Inc. (ADP) Career Center for a user-specified company.
 - Tracks new job postings
 - Tracks removed job postings
 - Tracks job posting modifications
 - Archives job postings locally
 
 ### blue_list_tracker
-Monitors the DCMA Blue UAS Cleared Drone List.
+Monitors the Defense Contract Management Agency (DCMA) Blue Unmanned Aircraft Systems (UAS) Cleared Drone List.
 - Tracks new listings
 - Tracks removed listings
 - Tracks listing modifications
