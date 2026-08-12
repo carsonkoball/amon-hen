@@ -40,11 +40,6 @@ Monitors the Department of War (DoW) daily contract announcements page.
 Monitors the Federal Communications Commission (FCC) Experimental Licensing System (ELS) application page.
 - Parses application information
 
-### file_tracker
-Searches websites for files with user-specified extensions (e.g. .pdf, .csv, .png).
-- Tracks file content modifications
-- Archives discovered files locally
-
 ### Common Utilities
 #### crawler
 Automated web crawler
@@ -98,23 +93,17 @@ amon-hen/
 │           │   ├── __main__.py
 │           │   ├── config.py
 │           │   └── dow_parser.py
-│           ├── fcc_els_parser/
-│           │   ├── __init__.py
-│           │   ├── __main__.py
-│           │   ├── config.py
-│           │   └── fcc_els_parser.py
-│           └── file_tracker/
+│           └── fcc_els_parser/
 │               ├── __init__.py
 │               ├── __main__.py
 │               ├── config.py
-│               └── file_tracker.py
+│               └── fcc_els_parser.py
 ├── ui/
 │   ├── handlers/
 │   │   ├── __init__.py
 │   │   ├── adp_tracker.py
 │   │   ├── blue_list_tracker.py
-│   │   ├── dow_parser.py
-│   │   └── file_tracker.py
+│   │   └── dow_parser.py
 │   ├── routes/
 │   │   ├── __init__.py
 │   │   └── scripts.py
@@ -125,8 +114,7 @@ amon-hen/
 │   │   ├── dashboard.html
 │   │   ├── adp_tracker.html
 │   │   ├── blue_list_tracker.html
-│   │   ├── dow_parser.html
-│   │   └── file_tracker.html
+│   │   └── dow_parser.html
 │   ├── config.py
 │   ├── amon_hen_ui.py
 │   ├── requirements.in
@@ -185,7 +173,6 @@ pip install -r requirements.txt
 
 ## Future Work
 ### Fixes/Modifications
-- Update file_tracker to implement Tracker system
 - Update UI with existing tools
 - Add fcc_els_parser to UI
 - Add diu_pathway_tracker to UI

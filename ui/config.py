@@ -15,9 +15,4 @@ SCRIPTS = [
         "description": "Monitors the Department of War (DoW) daily contract announcements page.",
         "slug": "dow_parser",
     },
-    {
-        "name": "File Tracker",
-        "description": "Searches websites for files with user-specified extensions (e.g. .pdf, .csv, .png).",
-        "slug": "file_tracker",
-    },
 ]
