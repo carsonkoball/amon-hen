@@ -2,11 +2,12 @@ from datetime import date
 
 from flask import render_template, request
 
-from amon_hen.scripts import dow_parser
+from amon_hen.tools import dow_parser
 
 
 def handle(script):
     results = None
+    contract_date = None
 
     contract_date = date.today()
 

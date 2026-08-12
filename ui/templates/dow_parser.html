@@ -39,28 +39,33 @@
 			
 				<p>{{ contract_date.strftime("%B") }} {{ contract_date.day }}, {{ contract_date.year }} contract URL not found.</p>
 				
-			{% elif results and results["companies"] %}
+			{% else %}
 
 				{% for branch, winners in results["companies"].items() %}
 
-					<h3>{{ branch }}</h3>
+					<p><b>{{ branch }}</b></p>
 
 					<ul>
+					
 					{% for winner in winners %}
+					
 						{% for company in winner %}
+						
 							<li>{{ company }}</li>
+							
 						{% endfor %}
+						
 						{% if winners[-1] != winner %}
+						
 							<li></li>
+							
 						{% endif %}
+						
 					{% endfor %}
+					
 					</ul>
 
 				{% endfor %}
-
-			{% else %}
-
-				<p>Error.</p>
 
 			{% endif %}
 		</div>
