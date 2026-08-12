@@ -341,12 +341,12 @@ def _parse_search(data):
                 else None
             ),
             notes_link=(
-                config.ELS_URL + values[3].find("a")["href"]
+                config.ELS_URL + values[3].find("a")["href"].lstrip("javascript:openWindow('").rstrip("')")
                 if values[3].text.strip() != "N/A"
                 else None
             ),
             grant_link=(
-                config.ELS_URL + values[5].find("a")["href"]
+                config.ELS_URL + values[5].find("a")["href"].lstrip("javascript:openWindow('").rstrip("')")
                 if values[5].text.strip() != "N/A"
                 else None
             ),
