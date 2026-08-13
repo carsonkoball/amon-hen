@@ -269,26 +269,27 @@ def _process_sta_form(form):
     return result
 
 
-def _process_administrative_action_form(form):
+def _process_administrative_action_form(form, code):
     """
-    Retrieve relevant information from the Transfer of Control Form type.
+    Retrieve relevant information from the Assignment of License or Transfer of Control Form type.
     """
     soup = BeautifulSoup(markup=form, features="html.parser")
 
     result = {}
 
-    transfers = soup.find(id="offTblBdy").find_all("tr")
+    license_entries = soup.find(id="offTblBdy").find_all("tr")
+    licenses = []
 
-    for transfer in transfers:
+    for _license in license_entries:
         entry = {
-            "Filing": config.ELS_URL + transfer.find("td").find("a")["href"],
-            "File Number": transfer.find_all("td")[2].text.strip(),
-            "Transferee Name": transfer.find_all("td")[3].text.strip(),
+            "Filing": config.ELS_URL + _license.find("td").find("a")["href"],
+            "File Number": _license.find_all("td")[2].text.strip(),
+            "Licensee Name" if code == "AU" else "Transferee Name": _license.find_all("td")[3].text.strip(),
         }
 
-        result.append(entry)
+        licenses.append(entry)
         
-    result["Transfers"] = transfers
+    result["Assignments" if code == "AU" else "Transfers"] = licenses
 
     return result
 
@@ -419,7 +420,7 @@ def _fcc_els_parser(search_date):
             case "TN" | "TM" | "TR":
                 processed_form = _process_compliance_testing_form(form=current_form)
             case "AU" | "TU":
-                processed_form = _process_administrative_action_form(form=current_form)
+                processed_form = _process_administrative_action_form(form=current_form, code=listing_code)
             case "ST":
                 processed_form = _process_sta_form(form=current_form)
 
