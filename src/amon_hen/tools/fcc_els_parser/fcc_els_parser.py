@@ -297,7 +297,6 @@ def _process_legacy_form(form, code):
     """
     Retrieve relevant information from Legacy form types.
     """
-    print("CODE", code)
     result = result = _process_conventional_form(form=form, code=code)
             
     return result
@@ -417,27 +416,30 @@ def _fcc_els_parser(search_date):
         )
 
         # Different application types have different information that needs to be parsed separately
-        match listing_code:
-            case "CN" | "CM" | "CR":
-                processed_form = _process_conventional_form(
-                    form=current_form, code=listing_code
-                )
-            case "PN" | "PM" | "PR":
-                processed_form = _process_program_form(form=current_form)
-            case "MN" | "MM" | "MR":
-                processed_form = _process_medical_testing_form(form=current_form)
-            case "TN" | "TM" | "TR":
-                processed_form = _process_compliance_testing_form(form=current_form)
-            case "AU" | "TU":
-                processed_form = _process_administrative_action_form(form=current_form, code=listing_code)
-            case "ST":
-                processed_form = _process_sta_form(form=current_form)
-            case "PL" | "ML" | "RR":
-                processed_form = _process_legacy_form(form=current_form, code=listing_code)
+        if current_form:
+            match listing_code:
+                case "CN" | "CM" | "CR":
+                    processed_form = _process_conventional_form(
+                        form=current_form, code=listing_code
+                    )
+                case "PN" | "PM" | "PR":
+                    processed_form = _process_program_form(form=current_form)
+                case "MN" | "MM" | "MR":
+                    processed_form = _process_medical_testing_form(form=current_form)
+                case "TN" | "TM" | "TR":
+                    processed_form = _process_compliance_testing_form(form=current_form)
+                case "AU" | "TU":
+                    processed_form = _process_administrative_action_form(form=current_form, code=listing_code)
+                case "ST":
+                    processed_form = _process_sta_form(form=current_form)
+                case "PL" | "ML" | "RR":
+                    processed_form = _process_legacy_form(form=current_form, code=listing_code)
 
-        logger.debug(
-            "Processed %s form (Number %s)", result.get_type, result.file_number
-        )
+            logger.debug(
+                "Processed %s form (Number %s)", result.get_type, result.file_number
+            )
+        else:
+            processed_form = None
 
         result.application_data = processed_form
 
