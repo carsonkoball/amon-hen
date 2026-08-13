@@ -84,20 +84,18 @@ def _process_conventional_form(form, code):
         stations = []
 
         if soup.find(title="Station Location"):
-            station_entries = soup.find(title="Station Location").find_all(
-                "table", recursive=False
-            )
-
+            station_entries = soup.find(title="Station Location").find_all("tr")
+            
             for station_entry in station_entries:
-                valid_entry = station_entry.find_all("th")
-                if len(valid_entry) >= 2 and valid_entry[1].text.strip() == "City":
-                    entry = station_entry.find_all("tr")[1].find_all(recursive=False)
+                entry = station_entry.find_all("td")
 
+                if entry and entry[0].text.strip() == "0":
                     station = {
                         "City": entry[1].text.strip(),
                         "State": entry[2].text.strip(),
                         "Mobile": entry[5].text.strip(),
                     }
+                    
                     stations.append(station)
 
         result["Station Location"] = stations
@@ -277,7 +275,7 @@ def _process_administrative_action_form(form):
     """
     soup = BeautifulSoup(markup=form, features="html.parser")
 
-    result = []
+    result = {}
 
     transfers = soup.find(id="offTblBdy").find_all("tr")
 
@@ -289,6 +287,8 @@ def _process_administrative_action_form(form):
         }
 
         result.append(entry)
+        
+    result["Transfers"] = transfers
 
     return result
 
