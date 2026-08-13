@@ -47,14 +47,14 @@ def _process_conventional_form(form, code):
 
     result = {}
 
-    if code == "CM":
+    if code == "CM" or code == "ML":
         result["Modification For"] = (
             soup.find(title="Modification For")
             .find(class_="small-content")
             .text.strip()
         )
 
-    if code == "CN" or code == "CM":
+    if code == "CN" or code == "CM" or code == "PL" or code == "ML":
         result["Estimated Duration"] = " ".join(
             soup.find(title="Estimated Duration")
             .find(class_="small-content")
@@ -292,6 +292,15 @@ def _process_administrative_action_form(form, code):
     result["Assignments" if code == "AU" else "Transfers"] = licenses
 
     return result
+    
+def _process_legacy_form(form, code):
+    """
+    Retrieve relevant information from Legacy form types.
+    """
+    print("CODE", code)
+    result = result = _process_conventional_form(form=form, code=code)
+            
+    return result
 
 
 def _get_form(form_link):
@@ -423,6 +432,8 @@ def _fcc_els_parser(search_date):
                 processed_form = _process_administrative_action_form(form=current_form, code=listing_code)
             case "ST":
                 processed_form = _process_sta_form(form=current_form)
+            case "PL" | "ML" | "RR":
+                processed_form = _process_legacy_form(form=current_form, code=listing_code)
 
         logger.debug(
             "Processed %s form (Number %s)", result.get_type, result.file_number

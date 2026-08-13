@@ -84,4 +84,8 @@ APPLICATION_CODE_MAP = {
     "TU": "Transfer of Control",
     # Special Temporary Authority
     "ST": "Special Temporary Authority",
+    # Legacy
+    "PL": "Legacy License New", 
+    "ML": "Legacy License Modification",
+    "RR": "Legacy License Renewal",
 }
