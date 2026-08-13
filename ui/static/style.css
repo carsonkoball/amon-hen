@@ -56,3 +56,9 @@ section {
 .parameter legend {
 	margin-bottom: 1rem;
 }
+
+.output-entry {
+	outline: 1px black solid;
+	margin: 1rem 0;
+	padding: 1rem;
+}

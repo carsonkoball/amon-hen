@@ -42,154 +42,156 @@
 			{% else %}
 
 				{% for result in results %}
+				
+					<div class="output-entry">
+						<p><b>{{ result.get_type }} Application:</b> {{ result.file_number }}</p>
+						<ul>
+							<li><p><b>Applicant Name:</b> {{ result.applicant_name }}</p></li>
 
-					<p><b>{{ result.get_type }} Application:</b> {{ result.file_number }}</p>
-					<ul>
-						<li><p><b>Applicant Name:</b> {{ result.applicant_name }}</p></li>
-
-						{% if result.exhibits_link is not none %}
-						
-							<li><p><b>Exhibits Link:</b> <a href="{{ result.exhibits_link }}"target="_blank">{{ result.exhibits_link }}</a></p></li>
-						
-						{% endif %}
-						
-						{% if result.notes_link is not none %}
-						
-							<li><p><b>Notes Link:</b> <a href="{{ result.notes_link }}"target="_blank">{{ result.notes_link }}</a></p></li>
-						
-						{% endif %}
-						
-						{% if result.grant_link is not none %}
+							{% if result.exhibits_link is not none %}
 							
-							<li><p><b>Grant Link:</b> <a href="{{ result.grant_link }}"target="_blank">{{ result.grant_link }}</a></p></li>
-						
-						{% endif %}
-						
-						{% if result.application_data is not none %}
-						
-							{% if result.get_code == "CN" or result.get_code == "CM" or result.get_code == "PL" or result.get_code == "ML" %}
+								<li><p><b>Exhibits Link:</b> <a href="{{ result.exhibits_link }}"target="_blank">{{ result.exhibits_link }}</a></p></li>
 							
-								{% if result.get_code == "CM" or result.get_code == "ML" %}
-								
-									<li><p><b>Modification For:</b> {{result.application_data["Modification For"]}}</p></li>
-								
-								{% endif %}
-							
-								<li><p><b>Estimated Duration:</b> {{result.application_data["Estimated Duration"]}}</p></li>
-								
-								{% for manufacturer in result.application_data["Manufacturer"] %}
-									
-									<li><p><b>Manufacturer:</b> {{ manufacturer["Manufacturer Name"] }}</p>
-										<ul>
-											<li><p><b>Model Number:</b> {{ manufacturer["Model Number"] }}</p></li>
-											<li><p><b>Number of Units:</b> {{ manufacturer["No. of Units"] }}</p></li>
-											<li><p><b>Experimental:</b> {{ manufacturer["Experimental"] }}</p></li>
-										</ul>
-									</li>
-									
-								{% endfor %}
-								
-								{% for location in result.application_data["Station Location"] %}
-								
-									<li><p><b>Station Location:</b> {{ location["City"] }}{% if location["City"] and location["State"] %}, {% endif %}{{ location["State"] }}</p></li>
-										
-										{% if location["Mobile"] %}
-										
-											<ul>
-												<li><p><b>Mobile:</b> {{ location["Mobile"] }}</li> 
-											</ul>
-										
-										{% endif %}
-										
-									</li>
-									
-								{% endfor %}
-								
-							{% elif result.get_code == "CR" or result.get_code == "RR" %}
-								
-								<li><p><b>Renewal For:</b> {{ result.application_data["Renewal Information"]["File Number"] }}</p></li>
-								
-							{% elif result.get_code == "AU" or result.get_code == "TU" %}
-							
-								{% if result.get_code == "AU" %}
-								
-									{% for license in result.application_data["Assignments"] %}
-									
-										<li><p><b>Assignment:</b> {{ license["File Number"] }}</p>
-											<ul>
-												<li><p><b>Licensee:</b> {{ license["Licensee Name"] }}</p></li>
-												<li><p><b>Filing Link:</b> <a href="{{ license['Filing'] }}" target="_blank">{{ license['Filing'] }}</a></p></li>
-											</ul>
-										</li>
-									
-									{% endfor %}
-							
-								{% else %}
-								
-									{% for license in result.application_data["Transfers"] %}
-									
-										<li><p><b>Transfer:</b> {{ license["File Number"] }}</p>
-											<ul>
-												<li><p><b>Transferee:</b> {{ license["Transferee Name"] }}</p></li>
-												<li><p><b>Filing Link:</b> <a href="{{ license['Filing'] }}" target="_blank">{{ license['Filing'] }}</a></p></li>
-											</ul>
-										</li>
-									
-									{% endfor %}
-									
-								{% endif %}
-								
-							{% elif result.get_code == "ST" %}
-							
-								<li><p><b>Explanation:</b> {{ result.application_data["Explanation"] }}</p></li>
-								<li><p><b>Purpose of Operation:</b> {{ result.application_data["Purpose of Operation"] }}</p></li>
-								<li><p><b>Operation Start Date:</b> {{ result.application_data["Operation Start Date"] }}</p></li>
-								<li><p><b>Operation End Date:</b> {{ result.application_data["Operation End Date"] }}</p></li>
-							
-								{% for manufacturer in result.application_data["Manufacturer"] %}
-									
-									<li><p><b>Manufacturer:</b> {{ manufacturer["Manufacturer Name"] }}</p>
-										<ul>
-											<li><p><b>Model Number:</b> {{ manufacturer["Model Number"] }}</p></li>
-											<li><p><b>Number of Units:</b> {{ manufacturer["No. of Units"] }}</p></li>
-											<li><p><b>Experimental:</b> {{ manufacturer["Experimental"] }}</p></li>
-										</ul>
-									</li>
-									
-								{% endfor %}
-								
-								{% for location in result.application_data["Station Location"] %}
-								
-									<li><p><b>Station Location:</b> {{ location["City"] }}{% if location["City"] and location["State"] %}, {% endif %}{{ location["State"] }}</p></li>
-										
-										{% if location["Mobile"] %}
-										
-											<ul>
-												<li><p><b>Mobile:</b> {{ location["Mobile"] }}</li> 
-											</ul>
-										
-										{% endif %}
-										
-									</li>
-									
-								{% endfor %}
-								
-							{% else %}
-								
-								{% if result.get_code == "PN" or result.get_code == "PM" or result.get_code == "PR" %}
-								
-									<li><p><b>Involving Clinical Trials:</b> {{ result.application_data["Involving Clinical Testing Trials"] }}</p></li>
-								
-								{% endif %}
-								
-								<li><p><b>Narrative Comment:</b> {{ result.application_data["Narrative Comment"] }}</p></li>
-								<li><p><b>Station Location:</b> {{ result.application_data["Location Information"]["City"] }}{% if result.application_data["Location Information"]["City"] and result.application_data["Location Information"]["State"] %}, {% endif %}{{ result.application_data["Location Information"]["State"] }}</p></li>
-								
 							{% endif %}
 							
-						{% endif %}
+							{% if result.notes_link is not none %}
 							
-					</ul>
+								<li><p><b>Notes Link:</b> <a href="{{ result.notes_link }}"target="_blank">{{ result.notes_link }}</a></p></li>
+							
+							{% endif %}
+							
+							{% if result.grant_link is not none %}
+								
+								<li><p><b>Grant Link:</b> <a href="{{ result.grant_link }}"target="_blank">{{ result.grant_link }}</a></p></li>
+							
+							{% endif %}
+							
+							{% if result.application_data is not none %}
+							
+								{% if result.get_code == "CN" or result.get_code == "CM" or result.get_code == "PL" or result.get_code == "ML" %}
+								
+									{% if result.get_code == "CM" or result.get_code == "ML" %}
+									
+										<li><p><b>Modification For:</b> {{result.application_data["Modification For"]}}</p></li>
+									
+									{% endif %}
+								
+									<li><p><b>Estimated Duration:</b> {{result.application_data["Estimated Duration"]}}</p></li>
+									
+									{% for manufacturer in result.application_data["Manufacturer"] %}
+										
+										<li><p><b>Manufacturer:</b> {{ manufacturer["Manufacturer Name"] }}</p>
+											<ul>
+												<li><p><b>Model Number:</b> {{ manufacturer["Model Number"] }}</p></li>
+												<li><p><b>Number of Units:</b> {{ manufacturer["No. of Units"] }}</p></li>
+												<li><p><b>Experimental:</b> {{ manufacturer["Experimental"] }}</p></li>
+											</ul>
+										</li>
+										
+									{% endfor %}
+									
+									{% for location in result.application_data["Station Location"] %}
+									
+										<li><p><b>Station Location:</b> {{ location["City"] }}{% if location["City"] and location["State"] %}, {% endif %}{{ location["State"] }}</p></li>
+											
+											{% if location["Mobile"] %}
+											
+												<ul>
+													<li><p><b>Mobile:</b> {{ location["Mobile"] }}</li> 
+												</ul>
+											
+											{% endif %}
+											
+										</li>
+										
+									{% endfor %}
+									
+								{% elif result.get_code == "CR" or result.get_code == "RR" %}
+									
+									<li><p><b>Renewal For:</b> {{ result.application_data["Renewal Information"]["File Number"] }}</p></li>
+									
+								{% elif result.get_code == "AU" or result.get_code == "TU" %}
+								
+									{% if result.get_code == "AU" %}
+									
+										{% for license in result.application_data["Assignments"] %}
+										
+											<li><p><b>Assignment:</b> {{ license["File Number"] }}</p>
+												<ul>
+													<li><p><b>Licensee:</b> {{ license["Licensee Name"] }}</p></li>
+													<li><p><b>Filing Link:</b> <a href="{{ license['Filing'] }}" target="_blank">{{ license['Filing'] }}</a></p></li>
+												</ul>
+											</li>
+										
+										{% endfor %}
+								
+									{% else %}
+									
+										{% for license in result.application_data["Transfers"] %}
+										
+											<li><p><b>Transfer:</b> {{ license["File Number"] }}</p>
+												<ul>
+													<li><p><b>Transferee:</b> {{ license["Transferee Name"] }}</p></li>
+													<li><p><b>Filing Link:</b> <a href="{{ license['Filing'] }}" target="_blank">{{ license['Filing'] }}</a></p></li>
+												</ul>
+											</li>
+										
+										{% endfor %}
+										
+									{% endif %}
+									
+								{% elif result.get_code == "ST" %}
+								
+									<li><p><b>Explanation:</b> {{ result.application_data["Explanation"] }}</p></li>
+									<li><p><b>Purpose of Operation:</b> {{ result.application_data["Purpose of Operation"] }}</p></li>
+									<li><p><b>Operation Start Date:</b> {{ result.application_data["Operation Start Date"] }}</p></li>
+									<li><p><b>Operation End Date:</b> {{ result.application_data["Operation End Date"] }}</p></li>
+								
+									{% for manufacturer in result.application_data["Manufacturer"] %}
+										
+										<li><p><b>Manufacturer:</b> {{ manufacturer["Manufacturer Name"] }}</p>
+											<ul>
+												<li><p><b>Model Number:</b> {{ manufacturer["Model Number"] }}</p></li>
+												<li><p><b>Number of Units:</b> {{ manufacturer["No. of Units"] }}</p></li>
+												<li><p><b>Experimental:</b> {{ manufacturer["Experimental"] }}</p></li>
+											</ul>
+										</li>
+										
+									{% endfor %}
+									
+									{% for location in result.application_data["Station Location"] %}
+									
+										<li><p><b>Station Location:</b> {{ location["City"] }}{% if location["City"] and location["State"] %}, {% endif %}{{ location["State"] }}</p></li>
+											
+											{% if location["Mobile"] %}
+											
+												<ul>
+													<li><p><b>Mobile:</b> {{ location["Mobile"] }}</li> 
+												</ul>
+											
+											{% endif %}
+											
+										</li>
+										
+									{% endfor %}
+									
+								{% else %}
+									
+									{% if result.get_code == "PN" or result.get_code == "PM" or result.get_code == "PR" %}
+									
+										<li><p><b>Involving Clinical Trials:</b> {{ result.application_data["Involving Clinical Testing Trials"] }}</p></li>
+									
+									{% endif %}
+									
+									<li><p><b>Narrative Comment:</b> {{ result.application_data["Narrative Comment"] }}</p></li>
+									<li><p><b>Station Location:</b> {{ result.application_data["Location Information"]["City"] }}{% if result.application_data["Location Information"]["City"] and result.application_data["Location Information"]["State"] %}, {% endif %}{{ result.application_data["Location Information"]["State"] }}</p></li>
+									
+								{% endif %}
+								
+							{% endif %}
+								
+						</ul>
+					</div>
 
 				{% endfor %}
 

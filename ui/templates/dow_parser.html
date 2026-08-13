@@ -43,27 +43,29 @@
 
 				{% for branch, winners in results["companies"].items() %}
 
-					<p><b>{{ branch }}</b></p>
+					<div class="output-entry">
+						<p><b>{{ branch }}</b></p>
 
-					<ul>
-					
-					{% for winner in winners %}
-					
-						{% for company in winner %}
+						<ul>
 						
-							<li>{{ company }}</li>
+						{% for winner in winners %}
+						
+							{% for company in winner %}
+							
+								<li>{{ company }}</li>
+								
+							{% endfor %}
+							
+							{% if winners[-1] != winner %}
+							
+								<li></li>
+								
+							{% endif %}
 							
 						{% endfor %}
 						
-						{% if winners[-1] != winner %}
-						
-							<li></li>
-							
-						{% endif %}
-						
-					{% endfor %}
-					
-					</ul>
+						</ul>
+					</div>
 
 				{% endfor %}
 
