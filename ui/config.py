@@ -15,4 +15,9 @@ SCRIPTS = [
         "description": "Monitors the Department of War (DoW) daily contract announcements page.",
         "slug": "dow_parser",
     },
+    {
+        "name": "FCC ELS Parser",
+        "description": "Monitors the Federal Communications Commission (FCC) Experimental Licensing System (ELS) application page.",
+        "slug": "fcc_els_parser",
+    },
 ]
