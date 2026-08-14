@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Amon Hen UI - {{ title }}
+{% endblock %}
+
+{% block content %}
+	<section>
+		<div class="section-title">
+			<h2>Input Parameters</h2>
+		</div>
+		<div class="section-content">
+			<form method="POST">
+				<button type="submit">
+					Run
+				</button>
+			</form>
+		</div>
+	</section>
+	<section>
+		<div class="section-title">
+			<h2>Output</h2>
+		</div>
+		<div class="section-content">
+			{% if results is none %}
+			
+				<p>No output yet.<p>
+				
+			{% elif results == [] %}
+			
+				<p>No changes found.</p>
+				
+			{% else %} 
+			
+				{% for result in results %}
+				
+					<div class"output-entry">
+				
+						{% if result.is_new or result.has_changed %}
+						
+							{% if result.is_new %}
+								
+								<p><b>New {{ result["type"] }} Pathway:</b></p>
+							
+							{% else %}
+								
+								<p><b>Modified {{ result["type"] }} Pathway:</b></p>
+								
+							{% endif %}
+						
+							
+							<ul>
+								<li><p><b>ID:</b> {{ result.new_data["id"] }}</p></li>
+								<li><p><b>Title:</b> {{ result.new_data["title"] }}</p></li>
+								<li><p><b>Due By:</b> {{ result.new_data["due_by"] }}</p></li>
+								<li><p><b>Description:</b> {{ result.new_data["description"] }}</p></li>
+							</ul>
+							
+						{% else %}
+						
+							<p><b>Removed {{ result["type"] }} Pathway:</b></p>
+							<ul>
+								<li><p><b>ID:</b> {{ result.old_data["id"] }}</p></li>
+								<li><p><b>Title:</b> {{ result.old_data["title"] }}</p></li>
+								<li><p><b>Due By:</b> {{ result.old_data["due_by"] }}</p></li>
+								<li><p><b>Description:</b> {{ result.old_data["description"] }}</p></li>
+							</ul>
+							
+						{% endif %}
+						
+					</div>
+					
+				{% endfor %}
+				
+			{% endif %}
+		</div>
+	</section>
+{% endblock %}
