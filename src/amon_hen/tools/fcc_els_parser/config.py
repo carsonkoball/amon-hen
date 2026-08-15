@@ -85,7 +85,7 @@ APPLICATION_CODE_MAP = {
     # Special Temporary Authority
     "ST": "Special Temporary Authority",
     # Legacy
-    "PL": "Legacy License New", 
+    "PL": "Legacy License New",
     "ML": "Legacy License Modification",
     "RR": "Legacy License Renewal",
 }

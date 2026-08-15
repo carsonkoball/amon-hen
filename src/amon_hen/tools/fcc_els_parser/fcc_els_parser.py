@@ -85,7 +85,7 @@ def _process_conventional_form(form, code):
 
         if soup.find(title="Station Location"):
             station_entries = soup.find(title="Station Location").find_all("tr")
-            
+
             for station_entry in station_entries:
                 entry = station_entry.find_all("td")
 
@@ -95,7 +95,7 @@ def _process_conventional_form(form, code):
                         "State": entry[2].text.strip(),
                         "Mobile": entry[5].text.strip(),
                     }
-                    
+
                     stations.append(station)
 
         result["Station Location"] = stations
@@ -249,7 +249,7 @@ def _process_sta_form(form):
 
     if soup.find(title="Station Location"):
         station_entries = soup.find(title="Station Location").find_all("tr")
-        
+
         for station_entry in station_entries:
             entry = station_entry.find_all("td")
 
@@ -259,7 +259,7 @@ def _process_sta_form(form):
                     "State": entry[2].text.strip(),
                     "Mobile": entry[5].text.strip(),
                 }
-                
+
                 stations.append(station)
 
     result["Station Location"] = stations
@@ -282,21 +282,24 @@ def _process_administrative_action_form(form, code):
         entry = {
             "Filing": config.ELS_URL + _license.find("td").find("a")["href"],
             "File Number": _license.find_all("td")[2].text.strip(),
-            "Licensee Name" if code == "AU" else "Transferee Name": _license.find_all("td")[3].text.strip(),
+            "Licensee Name" if code == "AU" else "Transferee Name": _license.find_all(
+                "td"
+            )[3].text.strip(),
         }
 
         licenses.append(entry)
-        
+
     result["Assignments" if code == "AU" else "Transfers"] = licenses
 
     return result
-    
+
+
 def _process_legacy_form(form, code):
     """
     Retrieve relevant information from Legacy form types.
     """
     result = result = _process_conventional_form(form=form, code=code)
-            
+
     return result
 
 
@@ -348,12 +351,20 @@ def _parse_search(data):
                 else None
             ),
             notes_link=(
-                config.ELS_URL + values[3].find("a")["href"].lstrip("javascript:openWindow('").rstrip("')")
+                config.ELS_URL
+                + values[3]
+                .find("a")["href"]
+                .lstrip("javascript:openWindow('")
+                .rstrip("')")
                 if values[3].text.strip() != "N/A"
                 else None
             ),
             grant_link=(
-                config.ELS_URL + values[5].find("a")["href"].lstrip("javascript:openWindow('").rstrip("')")
+                config.ELS_URL
+                + values[5]
+                .find("a")["href"]
+                .lstrip("javascript:openWindow('")
+                .rstrip("')")
                 if values[5].text.strip() != "N/A"
                 else None
             ),
@@ -427,11 +438,15 @@ def _fcc_els_parser(search_date):
                 case "TN" | "TM" | "TR":
                     processed_form = _process_compliance_testing_form(form=current_form)
                 case "AU" | "TU":
-                    processed_form = _process_administrative_action_form(form=current_form, code=listing_code)
+                    processed_form = _process_administrative_action_form(
+                        form=current_form, code=listing_code
+                    )
                 case "ST":
                     processed_form = _process_sta_form(form=current_form)
                 case "PL" | "ML" | "RR":
-                    processed_form = _process_legacy_form(form=current_form, code=listing_code)
+                    processed_form = _process_legacy_form(
+                        form=current_form, code=listing_code
+                    )
 
             logger.debug(
                 "Processed %s form (Number %s)", result.get_type, result.file_number
