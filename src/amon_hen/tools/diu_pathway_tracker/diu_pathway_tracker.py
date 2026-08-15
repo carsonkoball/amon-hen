@@ -147,7 +147,7 @@ def _diu_pathway_tracker(tracker):
         result = tracker.track(data=pathway, path=pathway_path)
 
         # Modified listing
-        if result.has_changed:
+        if result.has_changed and not result.is_removed:
             results.append(result)
 
             # New listing
@@ -216,15 +216,15 @@ def _diu_pathway_tracker(tracker):
             logger.info(
                 "%s pathway added: %s", result.new_data["type"], result.new_data["id"]
             )
-        elif result.has_changed:
+        elif result.is_removed:
+            logger.info(
+                "%s pathway removed: %s", result.old_data["type"], result.old_data["id"]
+            )
+        else:
             logger.info(
                 "%s pathway modified: %s",
                 result.new_data["type"],
                 result.new_data["id"],
-            )
-        else:
-            logger.info(
-                "%s pathway removed: %s", result.old_data["type"], result.old_data["id"]
             )
 
     return results

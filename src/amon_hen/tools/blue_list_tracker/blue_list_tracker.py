@@ -81,14 +81,14 @@ def blue_list_tracker(tracker):
         result = tracker.track(data=listing, path=listing_path)
 
         # Modified listing
-        if result.has_changed:
+        if result.has_changed and not result.is_removed:
             results.append(result)
 
             # New listing
             if result.is_new:
                 # Mark as newly added in history
                 listings_history_file_path = config.LISTINGS_HISTORY_FILE
-
+                print(result)
                 entry = config.HISTORY_ENTRY(
                     timestamp=timestamp.strftime("%Y-%m-%dT%H-%M-%S.%fZ"),
                     listing_id=listing_id,
@@ -143,17 +143,17 @@ def blue_list_tracker(tracker):
                 result.new_data["UXSCore"]["mad_coretype"].lower(),
                 result.new_data["UXSCore"]["mad_uxscoreid"],
             )
-        elif result.has_changed:
-            logger.info(
-                "%s modified: %s",
-                result.new_data["UXSCore"]["mad_coretype"].lower(),
-                result.new_data["UXSCore"]["mad_uxscoreid"],
-            )
-        else:
+        elif result.is_removed:
             logger.info(
                 "%s removed: %s",
                 result.old_data["UXSCore"]["mad_coretype"].lower(),
                 result.old_data["UXSCore"]["mad_uxscoreid"],
+            )
+        else:
+            logger.info(
+                "%s modified: %s",
+                result.new_data["UXSCore"]["mad_coretype"].lower(),
+                result.new_data["UXSCore"]["mad_uxscoreid"],
             )
 
     return results

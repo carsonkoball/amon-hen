@@ -120,7 +120,7 @@ def _adp_tracker(cid, ccid, tracker):
         result = tracker.track(data=data, path=posting_path)
 
         # Modified listing
-        if result.has_changed:
+        if result.has_changed and not result.is_removed:
             results.append(result)
 
             # New listing
@@ -177,15 +177,15 @@ def _adp_tracker(cid, ccid, tracker):
                 "listing added: %s",
                 result.new_data["customFieldGroup"]["stringFields"][0]["stringValue"],
             )
-        elif result.has_changed:
-            logger.info(
-                "listing modified: %s",
-                result.new_data["customFieldGroup"]["stringFields"][0]["stringValue"],
-            )
-        else:
+        elif result.is_removed:
             logger.info(
                 "listing removed: %s",
                 result.old_data["customFieldGroup"]["stringFields"][0]["stringValue"],
+            )
+        else:
+            logger.info(
+                "listing modified: %s",
+                result.new_data["customFieldGroup"]["stringFields"][0]["stringValue"],
             )
 
     return results
