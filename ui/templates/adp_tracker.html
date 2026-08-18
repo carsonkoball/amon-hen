@@ -66,7 +66,16 @@
 								<li><p><b>Link:</b> <a href='https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid={{ cid }}&ccId={{ ccid }}&lang=en_US&jobId={{ result.new_data["customFieldGroup"]["stringFields"][0]["stringValue"] }}' target="_blank">https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid={{ cid }}&ccId={{ ccid }}&lang=en_US&jobId={{ result.new_data["customFieldGroup"]["stringFields"][0]["stringValue"] }}</a></p></li>
 							</ul>
 							
-						{% elif result.has_changed %}
+						{% elif result.is_removed %}
+						
+							<p><b>Removed Job Listing:</b></p>
+							<ul>
+								<li><p><b>ID:</b> {{ result.old_data["customFieldGroup"]["stringFields"][0]["stringValue"] }}</p></li>
+								<li><p><b>Title:</b> {{ result.old_data["requisitionTitle"] }}</p></li>
+								<li><p><b>Post Date:</b> {{ result.old_data["postDate"] }}</p></li>
+							</ul>
+							
+						{% else %}
 						
 							<p><b>Modified Job Listing:</b></p>
 							<ul>
@@ -74,15 +83,6 @@
 								<li><p><b>Title:</b> {{ result.new_data["requisitionTitle"] }}</p></li>
 								<li><p><b>Post Date:</b> {{ result.new_data["postDate"] }}</p></li>
 								<li><p><b>Link:</b> <a href='https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid={{ cid }}&ccId={{ ccid }}&lang=en_US&jobId={{ result.new_data["customFieldGroup"]["stringFields"][0]["stringValue"] }}' target="_blank">https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid={{ cid }}&ccId={{ ccid }}&lang=en_US&jobId={{ result.new_data["customFieldGroup"]["stringFields"][0]["stringValue"] }}</a></p></li>
-							</ul>
-							
-						{% else %}
-						
-							<p><b>Removed Job Listing:</b></p>
-							<ul>
-								<li><p><b>ID:</b> {{ result.old_data["customFieldGroup"]["stringFields"][0]["stringValue"] }}</p></li>
-								<li><p><b>Title:</b> {{ result.old_data["requisitionTitle"] }}</p></li>
-								<li><p><b>Post Date:</b> {{ result.old_data["postDate"] }}</p></li>
 							</ul>
 							
 						{% endif %}

@@ -47,7 +47,18 @@
 								<li><p><b>Creation Date:</b> {{ result.new_data["UXSCore"]["createdon"] }}</p></li>
 							</ul>
 							
-						{% elif result.has_changed %}
+						{% elif result.is_removed %}
+						
+							<p><b>Removed Listing:</b></p>
+							<ul>
+								<li><p><b>ID:</b> {{ result.old_data["UXSCore"]["mad_uxscoreid"] }}</p></li>
+								<li><p><b>Type:</b> {{ result.old_data["UXSCore"]["mad_coretype"] }}</p></li>
+								<li><p><b>Name:</b> {{ result.old_data["UXSCore"]["mad_id"] }}</p></li>
+								<li><p><b>Manufacturer:</b> {{ result.old_data["manufacturer"]["mad_id"] }}</p></li>
+								<li><p><b>Creation Date:</b> {{ result.old_data["UXSCore"]["createdon"] }}</p></li>
+							</ul>
+							
+						{% else %}
 						
 							<p><b>Modified Listing:</b></p>
 							<ul>
@@ -57,17 +68,6 @@
 								<li><p><b>Manufacturer:</b> {{ result.new_data["manufacturer"]["mad_id"] }}</p></li>
 								<li><p><b>Creation Date:</b> {{ result.new_data["UXSCore"]["createdon"] }}</p></li>
 								<li><p><b>Modification Date:</b> {{ result.new_data["UXSCore"]["modifiedon"] }}</p></li>
-							</ul>
-							
-						{% else %}
-						
-							<p><b>Removed Listing:</b></p>
-							<ul>
-								<li><p><b>ID:</b> {{ result.old_data["UXSCore"]["mad_uxscoreid"] }}</p></li>
-								<li><p><b>Type:</b> {{ result.old_data["UXSCore"]["mad_coretype"] }}</p></li>
-								<li><p><b>Name:</b> {{ result.old_data["UXSCore"]["mad_id"] }}</p></li>
-								<li><p><b>Manufacturer:</b> {{ result.old_data["manufacturer"]["mad_id"] }}</p></li>
-								<li><p><b>Creation Date:</b> {{ result.old_data["UXSCore"]["createdon"] }}</p></li>
 							</ul>
 							
 						{% endif %}
