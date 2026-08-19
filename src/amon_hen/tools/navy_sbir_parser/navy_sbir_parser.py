@@ -43,6 +43,9 @@ class Synopsis:
 
 
 def _process_listing(listing):
+    """
+    Retrieve relevant information from a Navy SBIR/STTR listing.
+    """
     soup = BeautifulSoup(markup=listing, features="html.parser")
 
     firm_info = soup.find(id="FirmContent").find("table")
@@ -54,7 +57,7 @@ def _process_listing(listing):
 
     awards = related_info.find_all("a")
     award_links = [
-        config.SBIR_LISTING_URL.format(link_id=_extract_link_id(award["href"]))
+        config.SBIR_LISTING_URL.format(link_id=_extract_link_id(link=award["href"]))
         for award in awards
     ]
     award_names = [award.text.strip() for award in awards]
@@ -63,12 +66,16 @@ def _process_listing(listing):
 
     # Capture everything between ABSTRACT and BENEFIT
     abstracts = re.findall(
-        r"(?<=ABSTRACT:)\s*(.*?)(?=\s*BENEFIT:)", description, re.DOTALL
+        pattern=r"(?<=ABSTRACT:)\s*(.*?)(?=\s*BENEFIT:)",
+        string=description,
+        flags=re.DOTALL,
     )
 
     # Capture everything between BENEFIT and ABSTRACT or end of string
     benefits = re.findall(
-        r"(?<=BENEFIT:)\s*(.*?)(?=\s*ABSTRACT:|$)", description, re.DOTALL
+        pattern=r"(?<=BENEFIT:)\s*(.*?)(?=\s*ABSTRACT:|$)",
+        string=description,
+        flags=re.DOTALL,
     )
 
     # Remove empty sections
@@ -112,7 +119,7 @@ def _get_listing(listing_link):
     """
     Initiate GET request for specified form link and return response as text.
     """
-    response = http_get(listing_link)
+    response = http_get(url=listing_link)
 
     if response is None or not response.ok:
         logger.error("Failed to fetch listng page: %s", listing_link)
@@ -125,7 +132,10 @@ def _get_listing(listing_link):
 
 
 def _extract_link_id(link):
-    link_id = parse_qs(urlparse(link).query)["id"][0]
+    """
+    Extracat the listing id embedded in an inputted link.
+    """
+    link_id = parse_qs(qs=urlparse(link).query)["id"][0]
 
     return link_id
 
@@ -174,7 +184,7 @@ def _get_listing_links(start_date, end_date, start_index):
 
     # Create links to each listing found
     for listing in listings[3:-1]:
-        link_id = _extract_link_id(listing.find("a")["href"])
+        link_id = _extract_link_id(link=listing.find("a")["href"])
         links.append(config.SBIR_LISTING_URL.format(link_id=link_id))
 
     return links
@@ -199,8 +209,8 @@ def _navy_sbir_parser(start_date, end_date):
 
         if listing_links:
             for listing_link in listing_links:
-                listing = _get_listing(listing_link)
-                result = _process_listing(listing)
+                listing = _get_listing(listing_link=listing_link)
+                result = _process_listing(listing=listing)
 
                 results.append(result)
         else:
