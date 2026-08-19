@@ -201,13 +201,6 @@ def _navy_sbir_parser(start_date, end_date):
             for listing_link in listing_links:
                 listing = _get_listing(listing_link)
                 result = _process_listing(listing)
-                import json
-
-                A = result.as_dict
-                A["start_date"] = A["start_date"].strftime("%Y-%m-%d")
-                A["end_date"] = A["end_date"].strftime("%Y-%m-%d")
-                A["last_update"] = A["last_update"].strftime("%Y-%m-%d")
-                print(json.dumps(A, indent=2))
 
                 results.append(result)
         else:
