@@ -25,4 +25,9 @@ SCRIPTS = [
         "description": "Monitors the Federal Communications Commission (FCC) Experimental Licensing System (ELS) application page.",
         "slug": "fcc_els_parser",
     },
+    {
+        "name": "Navy SBIR Parser",
+        "description": "Monitors the Navy Small Business Innovation Research (SBIR) and Small Business Technology Transfer (STTR) awards and success stories page.",
+        "slug": "navy_sbir_parser",
+    },
 ]

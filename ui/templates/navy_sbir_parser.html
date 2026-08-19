@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Amon Hen UI - {{ title }}
+{% endblock %}
+
+{% block content %}
+	<section>
+		<div class="section-title">
+			<h2>Input Parameters</h2>
+		</div>
+		<div class="section-content">
+			<form method="POST">
+				<div class="parameter">
+					<label for="start_date">Start Date</label><br>
+					<input
+						type="date"
+						id="start_date"
+						name="start_date"
+						value="{{ start_date.isoformat()  }}"
+					>
+				</div>
+				<div class="parameter">
+					<label for="end_date">End Date</label><br>
+					<input
+						type="date"
+						id="end_date"
+						name="end_date"
+						value="{{ end_date.isoformat()  }}"
+					>
+				</div>
+				<button type="submit">
+					Run
+				</button>
+			</form>
+		</div>
+	</section>
+	<section>
+		<div class="section-title">
+			<h2>Output</h2>
+		</div>
+		<div class="section-content">
+			{% if results is none %}
+			
+				<p> No output yet. </p>
+			
+			{% elif results == [] %}
+			
+				<p>No awards found between {{ start_date.strftime("%B") }} {{ start_date.day }}, {{ start_date.year }} and {{ end_date.strftime("%B") }} {{ end_date.day }}, {{ end_date.year }}.</p>
+				
+			{% else %}
+
+				{% for result in results %}
+				
+					<div class="output-entry">
+						<p><b>Phase {{ result.phase }} Award:</b> {{ result.contract_number }}</p>
+						<ul>
+							<li><p><b>Firm:</b> {{ result.firm }}</p></li>
+							<li><p><b>Proposed Title:</b> {{ result.proposal_title }}</p></li>
+							<li><p><b>Award Amount:</b> ${{ "%.2f"|format(result.award_amount) }}</p></li>
+							<li><p><b>Start Date:</b> {{ result.start_date.strftime("%Y-%m-%d") }}</p></li>
+							<li><p><b>End Date:</b> {{ result.end_date.strftime("%Y-%m-%d") }}</p></li>
+							<li><p><b>Date Last Updated:</b> {{ result.last_update.strftime("%Y-%m-%d") }}</p></li>
+							<li><p><b>SYSCOM:</b> {{ result.syscom }}</p></li>
+							<li><p><b>Program:</b> {{ result.program }}</p></li>
+							<li><p><b>Source:</b> {{ result.source }}</p></li>
+							<li><p><b>Abstract:</b> {{ result.abstract }}</p></li>
+							<li><p><b>Benefit:</b> {{ result.benefit }}</p></li>
+							<li><p><b>Awards:</b></p>
+								<ul>
+									
+									{% for award_name in result.awards %}
+									
+										<li><p><b>{{ award_name }}:</b> {{ result.awards[award_name] }}</p></li>
+										
+									{% endfor %}
+									
+								</ul>
+							</li>
+							
+							{% if result.keywords %}
+							
+								<li><p><b>Keywords:</b></p>
+									<ul>
+										
+										{% for keyword in result.keywords %}
+										
+											<li><p>{{ keyword }}</p></li>
+											
+										{% endfor %}
+										
+									</ul>
+								</li>
+								
+							{% endif %}
+							
+						</ul>
+					</div>
+
+				{% endfor %}
+
+			{% endif %}
+		</div>
+	</section>
+{% endblock %}
