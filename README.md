@@ -40,6 +40,10 @@ Monitors the Department of War (DoW) daily contract announcements page.
 Monitors the Federal Communications Commission (FCC) Experimental Licensing System (ELS) application page.
 - Parses application information
 
+### navy_sbir_parser
+Monitors the Navy Small Business Innovation Research (SBIR) and Small Business Technology Transfer (STTR) awards and success stories page.
+- Parses award information
+
 ### Common Utilities
 #### crawler
 Automated web crawler
@@ -93,11 +97,16 @@ amon-hen/
 │           │   ├── __main__.py
 │           │   ├── config.py
 │           │   └── dow_parser.py
-│           └── fcc_els_parser/
+│           ├── fcc_els_parser/
+│           │   ├── __init__.py
+│           │   ├── __main__.py
+│           │   ├── config.py
+│           │   └── fcc_els_parser.py
+│           └── navy_sbir_parser/
 │               ├── __init__.py
 │               ├── __main__.py
 │               ├── config.py
-│               └── fcc_els_parser.py
+│               └── navy_sbir_parser.py
 ├── ui/
 │   ├── handlers/
 │   │   ├── __init__.py
@@ -105,7 +114,8 @@ amon-hen/
 │   │   ├── blue_list_tracker.py
 │   │   ├── diu_pathway_tracker.py
 │   │   ├── dow_parser.py
-│   │   └── fcc_els_parser.py
+│   │   ├── fcc_els_parser.py
+│   │   └── navy_sbir_parser.py
 │   ├── routes/
 │   │   ├── __init__.py
 │   │   └── scripts.py
@@ -118,7 +128,8 @@ amon-hen/
 │   │   ├── blue_list_tracker.html
 │   │   ├── diu_pathway_tracker.html
 │   │   ├── dow_parser.html
-│   │   └── fcc_els_parser.html
+│   │   ├── fcc_els_parser.html
+│   │   └── navy_sbir_parser.py
 │   ├── config.py
 │   ├── amon_hen_ui.py
 │   ├── requirements.in
@@ -183,6 +194,7 @@ pip install -r requirements.txt
 - [ ] Update file_tracker to utilize Tracker system
 	
 ### New Additions
+- [x] Add Navy SBIR/STTR parser capability
 - [ ] Add FedRAMP tracker capability
 - [ ] Add Navy SBIR parser capability
 - [ ] Add LinkedIn tracker capability
