@@ -152,26 +152,27 @@ def _get_listing_links(start_date, end_date, start_index):
         end_date.strftime("%m/%d/%Y"),
     )
 
-    start_date_year = start_date.strftime("%m")
+    start_date_year = start_date.strftime("%Y")
     start_date_month = start_date.strftime("%m")
-    start_date_day = start_date.strftime("%m")
+    start_date_day = start_date.strftime("%d")
 
-    end_date_year = end_date.strftime("%m")
+    end_date_year = end_date.strftime("%Y")
     end_date_month = end_date.strftime("%m")
-    end_date_day = end_date.strftime("%m")
-
+    end_date_day = end_date.strftime("%d")
+    
     payload = copy.deepcopy(config.SBIR_PAYLOAD)
 
     payload["start"] = str(start_index)
 
     # Search by award start date
     payload["mFromDateYear"] = start_date_year
-    payload["mToDateYear"] = start_date_year
     payload["mFromDateMonth"] = start_date_month
+    payload["mFromDateDay"] = start_date_day
+    
+    payload["mToDateYear"] = end_date_year
     payload["mToDateMonth"] = end_date_month
-    payload["mFromDateDay"] = end_date_day
     payload["mToDateDay"] = end_date_day
-
+    
     response = http_post(
         config.SBIR_SEARCH_URL,
         data=payload,
