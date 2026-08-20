@@ -47,6 +47,12 @@
 						<p><b>{{ result.get_type }} Application:</b> {{ result.file_number }}</p>
 						<ul>
 							<li><p><b>Applicant Name:</b> {{ result.applicant_name }}</p></li>
+							<li><p><b>Receipt Date:</b> {{ result.receipt_date }}</p></li>
+							<li><p><b>Status:</b> {{ result.status }}</p>
+								<ul>
+									<li><p><b>Status Date:</b> {{ result.status_date }}</li> 
+								</ul>
+							</li>
 
 							{% if result.exhibits_link is not none %}
 							
