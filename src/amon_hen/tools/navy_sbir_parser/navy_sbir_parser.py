@@ -208,6 +208,8 @@ def _navy_sbir_parser(start_date, end_date):
             start_index=1 + (i * config.MAX_RESULTS),
         )
 
+        logger.debug("%s awards found", len(results))
+        
         if listing_links:
             for listing_link in listing_links:
                 listing = _get_listing(listing_link=listing_link)
@@ -218,6 +220,17 @@ def _navy_sbir_parser(start_date, end_date):
             break
 
         i += 1
+        
+    # Log the found awards
+    logger.info("%d awards found between %s and %s.", len(results), start_date, end_date)
+
+    for result in results:
+        logger.info(
+            "Phase: %s Firm: %s Contract Number: %s",
+            result.phase,
+            result.firm,
+            result.contract_number,
+        )
 
     return results
 
