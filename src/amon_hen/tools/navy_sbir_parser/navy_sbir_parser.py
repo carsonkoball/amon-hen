@@ -159,7 +159,7 @@ def _get_listing_links(start_date, end_date, start_index):
     end_date_year = end_date.strftime("%Y")
     end_date_month = end_date.strftime("%m")
     end_date_day = end_date.strftime("%d")
-    
+
     payload = copy.deepcopy(config.SBIR_PAYLOAD)
 
     payload["start"] = str(start_index)
@@ -168,11 +168,11 @@ def _get_listing_links(start_date, end_date, start_index):
     payload["mFromDateYear"] = start_date_year
     payload["mFromDateMonth"] = start_date_month
     payload["mFromDateDay"] = start_date_day
-    
+
     payload["mToDateYear"] = end_date_year
     payload["mToDateMonth"] = end_date_month
     payload["mToDateDay"] = end_date_day
-    
+
     response = http_post(
         config.SBIR_SEARCH_URL,
         data=payload,
@@ -209,7 +209,7 @@ def _navy_sbir_parser(start_date, end_date):
         )
 
         logger.debug("%s awards found", len(results))
-        
+
         if listing_links:
             for listing_link in listing_links:
                 listing = _get_listing(listing_link=listing_link)
@@ -220,9 +220,11 @@ def _navy_sbir_parser(start_date, end_date):
             break
 
         i += 1
-        
+
     # Log the found awards
-    logger.info("%d awards found between %s and %s.", len(results), start_date, end_date)
+    logger.info(
+        "%d awards found between %s and %s.", len(results), start_date, end_date
+    )
 
     for result in results:
         logger.info(
