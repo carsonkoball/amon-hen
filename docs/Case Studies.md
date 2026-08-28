@@ -113,3 +113,5 @@ An [included narrative description document](https://apps.fcc.gov/els/GetAtt.htm
 Additionally, the document mentioned the following:
 
 > Anduril Industries recognizes the potential aviation impact of the 80 ft height of the antennas. Each site was selected in part due to the relative proximity of geological and manmade features with heights extending above the intended installation, and the height was reduced to the minimum possible to permit optimal testing for the Coast Guard mission set.
+
+*To be continued...*
