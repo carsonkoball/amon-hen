@@ -1,7 +1,10 @@
 # amon-hen
 A collection of tools for monitoring data sources to support investment research.
 
-Named after *Amon Hen*, a location in J.R.R. Tolkien's *The Lord of the Rings*.  The name is Sindarin and is usually translated as "Hill of Sight", but more literally "Hill of the Eye", from *amon* ("hill") and *hen* ("eye"). See [Amon Hen on Tolkien Gateway.](https://tolkiengateway.net/wiki/Amon_Hen)
+Named after *Amon Hen*, a location in J.R.R. Tolkien's *The Lord of the Rings*.  The name is Sindarin and is usually translated as "Hill of Sight", but more literally "Hill of the Eye", from *amon* ("hill") and *hen* ("eye"). See [Amon Hen on Tolkien Gateway](https://tolkiengateway.net/wiki/Amon_Hen).
+
+See the [Case Studies](docs/case-studies.md) for past examples of the tools working effectively.
+
 
 ## Table of Contents
 -   [Tools Overview](#tools-overview)
@@ -67,6 +70,8 @@ Browser-based user interface
 ## Structure
 ```
 amon-hen/
+├── docs/
+│   └── case-studies.md
 ├── src/
 │   └── amon_hen/
 │       ├── common/
@@ -129,7 +134,7 @@ amon-hen/
 │   │   ├── diu_pathway_tracker.html
 │   │   ├── dow_parser.html
 │   │   ├── fcc_els_parser.html
-│   │   └── navy_sbir_parser.py
+│   │   └── navy_sbir_parser.html
 │   ├── config.py
 │   ├── amon_hen_ui.py
 │   ├── requirements.in
@@ -195,7 +200,6 @@ pip install -r requirements.txt
 	
 ### New Additions
 - [x] Add Navy SBIR/STTR parser capability
+- [x] Add Case Studies section
 - [ ] Add FedRAMP tracker capability
-- [ ] Add Navy SBIR parser capability
 - [ ] Add LinkedIn tracker capability
-- [ ] Add Case Studies section
