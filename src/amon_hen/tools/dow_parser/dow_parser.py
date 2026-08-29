@@ -1,4 +1,5 @@
-from datetime import date
+from dataclasses import dataclass, asdict
+from datetime import date, datetime
 import logging
 
 from bs4 import BeautifulSoup
@@ -12,208 +13,243 @@ from amon_hen.common.log_config import setup_logging
 logger = logging.getLogger(__name__)
 
 
-def split_on_phrases(paragraph, phrases):
+@dataclass
+class Announcement:
+    date: datetime
+    branch: str
+    announcement_type: str
+    companies: list | None
+    url: str
+    text: str
+
+    @property
+    def as_dict(self) -> dict:
+        return asdict(self)
+
+
+def _split_on_phrases(text, phrases):
     """
-    Split paragraph on the phrase closest to the start from inputted list of phrases.
+    Split text on the phrase closest to the start from inputted list of phrases.
     """
-    min_index = len(paragraph)
+    min_index = len(text)
     min_phrase = ""
 
     for phrase in phrases:
-        index = paragraph.find(phrase)
+        index = text.find(phrase)
 
         if index < min_index and index > -1:
             min_index = index
             min_phrase = phrase
 
     if min_phrase:
-        return paragraph.split(min_phrase)
+        return text.split(min_phrase)
 
     return []
 
 
-def get_daily_url(contract_date=None):
+def _get_daily_links(start_date, end_date):
     """
-    Find daily contract page URL if it exists.
+    Recovera all contract announcement page links for a given search date range.
     """
+    start_date_year = start_date.strftime("%Y")
+    start_date_month = start_date.strftime("%m")
+    start_date_day = start_date.strftime("%d")
 
-    # Use date from contract_date argument, otherwise use today's date
-    if contract_date is None:
-        contract_date = date.today()
+    end_date_year = end_date.strftime("%Y")
+    end_date_month = end_date.strftime("%m")
+    end_date_day = end_date.strftime("%d")
 
-    day = str(contract_date.day)
-    month = contract_date.strftime("%B")
-    year = str(contract_date.year)
+    links = []
+    page = 1
 
-    search_url = config.SEARCH_URL.format(day=day, month=month, year=year)
+    # Continue iterating the page number until the last page is reached
+    while True:
+        search_url = config.SEARCH_URL.format(
+            start_date_day=start_date_day,
+            start_date_month=start_date_month,
+            start_date_year=start_date_year,
+            end_date_day=end_date_day,
+            end_date_month=end_date_month,
+            end_date_year=end_date_year,
+            page=page,
+        )
 
-    response = http_get(search_url, headers=config.SEARCH_HEADERS)
+        response = http_get(url=search_url, headers=config.SEARCH_HEADERS)
 
-    if response is None or not response.ok:
-        logger.error("Failed to fetch page: %s", search_url)
+        if response is None or not response.ok:
+            logger.error("Failed to fetch page: %s", search_url)
 
-        return None
+            continue
 
-    data = response.text
-
-    try:
-        logger.debug("Searching for %s %s, %s contract URL...", month, day, year)
+        data = response.text
 
         soup = BeautifulSoup(data, "html.parser")
 
-        daily_url = soup.find("listing-titles-only")
+        for link in soup.find_all("listing-titles-only"):
+            links.append(link["article-url"])
 
-        # Daily contract URL found
-        if daily_url:
-            daily_url = daily_url["article-url"]
+        # The "next" button doesn't lead to another page
+        if soup.find(attrs={"aria-label": "Next"})["href"] == "#":
+            break
 
-            logger.debug(
-                "%s %s, %s contract URL found: %s",
-                month,
-                day,
-                year,
-                daily_url,
-            )
+        page += 1
 
-            return daily_url
-        # Daily contract URL not found
-        logger.info("%s %s, %s contract URL not found.", month, day, year)
-
-        return None
-    # Some error ocurred while getting daily contract URL
-    except Exception as e:
-        logger.exception(
-            "Error while attempting to find %s %s, %s contract URL: %s.",
-            month,
-            day,
-            year,
-            str(e),
-        )
-        return None
+    return links
 
 
-def get_companies(daily_url):
+def _process_section(text, branch):
     """
-    Identify companies listed on the daily contract page.
+    Retrieve relevant information from a DoW announcement section of text.
     """
-    response = http_get(daily_url)
+    branch = branch
+    companies = []
 
-    if response is None or not response.ok:
-        logger.error("Failed to fetch page: %s", daily_url)
-
-        return {}
-
-    data = response.text
-
-    soup = BeautifulSoup(data, "html.parser")
-
-    # Ensure response contains valid HTML body
-    body = soup.find(class_="body")
-
-    if body is None:
-        logger.error("Malformed daily contract page.")
-
-        return {}
-
-    companies = {}
-
-    branch = ""
-
-    # Scan through every text section
-    for i, p in enumerate(body.find_all("p")):
-        # Footnote
-        if p.text.startswith("*"):
-            logger.debug("Footnote in p %s.", str(i + 1))
-
-            continue
-        # Military branch
-        if p.has_attr("style"):
-            logger.debug("Military branch in p %s.", str(i + 1))
-
-            branch = p.text
-            companies[p.text] = []
-
-            continue
-        # Correction
-        if p.text[:11] == "CORRECTION:":
-            logger.debug("Correction in p %s.", str(i + 1))
-
-            companies[branch].append([p.text.split(". ")[0]])
-
-            continue
-        # Update
-        if p.text[:7] == "UPDATE:":
-            logger.debug("Update in p %s.", str(i + 1))
-
-            companies[branch].append([p.text.split(". ")[0]])
-
-            continue
-        # Multiple companies
-        split = split_on_phrases(p.text, config.PLURAL_PHRASES)
+    # Correction section
+    if text.startswith("CORRECTION"):
+        announcement_type = "correction"
+    # Update Section
+    elif text.startswith("UPDATE"):
+        announcement_type = "update"
+    # Award section
+    else:
+        # Single-Award
+        split = _split_on_phrases(text=text, phrases=config.SINGULAR_PHRASES)
         if split:
-            logger.debug("Multiple companies in p %s.", str(i + 1))
+            announcement_type = "single_award"
 
-            multi = []
-            for winner in split[0].split(";"):
-                company = winner.split("(")[0]
-                company = company.lstrip().rstrip()
-                if company[:4] == "and ":
-                    company = company[4:]
+            company = split[0].strip().rstrip(",")
+            companies.append(company)
+        # Multi-Award
+        else:
+            split = _split_on_phrases(text=text, phrases=config.PLURAL_PHRASES)
 
-                multi.append(company)
+            announcement_type = "multi_award"
 
-            companies[branch].append(multi)
+            for c in split[0].split(";"):
+                company = c.split("(")[0].strip().removeprefix("and ")
+
+                companies.append(company)
+
+    result = Announcement(
+        date=None,
+        branch=branch,
+        announcement_type=announcement_type,
+        companies=companies,
+        url=None,
+        text=text,
+    )
+
+    return result
+
+
+def _extract_date(link):
+    """
+    Parse an inputted DoW announcement link to create a valid datetime object.
+    """
+    date_string = link.split("for-")[1].rstrip("/")
+    month_string = date_string.split("-")[0][:3]
+    date_string = month_string + "-" + date_string.split("-", maxsplit=1)[1]
+
+    return datetime.strptime(date_string, "%b-%d-%Y")
+
+
+def _dow_parser(start_date, end_date):
+    """
+    Get the daily contract pages for a given search date range and return the announcements on them.
+    """
+    results = []
+
+    daily_links = _get_daily_links(start_date=start_date, end_date=end_date)
+
+    for link in daily_links:
+        response = http_get(url=link)
+
+        if response is None or not response.ok:
+            logger.error("Failed to fetch page: %s", link)
 
             continue
-        # Single company
-        split = split_on_phrases(p.text, config.SINGULAR_PHRASES)
-        if split:
-            logger.debug("Single company in p %s.", str(i + 1))
 
-            winner = split[0]
-            winner = winner.lstrip().rstrip()
-            winner = winner.rstrip(",")
-            companies[branch].append([winner])
+        data = response.text
 
-            continue
+        soup = BeautifulSoup(data, "html.parser")
 
-        # Something not picked up
-        logger.debug("Unclassified content in p %s.", str(i + 1))
+        branch = None
 
-        companies[branch].append(["ERROR in p " + str(i + 1)])
+        # Scan through every text section
+        for i, p in enumerate(soup.find(class_="body").find_all("p")):
+            if p.text.startswith("*"):
+                logger.debug("Footnote in p %s.", str(i + 1))
+            elif p.has_attr("style"):
+                branch = p.text
 
-    return companies
+                logger.debug("Military branch in p %s.", str(i + 1))
+            else:
+                result = _process_section(text=p.text, branch=branch)
+                result.url = link
+                result.date = _extract_date(link=link)
 
+                results.append(result)
 
-def dow_parser(contract_date=None):
-    """
-    Get the daily contract page and return the companies on it.
-    """
-    results = {"daily_url": None, "companies": None}
+                match result.announcement_type:
+                    case "correction":
+                        logger.debug("Correction in p %s.", str(i + 1))
+                    case "update":
+                        logger.debug("Update in p %s.", str(i + 1))
+                    case "single_award":
+                        logger.debug("Single-Award in p %s.", str(i + 1))
+                    case "multi_award":
+                        logger.debug("Multi-Award in p %s.", str(i + 1))
 
-    daily_url = get_daily_url(contract_date)
-
-    if daily_url is None:
-        return results
-
-    companies = get_companies(daily_url)
-
-    # Log the companies
-    logger.info("%d branches found.", len(companies))
-
-    for branch in companies:
-        logger.info("%s:", branch)
-        for winner in companies[branch]:
-            for company in winner:
-                logger.info("    %s", company)
-
-    results["daily_url"] = daily_url
-    results["companies"] = companies
+        # Log the found announcements
+        for result in results:
+            if (
+                result.announcement_type == "correction"
+                or result.announcement_type == "update"
+            ):
+                logger.info(
+                    "Date: %s Type: %s",
+                    result.date.strftime("%Y-%m-%d"),
+                    result.announcement_type,
+                )
+            else:
+                logger.info(
+                    "Date: %s Type: %s Companies: %s",
+                    result.date.strftime("%Y-%m-%d"),
+                    result.announcement_type,
+                    result.companies,
+                )
 
     return results
 
 
-def run(contract_date=None):
+def _validate_arguments(start_date, end_date):
+    """
+    Ensure that inputted arguments are of valid types, values, etc.
+    """
+    # start_date must either be datetime.date object or ISO string
+    if start_date is None:
+        start_date = datetime.now()
+    elif isinstance(end_date, str):
+        start_date = date.fromisoformat(start_date)
+    elif not isinstance(start_date, date):
+        raise TypeError("start_date must be a datetime.date object or an ISO string.")
+
+    # end_date must either be datetime.date object or ISO string
+    if end_date is None:
+        end_date = datetime.now()
+    elif isinstance(end_date, str):
+        end_date = date.fromisoformat(end_date)
+    elif not isinstance(end_date, date):
+        raise TypeError("end_date must be a datetime.date object or an ISO string.")
+
+    # start_date can't be after end_date
+    if start_date > end_date:
+        raise ValueError("start_date must be on or before end_date.")
+
+    return start_date, end_date
+
+
+def run(start_date=None, end_date=None):
     """
     Execute the dow_parser workflow.
     """
@@ -221,9 +257,11 @@ def run(contract_date=None):
     setup_logging()
 
     logger.debug("Starting dow_parser")
-    logger.debug("Argument contract_date: %s", contract_date)
+    logger.debug("Argument start_date: %s", start_date)
+    logger.debug("Argument end_date: %s", end_date)
 
-    results = dow_parser(contract_date)
+    start_date, end_date = _validate_arguments(start_date=start_date, end_date=end_date)
+    results = _dow_parser(start_date=start_date, end_date=end_date)
 
     logger.debug("Stopping dow_parser")
 

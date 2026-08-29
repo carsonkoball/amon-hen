@@ -12,12 +12,21 @@
 		<div class="section-content">
 			<form method="POST">
 				<div class="parameter">
-					<label for="contract_date">Contract Date</label><br>
+					<label for="start_date">Start Date</label><br>
 					<input
 						type="date"
-						id="contract_date"
-						name="contract_date"
-						value="{{ contract_date.isoformat()  }}"
+						id="start_date"
+						name="start_date"
+						value="{{ start_date.isoformat()  }}"
+					>
+				</div>
+				<div class="parameter">
+					<label for="end_date">End Date</label><br>
+					<input
+						type="date"
+						id="end_date"
+						name="end_date"
+						value="{{ end_date.isoformat()  }}"
 					>
 				</div>
 				<button type="submit">
@@ -33,40 +42,58 @@
 		<div class="section-content">
 			{% if results is none %}
 			
-				<p> No output yet. </p>
+				<p>No output yet.</p>
 			
-			{% elif results["daily_url"] is none %}
+			{% elif results == [] %}
 			
-				<p>{{ contract_date.strftime("%B") }} {{ contract_date.day }}, {{ contract_date.year }} contract URL not found.</p>
+				<p>No contracts found between {{ start_date.strftime("%B") }} {{ start_date.day }}, {{ start_date.year }} and {{ end_date.strftime("%B") }} {{ end_date.day }}, {{ end_date.year }}.</p>
 				
 			{% else %}
 
-				{% for branch, winners in results["companies"].items() %}
-
+				{% for date in results %}
+				
 					<div class="output-entry">
-						<p><b>{{ branch }}</b></p>
-
+					
+						<p><b>{{ start_date.strftime("%B") }} {{ start_date.day }}, {{ start_date.year }}:</b></p>
 						<ul>
 						
-						{% for winner in winners %}
-						
-							{% for company in winner %}
-							
-								<li>{{ company }}</li>
+							{% for result in results[date] %}
 								
+								{% if result.announcement_type == "correction" %}
+								
+									<li><p><b>{{ result.branch }} Correction</b></p></li>
+									
+								{% elif result.announcement_type == "update" %}
+								
+									<li><p><b>{{ result.branch }} Update</b></p></li>
+									
+								{% elif result.announcement_type == "single_award" %}
+									
+									<li><p><b>{{ result.branch }} Single-Award Contract:</b></p></li>
+									<ul>
+										<li><p>{{ result.companies[0] }}<p></li>
+									</ul>
+									
+								{% elif result.announcement_type == "multi_award" %}
+								
+									<li><p><b>{{ result.branch }} Multi-Award Contract:</b></p></li>
+									<ul>
+									
+										{% for company in result.companies %}
+										
+											<li><p>{{ company }}<p></li>
+										
+										{% endfor %}
+										
+									</ul>
+									
+								{% endif %}	
+							
 							{% endfor %}
-							
-							{% if winners[-1] != winner %}
-							
-								<li></li>
-								
-							{% endif %}
-							
-						{% endfor %}
 						
-						</ul>
+						<ul>
 					</div>
-
+					
 				{% endfor %}
 
 			{% endif %}

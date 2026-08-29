@@ -1,3 +1,4 @@
+from datetime import date
 from pathlib import Path
 
 from amon_hen.common.filesystem import get_script_data_dir, get_script_log_dir
@@ -8,8 +9,12 @@ SCRIPT_NAME = __package__.split(".")[-1]
 DATA_DIR = get_script_data_dir(SCRIPT_NAME)
 LOG_DIR = get_script_log_dir(SCRIPT_NAME)
 
+# Default Arguments
+DEFAULT_START_DATE = date.today()
+DEFAULT_END_DATE = date.today()
+
 # Base URL
-SEARCH_URL = "https://www.war.gov/News/Contracts/StartDate/{year}-{month}-{day}/EndDate/{year}-{month}-{day}/"
+SEARCH_URL = "https://www.war.gov/News/Contracts/StartDate/{start_date_year}-{start_date_month}-{start_date_day}/EndDate/{end_date_year}-{end_date_month}-{end_date_day}/?Page={page}"
 
 # Base headers
 SEARCH_HEADERS = {
