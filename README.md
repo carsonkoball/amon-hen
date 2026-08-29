@@ -3,7 +3,7 @@ A collection of tools for monitoring data sources to support investment research
 
 Named after *Amon Hen*, a location in J.R.R. Tolkien's *The Lord of the Rings*.  The name is Sindarin and is usually translated as "Hill of Sight", but more literally "Hill of the Eye", from *amon* ("hill") and *hen* ("eye"). See [Amon Hen on Tolkien Gateway](https://tolkiengateway.net/wiki/Amon_Hen).
 
-See the [Case Studies](docs/case-studies.md) for past examples of the tools working effectively.
+See [case_studies.md](docs/case_studies.md) for past examples of the tools working effectively.
 
 
 ## Table of Contents
@@ -71,7 +71,7 @@ Browser-based user interface
 ```
 amon-hen/
 ├── docs/
-│   └── case-studies.md
+│   └── case_studies.md
 ├── src/
 │   └── amon_hen/
 │       ├── common/
@@ -196,10 +196,13 @@ pip install -r requirements.txt
 - [x] Update UI with existing tools
 - [x] Add fcc_els_parser to UI
 - [x] Add diu_pathway_tracker to UI
+- [ ] Modify fcc_els_parser to utilize a search date range
 - [ ] Update file_tracker to utilize Tracker system
 	
 ### New Additions
 - [x] Add Navy SBIR/STTR parser capability
 - [x] Add Case Studies section
+- [ ] Add a tool example document
+- [ ] Add tool examples to README
 - [ ] Add FedRAMP tracker capability
 - [ ] Add LinkedIn tracker capability
