@@ -16,7 +16,7 @@ def main():
         "--start-date",
         type=date.fromisoformat,
         required=False,
-        default=config.DEFAULT_SEARCH_DATE,
+        default=config.DEFAULT_START_DATE,
         help="Search start date (YYYY-MM-DD).",
     )
 
@@ -24,7 +24,7 @@ def main():
         "--end-date",
         type=date.fromisoformat,
         required=False,
-        default=config.DEFAULT_SEARCH_DATE,
+        default=config.DEFAULT_END_DATE,
         help="Search end date (YYYY-MM-DD).",
     )
 
