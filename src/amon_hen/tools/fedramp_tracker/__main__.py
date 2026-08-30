@@ -1,0 +1,4 @@
+from .fedramp_tracker import run
+
+if __name__ == "__main__":
+    results = run()
