@@ -65,28 +65,23 @@ def _log_results(results):
     """
     Log the results of the tracking process.
     """
-    if results:
+    if not results:
+        logger.info("no listing changes found")
+    else:
         for result in results:
             if result.is_new:
-                logger.info(
-                    "listing %s added | title: %s",
-                    result.identifier,
-                    result.label["title"],
-                )
+                status = "added"
             elif result.is_removed:
-                logger.info(
-                    "listing %s removed | title: %s",
-                    result.identifier,
-                    result.label["title"],
-                )
+                status = "removed"
             else:
-                logger.info(
-                    "listing %s modified | title: %s",
-                    result.identifier,
-                    result.label["title"],
-                )
-    else:
-        logger.info("no listing changes found")
+                status = "modified"
+
+            logger.info(
+                "listing %s %s | title: %s",
+                result.identifier,
+                status,
+                result.label["title"],
+            )
 
 
 def _adp_tracker(cid, ccid, tracker):

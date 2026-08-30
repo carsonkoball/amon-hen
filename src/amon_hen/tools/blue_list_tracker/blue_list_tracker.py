@@ -32,34 +32,25 @@ def _log_results(results):
     """
     Log the results of the tracking process.
     """
-    if results:
+    if not results:
+        logger.info("no listing changes found")
+    else:
         for result in results:
             if result.is_new:
-                logger.info(
-                    "listing %s added | manufacturer: %s product_name: %s product_type: %s",
-                    result.identifier,
-                    result.label["manufacturer"],
-                    result.label["product_name"],
-                    result.label["product_type"],
-                )
+                status = "added"
             elif result.is_removed:
-                logger.info(
-                    "listing %s removed | manufacturer: %s product_name: %s product_type: %s",
-                    result.identifier,
-                    result.label["manufacturer"],
-                    result.label["product_name"],
-                    result.label["product_type"],
-                )
+                status = "removed"
             else:
-                logger.info(
-                    "listing %s modified | manufacturer: %s product_name: %s product_type: %s",
-                    result.identifier,
-                    result.label["manufacturer"],
-                    result.label["product_name"],
-                    result.label["product_type"],
-                )
-    else:
-        logger.info("no listing changes found")
+                status = "modified"
+
+            logger.info(
+                "listing %s %s | manufacturer: %s product_name: %s product_type: %s",
+                result.identifier,
+                status,
+                result.label["manufacturer"],
+                result.label["product_name"],
+                result.label["product_type"],
+            )
 
 
 def blue_list_tracker(tracker):

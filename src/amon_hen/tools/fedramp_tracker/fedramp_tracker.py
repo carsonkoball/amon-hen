@@ -67,83 +67,46 @@ def _log_results(results, listing_type):
     """
     Log the results of the tracking process.
     """
-    if results:
+    if not results:
+        logger.info("no %s listing changes found", listing_type)
+    else:
         for result in results:
+            if result.is_new:
+                status = "added"
+            elif result.is_removed:
+                status = "removed"
+            else:
+                status = "modified"
+
             match result.label["type"]:
                 case "products":
-                    if result.is_new:
-                        logger.info(
-                            "%s listing %s added | csp: %s cso: %s",
-                            result.label["type"],
-                            result.identifier,
-                            result.label["csp"],
-                            result.label["cso"],
-                        )
-                    elif result.is_removed:
-                        logger.info(
-                            "%s listing %s removed | csp: %s cso: %s",
-                            result.label["type"],
-                            result.identifier,
-                            result.label["csp"],
-                            result.label["cso"],
-                        )
-                    else:
-                        logger.info(
-                            "%s listing %s modified | csp: %s cso: %s",
-                            result.label["type"],
-                            result.identifier,
-                            result.label["csp"],
-                            result.label["cso"],
-                        )
+                    logger.info(
+                        "%s listing %s %s | csp: %s cso: %s",
+                        result.label["type"],
+                        result.identifier,
+                        status,
+                        result.label["csp"],
+                        result.label["cso"],
+                    )
+
                 case "agencies":
-                    if result.is_new:
-                        logger.info(
-                            "%s listing %s added | parent: %s sub: %s",
-                            result.label["type"],
-                            result.identifier,
-                            result.label["parent"],
-                            result.label["sub"],
-                        )
-                    elif result.is_removed:
-                        logger.info(
-                            "%s listing %s removed | parent: %s sub: %s",
-                            result.label["type"],
-                            result.identifier,
-                            result.label["parent"],
-                            result.label["sub"],
-                        )
-                    else:
-                        logger.info(
-                            "%s listing %s modified | parent: %s sub: %s",
-                            result.label["type"],
-                            result.identifier,
-                            result.label["parent"],
-                            result.label["sub"],
-                        )
+                    logger.info(
+                        "%s listing %s %s | parent: %s sub: %s",
+                        result.label["type"],
+                        result.identifier,
+                        status,
+                        result.label["parent"],
+                        result.label["sub"],
+                    )
+
                 case "assessors" | "advisors":
-                    if result.is_new:
-                        logger.info(
-                            "%s listing %s added | name: %s",
-                            result.label["type"],
-                            result.identifier,
-                            result.label["name"],
-                        )
-                    elif result.is_removed:
-                        logger.info(
-                            "%s listing %s removed | name: %s",
-                            result.label["type"],
-                            result.identifier,
-                            result.label["csp"],
-                        )
-                    else:
-                        logger.info(
-                            "%s listing %s modified | name: %s",
-                            result.label["type"],
-                            result.identifier,
-                            result.label["csp"],
-                        )
-    else:
-        logger.info("no %s listing changes found", listing_type)
+                    logger.info(
+                        "%s listing %s %s | csp: %s cso: %s",
+                        result.label["type"],
+                        result.identifier,
+                        status,
+                        result.label["name"],
+                    )
 
 
 def _fedramp_tracker(tracker):

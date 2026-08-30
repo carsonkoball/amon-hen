@@ -115,31 +115,24 @@ def _log_results(results, listing_type):
     """
     Log the results of the tracking process.
     """
+    if not results:
+        logger.info("no %s pathway changes found", listing_type)
     if results:
         for result in results:
             if result.is_new:
-                logger.info(
-                    "%s pathway %s added | title: %s",
-                    result.label["type"],
-                    result.identifier,
-                    result.label["title"],
-                )
+                status = "added"
             elif result.is_removed:
-                logger.info(
-                    "%s pathway %s removed | title: %s",
-                    result.label["type"],
-                    result.identifier,
-                    result.label["title"],
-                )
+                status = "removed"
             else:
-                logger.info(
-                    "%s pathway %s modified | title: %s",
-                    result.label["type"],
-                    result.identifier,
-                    result.label["title"],
-                )
-    else:
-        logger.info("no %s pathway changes found", listing_type)
+                status = "modified"
+
+            logger.info(
+                "%s pathway %s %s | title: %s",
+                result.label["type"],
+                result.identifier,
+                label,
+                result.label["title"],
+            )
 
 
 def _diu_pathway_tracker(tracker):
