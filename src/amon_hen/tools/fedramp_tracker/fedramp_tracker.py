@@ -8,7 +8,8 @@ from amon_hen.common.tracker import Tracker
 
 # Logging seup
 logger = logging.getLogger(__name__)
-    
+
+
 def _get_fedramp_data():
     """
     Initiate GET request for FedRAMP marketplace listings and return the response in JSON format.
@@ -22,7 +23,8 @@ def _get_fedramp_data():
     logger.debug("Retrieved %d listings", len(data))
 
     return data["nodes"][3]["data"]
-    
+
+
 def _extract_listing_indices(data):
     indices = {}
 
@@ -36,7 +38,8 @@ def _extract_listing_indices(data):
         indices[listing_type] = listing_indices
 
     return indices
-    
+
+
 def _traverse(entry, data):
     if isinstance(entry, int):
         entry = data[entry]
@@ -49,6 +52,7 @@ def _traverse(entry, data):
 
     return entry
 
+
 def _process_listing_index(data, listing_index):
     listing = data[listing_index].copy()
 
@@ -56,7 +60,8 @@ def _process_listing_index(data, listing_index):
         entry = _traverse(listing[key], data)
         listing[key] = entry
 
-    return listing   
+    return listing
+
 
 def _log_results(results, listing_type):
     """
@@ -72,7 +77,7 @@ def _log_results(results, listing_type):
                             result.label["type"],
                             result.identifier,
                             result.label["csp"],
-                            result.label["cso"]
+                            result.label["cso"],
                         )
                     elif result.is_removed:
                         logger.info(
@@ -80,7 +85,7 @@ def _log_results(results, listing_type):
                             result.label["type"],
                             result.identifier,
                             result.label["csp"],
-                            result.label["cso"]
+                            result.label["cso"],
                         )
                     else:
                         logger.info(
@@ -88,8 +93,8 @@ def _log_results(results, listing_type):
                             result.label["type"],
                             result.identifier,
                             result.label["csp"],
-                            result.label["cso"]
-                        )   
+                            result.label["cso"],
+                        )
                 case "agencies":
                     if result.is_new:
                         logger.info(
@@ -97,7 +102,7 @@ def _log_results(results, listing_type):
                             result.label["type"],
                             result.identifier,
                             result.label["parent"],
-                            result.label["sub"]
+                            result.label["sub"],
                         )
                     elif result.is_removed:
                         logger.info(
@@ -105,7 +110,7 @@ def _log_results(results, listing_type):
                             result.label["type"],
                             result.identifier,
                             result.label["parent"],
-                            result.label["sub"]
+                            result.label["sub"],
                         )
                     else:
                         logger.info(
@@ -113,8 +118,8 @@ def _log_results(results, listing_type):
                             result.label["type"],
                             result.identifier,
                             result.label["parent"],
-                            result.label["sub"]
-                        ) 
+                            result.label["sub"],
+                        )
                 case "assessors" | "advisors":
                     if result.is_new:
                         logger.info(
@@ -142,12 +147,17 @@ def _log_results(results, listing_type):
 
 
 def _fedramp_tracker(tracker):
-    products_records, agencies_records, assessors_records, advisors_records = {}, {}, {}, {}
-    
+    products_records, agencies_records, assessors_records, advisors_records = (
+        {},
+        {},
+        {},
+        {},
+    )
+
     data = _get_fedramp_data()
-    
+
     listing_indices = _extract_listing_indices(data)
-    
+
     # Iterate through every listing type
     for listing_type in listing_indices:
         # Iterate through every index of a listing type
@@ -158,30 +168,63 @@ def _fedramp_tracker(tracker):
 
             match listing_type:
                 case "Products":
-                    label = {"type": listing_type.lower(), "csp": listing["csp"], "cso": listing["cso"]}
-                    products_records[listing_id] = {"id": listing_id, "label": label, "data": listing}
+                    label = {
+                        "type": listing_type.lower(),
+                        "csp": listing["csp"],
+                        "cso": listing["cso"],
+                    }
+                    products_records[listing_id] = {
+                        "id": listing_id,
+                        "label": label,
+                        "data": listing,
+                    }
                 case "Agencies":
-                    label = {"type": listing_type.lower(), "parent": listing["parent"], "sub": listing["sub"]}
-                    agencies_records[listing_id] = {"id": listing_id, "label": label, "data": listing}
+                    label = {
+                        "type": listing_type.lower(),
+                        "parent": listing["parent"],
+                        "sub": listing["sub"],
+                    }
+                    agencies_records[listing_id] = {
+                        "id": listing_id,
+                        "label": label,
+                        "data": listing,
+                    }
                 case "Assessors":
                     label = {"type": listing_type.lower(), "name": listing["name"]}
-                    assessors_records[listing_id] = {"id": listing_id, "label": label, "data": listing}
+                    assessors_records[listing_id] = {
+                        "id": listing_id,
+                        "label": label,
+                        "data": listing,
+                    }
                 case "Advisors":
                     label = {"type": listing_type.lower(), "name": listing["name"]}
-                    advisors_records[listing_id] = {"id": listing_id, "label": label, "data": listing}
-    
-    products_results = tracker.track(records=products_records, path=config.LISTING_TYPE_DIR("products"))
-    agencies_results = tracker.track(records=agencies_records, path=config.LISTING_TYPE_DIR("agencies"))
-    assessors_results = tracker.track(records=assessors_records, path=config.LISTING_TYPE_DIR("assessors"))
-    advisors_results = tracker.track(records=advisors_records, path=config.LISTING_TYPE_DIR("advisors"))
+                    advisors_records[listing_id] = {
+                        "id": listing_id,
+                        "label": label,
+                        "data": listing,
+                    }
+
+    products_results = tracker.track(
+        records=products_records, path=config.LISTING_TYPE_DIR("products")
+    )
+    agencies_results = tracker.track(
+        records=agencies_records, path=config.LISTING_TYPE_DIR("agencies")
+    )
+    assessors_results = tracker.track(
+        records=assessors_records, path=config.LISTING_TYPE_DIR("assessors")
+    )
+    advisors_results = tracker.track(
+        records=advisors_records, path=config.LISTING_TYPE_DIR("advisors")
+    )
 
     _log_results(products_results, "products")
     _log_results(agencies_results, "agencies")
     _log_results(assessors_results, "assessors")
     _log_results(advisors_results, "advisors")
-    
+
     return products_results, agencies_results, assessors_results, advisors_results
-            
+
+
 def run():
     """
     Execute the fedramp_tracker workflow.
@@ -190,10 +233,12 @@ def run():
     setup_logging()
 
     logger.debug("Starting fedramp_tracker")
-    
+
     tracker = Tracker()
 
-    products_results, agencies_results, assessors_results, advisors_results = _fedramp_tracker(tracker=tracker)
+    products_results, agencies_results, assessors_results, advisors_results = (
+        _fedramp_tracker(tracker=tracker)
+    )
 
     logger.debug("Stopping fedramp_tracker")
 

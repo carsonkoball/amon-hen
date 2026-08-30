@@ -59,7 +59,7 @@ def _log_results(results):
                     result.label["product_type"],
                 )
     else:
-        logger.info("no listing changes found")                
+        logger.info("no listing changes found")
 
 
 def blue_list_tracker(tracker):

@@ -69,7 +69,9 @@ def _log_results(results):
         for result in results:
             if result.is_new:
                 logger.info(
-                    "listing %s added | title: %s", result.identifier, result.label["title"]
+                    "listing %s added | title: %s",
+                    result.identifier,
+                    result.label["title"],
                 )
             elif result.is_removed:
                 logger.info(

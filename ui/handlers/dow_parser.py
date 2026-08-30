@@ -19,12 +19,12 @@ def handle(script):
     # Group by date for easier display
     if results:
         parsed_results = {}
-        
+
         for result in results:
             parsed_results.setdefault(result.date, []).append(result)
-        
+
         results = parsed_results
-        
+
     return render_template(
         "dow_parser.html",
         title=script["name"],

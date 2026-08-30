@@ -156,7 +156,7 @@ def _diu_pathway_tracker(tracker):
 
         label = {"type": pathway["type"], "title": pathway["title"]}
 
-        cso_records[pathway_id] = {"label": label, "data": pathway}    
+        cso_records[pathway_id] = {"label": label, "data": pathway}
 
     # Process CCAO pathways
     for pathway_id in ccao_pathway_ids:
