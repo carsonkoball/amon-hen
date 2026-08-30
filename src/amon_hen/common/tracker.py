@@ -62,6 +62,8 @@ def _diff(old: Any, new: Any, path: tuple, differences: list[Difference]) -> Non
 
 @dataclass(frozen=True)
 class Track:
+    identifier: str
+    label: dict
     old_hash: str | None
     old_data: dict | None
     new_hash: str | None
@@ -80,6 +82,10 @@ class Track:
         return self.old_hash is not None and self.new_hash is None
 
     @property
+    def is_active(self) -> bool:
+        return self.new_hash is not None
+
+    @property
     def differences(self) -> list[Difference]:
         return diff(self.old_data, self.new_data)
 
@@ -89,6 +95,20 @@ class Tracker:
         self.path = None
         self.versions_path = None
         self.history_path = None
+        self.index_path = None
+        self.active_path = None
+        self.active = set()
+
+    def _get_timestamp(self):
+        """
+        Return a consistently formatted timestamp value.
+        """
+
+        return (
+            datetime.now(timezone.utc)
+            .isoformat(timespec="seconds")
+            .replace("+00:00", "Z")
+        )
 
     def _save_version(self, hash_value: str, data: dict) -> None:
         """
@@ -106,18 +126,56 @@ class Tracker:
 
     def _append_history(self, hash_value: str) -> None:
         """
-        Append a new entry to the history JSONL file.
+        Append an entry to the history JSONL file.
         """
 
         entry = {
             "hash": hash_value,
-            "timestamp": datetime.now(timezone.utc)
-            .isoformat(timespec="seconds")
-            .replace("+00:00", "Z"),
+            "timestamp": self._get_timestamp(),
         }
 
         with open(self.history_path, "a", encoding="utf-8") as file:
             file.write(json.dumps(entry) + "\n")
+
+    def _append_index(self, identifier: str, label: dict, event: str) -> None:
+        """
+        Append an entry to the index JSONL file.
+        """
+
+        entry = {
+            "id": identifier,
+            "label": label,
+            "event": event,
+            "timestamp": self._get_timestamp(),
+        }
+
+        with open(self.index_path, "a", encoding="utf-8") as file:
+            file.write(json.dumps(entry) + "\n")
+
+    def _set_active(self, identifier: str) -> None:
+        """
+        Save an active object's ID to the active set.
+        """
+
+        self.active.add(identifier)
+
+    def _load_active(self) -> None:
+        """
+        Load object IDs from the active JSON file.
+        """
+
+        with open(file=self.active_path, mode="r", encoding="utf-8") as file:
+            active = set(json.load(file))
+
+        return active
+
+    def _save_active(self) -> None:
+        """
+        Save object IDs to the active JSON file.
+        """
+
+        with open(file=self.active_path, mode="w", encoding="utf-8") as file:
+            json.dump(obj=sorted(self.active), fp=file, indent=2)
 
     def _get_latest_history_entry(self) -> dict | None:
         """
@@ -199,41 +257,82 @@ class Tracker:
 
         return hashlib.sha256(serialized.encode()).hexdigest()
 
-    def set_path(self, path: str | Path) -> None:
+    def _set_paths(self, path: str | Path, identifier: str) -> None:
         """
-        Sets tracked object path.
+        Sets tracked object paths.
         """
         self.path = Path(path)
 
-        self.versions_path = self.path / "versions"
-        ensure_dir(self.versions_path)
+        self.index_path = self.path / "index.jsonl"
+        ensure_file(self.index_path)
 
-        self.history_path = self.path / "history.jsonl"
-        ensure_file(self.history_path)
+        self.active_path = self.path / "active.json"
+        ensure_file(self.active_path, default_content="[]")
 
-    def track(self, data: dict | None, path: str | Path) -> Track:
+        if identifier is not None:
+            self.versions_path = self.path / identifier / "versions"
+            ensure_dir(self.versions_path)
+
+            self.history_path = self.path / identifier / "history.jsonl"
+            ensure_file(self.history_path)
+
+    def track(self, records: dict, path: str | Path) -> Track:
         """
         Initiate the tracking process.
         """
-        self.set_path(path)
+        results = []
+        self.active = set()
+        self._set_paths(path=path, identifier=None)
 
-        old_hash, old_data = self._get_old()
-        new_hash = self._hash_data(data)
-        new_data = data
+        for identifier, record in records.items():
+            self._set_paths(path=path, identifier=identifier)
 
-        result = Track(
-            old_hash=old_hash,
-            old_data=old_data,
-            new_hash=new_hash,
-            new_data=data,
-        )
+            old_hash, old_data = self._get_old()
+            new_hash = self._hash_data(record["data"])
+            new_data = record["data"]
 
-        # First time seeing this object or it changed
-        if old_hash != new_hash:
-            # Save content only when the object currently exists
-            if new_hash is not None:
+            track = Track(
+                identifier=identifier,
+                label=record["label"],
+                old_hash=old_hash,
+                old_data=old_data,
+                new_hash=new_hash,
+                new_data=new_data,
+            )
+
+            self._set_active(identifier)
+
+            if track.has_changed:
+                self._append_history(new_hash)
                 self._save_version(new_hash, new_data)
 
-            self._append_history(new_hash)
+                if track.is_new:
+                    self._append_index(
+                        identifier=identifier, label=track.label, event="added"
+                    )
+                else:
+                    self._append_index(
+                        identifier=identifier, label=track.label, event="modified"
+                    )
 
-        return result
+                results.append(track)
+
+        # Load previously active objects
+        previous_active = self._load_active()
+
+        # Save current active objects
+        self._save_active()
+
+        # Determine removed objects
+        removed = previous_active - self.active
+
+        for identifier in removed:
+            track = tracker.track(identifier=identifier, data=None, path=path)
+
+            self._append_index(
+                identifier=identifier, label=track.label, event="removed"
+            )
+
+            results.append(track)
+
+        return results
