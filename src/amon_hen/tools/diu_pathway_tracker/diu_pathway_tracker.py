@@ -61,8 +61,6 @@ def _get_pathway_ids():
     """
     logger.debug("Fetching DIU pathway listings...")
 
-    timestamp = datetime.now()
-
     response = http_get(config.LISTINGS_URL)
 
     soup = BeautifulSoup(markup=response.text, features="html.parser")
@@ -85,18 +83,16 @@ def _get_pathway_ids():
         len(ccao_pathway_ids),
     )
 
-    return cso_pathway_ids, ccao_pathway_ids, timestamp
+    return cso_pathway_ids, ccao_pathway_ids
 
 
-def _process_pathway(pathway_id, is_cso_pathway):
+def _process_pathway(pathway_id, pathway_type):
     """
     Retrieve relevant pathway information.
     """
-    logger.debug("Fetching pathway %s...", pathway_id)
+    logger.debug("Fetching %s pathway %s...", pathway_type, pathway_id)
 
     result = {}
-
-    timestamp = datetime.now()
 
     response = http_get(config.PATHWAY_URL.format(pathway_id=pathway_id))
 
@@ -104,7 +100,7 @@ def _process_pathway(pathway_id, is_cso_pathway):
 
     result["id"] = pathway_id
 
-    result["type"] = "CSO" if is_cso_pathway else "CCAO"
+    result["type"] = pathway_type
 
     result["title"] = soup.find("h1").text.strip()
 
@@ -112,122 +108,71 @@ def _process_pathway(pathway_id, is_cso_pathway):
 
     result["description"] = soup.find(class_="info").prettify()
 
-    return result, timestamp
+    return result
+
+
+def _log_results(results, listing_type):
+    """
+    Log the results of the tracking process.
+    """
+    if results:
+        for result in results:
+            if result.is_new:
+                logger.info(
+                    "%s pathway %s added | title: %s",
+                    result.label["type"],
+                    result.identifier,
+                    result.label["title"],
+                )
+            elif result.is_removed:
+                logger.info(
+                    "%s pathway %s removed | title: %s",
+                    result.label["type"],
+                    result.identifier,
+                    result.label["title"],
+                )
+            else:
+                logger.info(
+                    "%s pathway %s modified | title: %s",
+                    result.label["type"],
+                    result.identifier,
+                    result.label["title"],
+                )
+    else:
+        logger.info("no %s pathway changes found", listing_type)
 
 
 def _diu_pathway_tracker(tracker):
     """
     Find DIU pathway changes and return them.
     """
-    results = []
+    cso_records, ccao_records = {}, {}
 
-    cso_pathway_ids, ccao_pathway_ids, removed_timestamp = _get_pathway_ids()
+    cso_pathway_ids, ccao_pathway_ids = _get_pathway_ids()
 
-    current_cso_active = set()
-    current_ccao_active = set()
+    # Process CSO pathways
+    for pathway_id in cso_pathway_ids:
+        pathway = _process_pathway(pathway_id, "CSO")
 
-    # Process seen pathways
-    for index, pathway_id in enumerate(cso_pathway_ids + ccao_pathway_ids):
-        is_cso_pathway = index < len(cso_pathway_ids)
+        label = {"type": pathway["type"], "title": pathway["title"]}
 
-        (
-            current_cso_active.add(pathway_id)
-            if is_cso_pathway
-            else current_ccao_active.add(pathway_id)
-        )
+        cso_records[pathway_id] = {"label": label, "data": pathway}    
 
-        pathway_path = (
-            config.CSO_PATHWAY_DIR(pathway_id)
-            if is_cso_pathway
-            else config.CCAO_PATHWAY_DIR(pathway_id)
-        )
+    # Process CCAO pathways
+    for pathway_id in ccao_pathway_ids:
+        pathway = _process_pathway(pathway_id, "CCAO")
 
-        pathway, timestamp = _process_pathway(pathway_id, is_cso_pathway)
+        label = {"type": pathway["type"], "title": pathway["title"]}
 
-        result = tracker.track(data=pathway, path=pathway_path)
+        cso_records[pathway_id] = {"label": label, "data": pathway}
 
-        # Modified listing
-        if result.has_changed and not result.is_removed:
-            results.append(result)
+    cso_results = tracker.track(records=ccao_records, path=config.CCAO_DIR)
+    ccao_results = tracker.track(records=ccao_records, path=config.CCAO_DIR)
 
-            # New listing
-            if result.is_new:
-                # Mark as newly added in history
-                entry = config.HISTORY_ENTRY(
-                    timestamp=timestamp.strftime("%Y-%m-%dT%H-%M-%S.%fZ"),
-                    pathway_id=pathway_id,
-                    pathway_info={"title": result.new_data["title"]},
-                    event="added",
-                )
+    _log_results(cso_results, "CSO")
+    _log_results(ccao_results, "CCAO")
 
-                _append_to(
-                    entry=entry,
-                    path=(
-                        config.CSO_HISTORY_FILE
-                        if is_cso_pathway
-                        else config.CCAO_HISTORY_FILE
-                    ),
-                )
-
-    # Load previously active pathways
-    previous_cso_active, previous_ccao_active = _load_active()
-
-    # Save current active pathways
-    _save_active(
-        current_cso_active=current_cso_active, current_ccao_active=current_ccao_active
-    )
-
-    # Determine removed pathways
-    removed_cso = previous_cso_active - current_cso_active
-    removed_ccao = previous_ccao_active - current_ccao_active
-
-    for index, pathway_id in enumerate(list(removed_cso) + list(removed_ccao)):
-        # Every pathway found to be removed
-        is_cso_pathway = index < len(cso_pathway_ids)
-
-        pathway_path = (
-            config.CSO_PATHWAY_DIR(pathway_id)
-            if is_cso_pathway
-            else config.CCAO_PATHWAY_DIR(pathway_id)
-        )
-
-        result = tracker.track(data=None, path=pathway_path)
-
-        # Mark as removed in history
-        entry = config.HISTORY_ENTRY(
-            timestamp=removed_timestamp.strftime("%Y-%m-%dT%H-%M-%S.%fZ"),
-            pathway_id=pathway_id,
-            pathway_info={"title": result.new_data["title"]},
-            event="removed",
-        )
-
-        _append_to(
-            entry=entry,
-            path=(
-                config.CSO_HISTORY_FILE if is_cso_pathway else config.CCAO_HISTORY_FILE
-            ),
-        )
-
-        results.append(result)
-
-    # Log the pathways
-    for result in results:
-        if result.is_new:
-            logger.info(
-                "%s pathway added: %s", result.new_data["type"], result.new_data["id"]
-            )
-        elif result.is_removed:
-            logger.info(
-                "%s pathway removed: %s", result.old_data["type"], result.old_data["id"]
-            )
-        else:
-            logger.info(
-                "%s pathway modified: %s",
-                result.new_data["type"],
-                result.new_data["id"],
-            )
-
-    return results
+    return cso_results, ccao_results
 
 
 def run():
@@ -241,8 +186,8 @@ def run():
 
     logger.debug("Starting diu_pathway_tracker")
 
-    results = _diu_pathway_tracker(tracker=tracker)
+    cso_results, ccao_results = _diu_pathway_tracker(tracker=tracker)
 
     logger.debug("Stopping diu_pathway_tracker")
 
-    return results
+    return cso_results, ccao_results

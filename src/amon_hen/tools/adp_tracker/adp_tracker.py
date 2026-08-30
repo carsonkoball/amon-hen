@@ -38,39 +38,6 @@ def _get_postings(external_job_id, cid, ccid):
     return data
 
 
-def _append_to(entry, path):
-    """
-    Save an entry to an append-only JSONL file.
-    """
-    ensure_file(path)
-
-    with open(path, "a", encoding="utf-8") as file:
-        file.write(json.dumps(obj=entry) + "\n")
-
-
-def _load_active(cid):
-    """
-    Load IDs from the active.json file.
-    """
-    postings_active_path = config.POSTINGS_ACTIVE_FILE(cid=cid)
-    ensure_file(path=postings_active_path, default_content="[]")
-
-    with open(file=postings_active_path, mode="r", encoding="utf-8") as file:
-        previous_active = set(json.load(file))
-
-    return previous_active
-
-
-def _save_active(current_active, cid):
-    """
-    Save IDs to the active.json file.
-    """
-    postings_active_path = config.POSTINGS_ACTIVE_FILE(cid=cid)
-
-    with open(file=postings_active_path, mode="w", encoding="utf-8") as file:
-        json.dump(obj=sorted(current_active), fp=file, indent=2)
-
-
 def _initialize_company(cid, ccid):
     """
     Add company to company index if needed.
@@ -89,104 +56,62 @@ def _initialize_company(cid, ccid):
         ]
 
         entry = {"cid": cid, "company_name": company_name}
-        _append_to(entry=entry, path=config.COMPANIES_INDEX_FILE)
+
+        with open(config.COMPANIES_INDEX_FILE, "a", encoding="utf-8") as file:
+            file.write(json.dumps(obj=entry) + "\n")
+
+
+def _log_results(results):
+    """
+    Log the results of the tracking process.
+    """
+    if results:
+        for result in results:
+            if result.is_new:
+                logger.info(
+                    "listing %s added | title: %s", result.identifier, result.label["title"]
+                )
+            elif result.is_removed:
+                logger.info(
+                    "listing %s removed | title: %s",
+                    result.identifier,
+                    result.label["title"],
+                )
+            else:
+                logger.info(
+                    "listing %s modified | title: %s",
+                    result.identifier,
+                    result.label["title"],
+                )
+    else:
+        logger.info("no listing changes found")
 
 
 def _adp_tracker(cid, ccid, tracker):
     """
     Find newly added and newly removed job postings and return them.
     """
-    results = []
+    records = {}
 
     _initialize_company(cid=cid, ccid=ccid)
 
     postings_data = _get_postings(external_job_id=None, cid=cid, ccid=ccid)
 
-    current_active = set()
-
     # Every listing found in current search
     for posting in postings_data["jobRequisitions"]:
         external_job_id = posting["customFieldGroup"]["stringFields"][0]["stringValue"]
 
-        current_active.add(external_job_id)
-
         data = _get_postings(external_job_id=external_job_id, cid=cid, ccid=ccid)
-
         # Remove "CurrentServerDateTime" to prevent hash discrepancies on every scan
         del data["customFieldGroup"]["dateFields"][1]
 
-        posting_path = config.POSTING_DIR(cid=cid, external_job_id=external_job_id)
+        label = {"title": data["requisitionTitle"]}
 
-        result = tracker.track(data=data, path=posting_path)
+        records[external_job_id] = {"label": label, "data": data}
 
-        # Modified listing
-        if result.has_changed and not result.is_removed:
-            results.append(result)
+    results = tracker.track(records=records, path=config.COMPANY_DIR(cid=cid))
 
-            # New listing
-            if result.is_new:
-                # Mark as newly added in index
-                postings_index_file_path = config.POSTINGS_INDEX_FILE(cid=cid)
-
-                entry = {
-                    "time": datetime.now(timezone.utc)
-                    .isoformat(timespec="seconds")
-                    .replace("+00:00", "Z"),
-                    "external_job_id": external_job_id,
-                    "requisition_title": result.new_data["requisitionTitle"],
-                    "event": "added",
-                }
-
-                _append_to(entry=entry, path=postings_index_file_path)
-
-    # Load previously active postings
-    previous_active = _load_active(cid=cid)
-
-    # Save current active postings
-    _save_active(current_active=current_active, cid=cid)
-
-    # Determine removed postings
-    removed = previous_active - current_active
-
-    # Every listing found to be removed
-    for external_job_id in removed:
-        posting_path = config.POSTING_DIR(cid=cid, external_job_id=external_job_id)
-
-        result = tracker.track(data=None, path=posting_path)
-
-        # Mark as removed in index
-        postings_index_file_path = config.POSTINGS_INDEX_FILE(cid=cid)
-
-        entry = {
-            "time": datetime.now(tz=timezone.utc)
-            .isoformat(timespec="seconds")
-            .replace("+00:00", "Z"),
-            "external_job_id": external_job_id,
-            "requisition_title": result.old_data["requisitionTitle"],
-            "event": "removed",
-        }
-
-        _append_to(entry=entry, path=postings_index_file_path)
-
-        results.append(result)
-
-    # Log the listings
-    for result in results:
-        if result.is_new:
-            logger.info(
-                "listing added: %s",
-                result.new_data["customFieldGroup"]["stringFields"][0]["stringValue"],
-            )
-        elif result.is_removed:
-            logger.info(
-                "listing removed: %s",
-                result.old_data["customFieldGroup"]["stringFields"][0]["stringValue"],
-            )
-        else:
-            logger.info(
-                "listing modified: %s",
-                result.new_data["customFieldGroup"]["stringFields"][0]["stringValue"],
-            )
+    _log_results(results)
 
     return results
 

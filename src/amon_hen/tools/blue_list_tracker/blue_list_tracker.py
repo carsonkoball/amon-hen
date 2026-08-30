@@ -19,142 +19,71 @@ def _get_listings():
     """
     logger.debug("Fetching DCMA blue list...")
 
-    timestamp = datetime.now()
-
     response = http_get(config.LISTINGS_URL)
 
     listings = response.json()
 
     logger.debug("Retrieved %d listings", len(listings))
 
-    return listings, timestamp
+    return listings
 
 
-def _append_to(entry, path):
+def _log_results(results):
     """
-    Save an entry to an append-only JSONL file.
+    Log the results of the tracking process.
     """
-    with open(path, "a", encoding="utf-8") as file:
-        file.write(json.dumps(obj=entry) + "\n")
-
-
-def _save_active(current_active):
-    """
-    Save IDs to the active.json file.
-    """
-    listings_active_path = config.LISTINGS_ACTIVE_FILE
-
-    with open(file=listings_active_path, mode="w", encoding="utf-8") as file:
-        json.dump(obj=sorted(current_active), fp=file, indent=2)
-
-
-def _load_active():
-    """
-    Load IDs from the active.json file.
-    """
-    listings_active_path = config.LISTINGS_ACTIVE_FILE
-    ensure_file(path=listings_active_path, default_content="[]")
-
-    with open(file=listings_active_path, mode="r", encoding="utf-8") as file:
-        previous_active = set(json.load(file))
-
-    return previous_active
+    if results:
+        for result in results:
+            if result.is_new:
+                logger.info(
+                    "listing %s added | manufacturer: %s product_name: %s product_type: %s",
+                    result.identifier,
+                    result.label["manufacturer"],
+                    result.label["product_name"],
+                    result.label["product_type"],
+                )
+            elif result.is_removed:
+                logger.info(
+                    "listing %s removed | manufacturer: %s product_name: %s product_type: %s",
+                    result.identifier,
+                    result.label["manufacturer"],
+                    result.label["product_name"],
+                    result.label["product_type"],
+                )
+            else:
+                logger.info(
+                    "listing %s modified | manufacturer: %s product_name: %s product_type: %s",
+                    result.identifier,
+                    result.label["manufacturer"],
+                    result.label["product_name"],
+                    result.label["product_type"],
+                )
+    else:
+        logger.info("no listing changes found")                
 
 
 def blue_list_tracker(tracker):
     """
     Find blue list changes and return them.
     """
-    results = []
+    records = {}
 
-    listings, timestamp = _get_listings()
-
-    current_active = set()
+    listings = _get_listings()
 
     for listing in listings:
         listing_id = listing["UXSCore"]["mad_uxscoreid"]
 
-        current_active.add(listing_id)
+        label = {
+            "manufacturer": listing["manufacturer"]["mad_id"],
+            "product_name": listing["UXSCore"]["mad_id"],
+            "product_type": listing["UXSCore"]["mad_coretype"],
+        }
 
-        listing_path = config.LISTING_DIR(listing_id)
+        records[external_job_id] = {"label": label, "data": listing}
 
-        result = tracker.track(data=listing, path=listing_path)
+    results = tracker.track(records=records, path=config.DATA_DIR)
 
-        # Modified listing
-        if result.has_changed and not result.is_removed:
-            results.append(result)
-
-            # New listing
-            if result.is_new:
-                # Mark as newly added in history
-                listings_history_file_path = config.LISTINGS_HISTORY_FILE
-                print(result)
-                entry = config.HISTORY_ENTRY(
-                    timestamp=timestamp.strftime("%Y-%m-%dT%H-%M-%S.%fZ"),
-                    listing_id=listing_id,
-                    listing_info={
-                        "manufacturer": result.new_data["manufacturer"]["mad_id"],
-                        "product_type": result.new_data["UXSCore"]["mad_coretype"],
-                        "product_name": result.new_data["UXSCore"]["mad_id"],
-                    },
-                    event="added",
-                )
-
-                _append_to(entry=entry, path=listings_history_file_path)
-
-    # Load previously active listings
-    previous_active = _load_active()
-
-    # Save current active listings
-    _save_active(current_active=current_active)
-
-    # Determine removed listings
-    removed = previous_active - current_active
-
-    # Every listing found to be removed
-    for listing_id in removed:
-        listing_path = config.LISTING_DIR(listing_id)
-
-        result = tracker.track(data=None, path=listing_path)
-
-        # Mark as removed in history
-        listings_history_file_path = config.LISTINGS_HISTORY_FILE
-
-        entry = config.HISTORY_ENTRY(
-            timestamp=timestamp.strftime("%Y-%m-%dT%H-%M-%S.%fZ"),
-            listing_id=listing_id,
-            listing_info={
-                "manufacturer": result.old_data["manufacturer"]["mad_id"],
-                "product_type": result.old_data["UXSCore"]["mad_coretype"],
-                "product_name": result.old_data["UXSCore"]["mad_id"],
-            },
-            event="removed",
-        )
-
-        _append_to(entry=entry, path=listings_history_file_path)
-
-        results.append(result)
-
-    # Log the listings
-    for result in results:
-        if result.is_new:
-            logger.info(
-                "%s added: %s",
-                result.new_data["UXSCore"]["mad_coretype"].lower(),
-                result.new_data["UXSCore"]["mad_uxscoreid"],
-            )
-        elif result.is_removed:
-            logger.info(
-                "%s removed: %s",
-                result.old_data["UXSCore"]["mad_coretype"].lower(),
-                result.old_data["UXSCore"]["mad_uxscoreid"],
-            )
-        else:
-            logger.info(
-                "%s modified: %s",
-                result.new_data["UXSCore"]["mad_coretype"].lower(),
-                result.new_data["UXSCore"]["mad_uxscoreid"],
-            )
+    _log_results(results)
 
     return results
 

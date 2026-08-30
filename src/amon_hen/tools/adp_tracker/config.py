@@ -9,11 +9,8 @@ DATA_DIR = get_script_data_dir(SCRIPT_NAME)
 LOG_DIR = get_script_log_dir(SCRIPT_NAME)
 
 COMPANY_DIR = lambda cid: DATA_DIR / cid
-POSTING_DIR = lambda cid, external_job_id: COMPANY_DIR(cid) / external_job_id
 
 COMPANIES_INDEX_FILE = DATA_DIR / "index.jsonl"
-POSTINGS_INDEX_FILE = lambda cid: DATA_DIR / cid / "index.jsonl"
-POSTINGS_ACTIVE_FILE = lambda cid: DATA_DIR / cid / "active.json"
 
 # Query settings
 N_TOP = 999
