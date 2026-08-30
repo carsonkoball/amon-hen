@@ -16,24 +16,20 @@ See [case_studies.md](docs/case_studies.md) for past examples of the tools worki
 ## Tools Overview
 ### adp_tracker
 Monitors the Automatic Data Processing, Inc. (ADP) Career Center for a user-specified company.
-- Tracks new job postings
-- Tracks removed job postings
-- Tracks job posting modifications
+- Tracks new, removed, and modified job postings
 - Archives job postings locally
 
 ### blue_list_tracker
 Monitors the Defense Contract Management Agency (DCMA) Blue Unmanned Aircraft Systems (UAS) Cleared Drone List.
-- Tracks new listings
-- Tracks removed listings
-- Tracks listing modifications
+- Tracks new, removed, and modified listings
 - Archives listings locally
 
 ### diu_pathway_tracker
 Monitors the Defense Innovation Unit (DIU) solicitation pathways page.
-- Tracks new pathways
-- Tracks removed pathways
-- Tracks pathway modifications
-- Archives pathways locally
+- Tracks new, removed, and modified Commercial Solutions Openings (CSO) pathways
+- Archives CSO pathways locally
+- Tracks new, removed, and modified Challenges or Commercial Acceleration Opportunities (CCAO) pathways
+- Archives CCAO pathways locally
 
 ### dow_parser
 Monitors the Department of War (DoW) daily contract announcements page.
@@ -46,9 +42,13 @@ Monitors the Federal Communications Commission (FCC) Experimental Licensing Syst
 ### fedramp_tracker
 Monitors the Federal Risk and Authorization Management Program (FedRAMP) marketplace.
 - Tracks new, removed, and modified products
+- Archives product listings locally
 - Tracks new, removed, and modified agencies
+- Archives agency listings locally
 - Tracks new, removed, and modified assessors
+- Archives assessor listings locally
 - Tracks new, removed, and modified advisors
+- Archives advisor listings locally
 
 ### navy_sbir_parser
 Monitors the Navy Small Business Innovation Research (SBIR) and Small Business Technology Transfer (STTR) awards and success stories page.
