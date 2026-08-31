@@ -57,6 +57,8 @@ def _initialize_company(cid, ccid):
 
         entry = {"cid": cid, "company_name": company_name}
 
+        ensure_file(config.COMPANIES_INDEX_FILE)
+
         with open(config.COMPANIES_INDEX_FILE, "a", encoding="utf-8") as file:
             file.write(json.dumps(obj=entry) + "\n")
 
