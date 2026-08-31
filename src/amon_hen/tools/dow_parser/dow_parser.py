@@ -89,7 +89,10 @@ def _get_daily_links(start_date, end_date):
             links.append(link["article-url"])
 
         # The "next" button doesn't lead to another page
-        if soup.find(attrs={"aria-label": "Next"})["href"] == "#":
+        if (
+            soup.find(attrs={"aria-label": "Next"}) is None
+            or soup.find(attrs={"aria-label": "Next"})["href"] == "#"
+        ):
             break
 
         page += 1
