@@ -120,11 +120,11 @@ amon-hen/
 │           │   ├── __main__.py
 │           │   ├── config.py
 │           │   └── fedramp_tracker.py
-│           └── navy_sbir_parser/
+│           └── navy_sbir_sttr_parser/
 │               ├── __init__.py
 │               ├── __main__.py
 │               ├── config.py
-│               └── navy_sbir_parser.py
+│               └── navy_sbir_sttr_parser.py
 ├── ui/
 │   ├── handlers/
 │   │   ├── __init__.py
@@ -133,7 +133,7 @@ amon-hen/
 │   │   ├── diu_pathway_tracker.py
 │   │   ├── dow_parser.py
 │   │   ├── fcc_els_parser.py
-│   │   └── navy_sbir_parser.py
+│   │   └── navy_sbir_sttr_parser.py
 │   ├── routes/
 │   │   ├── __init__.py
 │   │   └── scripts.py
@@ -147,7 +147,7 @@ amon-hen/
 │   │   ├── diu_pathway_tracker.html
 │   │   ├── dow_parser.html
 │   │   ├── fcc_els_parser.html
-│   │   └── navy_sbir_parser.html
+│   │   └── navy_sbir_sttr_parser.html
 │   ├── config.py
 │   ├── amon_hen_ui.py
 │   ├── requirements.in
@@ -217,6 +217,7 @@ pip install -r requirements.txt
 - [x] Add Navy SBIR/STTR parser capability
 - [x] Add Case Studies section
 - [x] Add FedRAMP tracker capability
+- [ ] Add DIU solutions tracker capability
 - [ ] Add a tool example document
 - [ ] Add tool examples to README
 - [ ] Add LinkedIn tracker capability
