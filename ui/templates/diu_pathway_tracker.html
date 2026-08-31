@@ -22,23 +22,62 @@
 			<h2>Output</h2>
 		</div>
 		<div class="section-content">
-			{% if results is none %}
+			{% if cso_results is none and ccao_results is none %}
 			
 				<p>No output yet.<p>
 				
-			{% elif results == [] %}
+			{% elif cso_results == [] and ccao_results == [] %}
 			
 				<p>No changes found.</p>
 				
 			{% else %} 
 			
-				{% for result in results %}
-				
+				{% for result in cso_results %}
+					
 					<div class"output-entry">
-				
+					
 						{% if result.is_new %}
 							
-							<p><b>New {{ result["type"] }} Pathway:</b></p>
+							<p><b>New {{ result["label"]["type"] }} Pathway:</b></p>
+							<ul>
+								<li><p><b>ID:</b> {{ result.new_data["id"] }}</p></li>
+								<li><p><b>Title:</b> {{ result.new_data["title"] }}</p></li>
+								<li><p><b>Due By:</b> {{ result.new_data["due_by"] }}</p></li>
+								<li><p><b>Description:</b> {{ result.new_data["description"] }}</p></li>
+							</ul>
+						
+						{% elif result.is_removed %}
+						
+							<p><b>Removed {{ result["type"] }} Pathway:</b></p>
+							<ul>
+								<li><p><b>ID:</b> {{ result.old_data["id"] }}</p></li>
+								<li><p><b>Title:</b> {{ result.old_data["title"] }}</p></li>
+								<li><p><b>Due By:</b> {{ result.old_data["due_by"] }}</p></li>
+								<li><p><b>Description:</b> {{ result.old_data["description"] }}</p></li>
+							</ul>
+							
+						{% else %}
+						
+							<p><b>Modified {{ result["type"] }} Pathway:</b></p>
+							<ul>
+								<li><p><b>ID:</b> {{ result.new_data["id"] }}</p></li>
+								<li><p><b>Title:</b> {{ result.new_data["title"] }}</p></li>
+								<li><p><b>Due By:</b> {{ result.new_data["due_by"] }}</p></li>
+								<li><p><b>Description:</b> {{ result.new_data["description"] }}</p></li>
+							</ul>
+							
+						{% endif %}
+						
+					</div>
+					
+				{% endfor %}
+				{% for result in ccao_results %}
+					
+					<div class"output-entry">
+					
+						{% if result.is_new %}
+							
+							<p><b>New {{ result["label"]["type"] }} Pathway:</b></p>
 							<ul>
 								<li><p><b>ID:</b> {{ result.new_data["id"] }}</p></li>
 								<li><p><b>Title:</b> {{ result.new_data["title"] }}</p></li>
