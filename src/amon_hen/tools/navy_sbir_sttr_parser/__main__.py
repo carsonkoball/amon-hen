@@ -2,7 +2,7 @@ import argparse
 from datetime import date
 
 from . import config
-from .navy_sbir_parser import run
+from .navy_sbir_sttr_parser import run
 
 
 def main():

@@ -50,9 +50,10 @@ Monitors the Federal Risk and Authorization Management Program (FedRAMP) marketp
 - Tracks new, removed, and modified advisors
 - Archives advisor listings locally
 
-### navy_sbir_parser
+### navy_sbir_sttr_parser
 Monitors the Navy Small Business Innovation Research (SBIR) and Small Business Technology Transfer (STTR) awards and success stories page.
-- Parses award information
+- Parses SBIR award information
+- Parses STTR award information
 
 ### Common Utilities
 #### crawler

@@ -26,7 +26,7 @@ SCRIPTS = [
         "slug": "fcc_els_parser",
     },
     {
-        "name": "Navy SBIR Parser",
+        "name": "Navy SBIR/STTR Parser",
         "description": "Monitors the Navy Small Business Innovation Research (SBIR) and Small Business Technology Transfer (STTR) awards and success stories page.",
         "slug": "navy_sbir_parser",
     },

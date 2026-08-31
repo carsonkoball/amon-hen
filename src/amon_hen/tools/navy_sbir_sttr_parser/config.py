@@ -10,7 +10,8 @@ DATA_DIR = get_script_data_dir(SCRIPT_NAME)
 LOG_DIR = get_script_log_dir(SCRIPT_NAME)
 
 # Default Arguments
-DEFAULT_SEARCH_DATE = date.today()
+DEFAULT_START_DATE = date.today()
+DEFAULT_END_DATE = date.today()
 
 # URLs
 SBIR_URL = "https://www.navysbirsearch.com/"
