@@ -1,58 +1,15 @@
-from datetime import datetime, UTC
 import json
 import logging
 
 from bs4 import BeautifulSoup
 
 from . import config
-from amon_hen.common.filesystem import ensure_file
 from amon_hen.common.http import http_get
 from amon_hen.common.log_config import setup_logging
 from amon_hen.common.tracker import Tracker
 
 # Logging seup
 logger = logging.getLogger(__name__)
-
-
-def _append_to(entry, path):
-    """
-    Save an entry to an append-only JSONL file.
-    """
-    with open(path, "a", encoding="utf-8") as file:
-        file.write(json.dumps(obj=entry) + "\n")
-
-
-def _save_active(current_cso_active, current_ccao_active):
-    """
-    Save IDs to the active.json file for each pathway type.
-    """
-    cso_active_file_path = config.CSO_ACTIVE_FILE
-    ccao_active_file_path = config.CCAO_ACTIVE_FILE
-
-    with open(file=cso_active_file_path, mode="w", encoding="utf-8") as file:
-        json.dump(obj=sorted(current_cso_active), fp=file, indent=2)
-
-    with open(file=ccao_active_file_path, mode="w", encoding="utf-8") as file:
-        json.dump(obj=sorted(current_ccao_active), fp=file, indent=2)
-
-
-def _load_active():
-    """
-    Load IDs from the active.json file for each pathway type.
-    """
-    cso_active_file_path = config.CSO_ACTIVE_FILE
-    ccao_active_file_path = config.CCAO_ACTIVE_FILE
-
-    ensure_file(path=cso_active_file_path, default_content="[]")
-    ensure_file(path=ccao_active_file_path, default_content="[]")
-
-    with open(file=cso_active_file_path, mode="r", encoding="utf-8") as file:
-        previous_cso_active = set(json.load(file))
-
-    with open(file=ccao_active_file_path, mode="r", encoding="utf-8") as file:
-        previous_ccao_active = set(json.load(file))
-
-    return previous_cso_active, previous_ccao_active
 
 
 def _get_pathway_ids():
@@ -130,7 +87,7 @@ def _log_results(results, listing_type):
                 "%s pathway %s %s | title: %s",
                 result.label["type"],
                 result.identifier,
-                label,
+                status,
                 result.label["title"],
             )
 
@@ -157,9 +114,9 @@ def _diu_pathway_tracker(tracker):
 
         label = {"type": pathway["type"], "title": pathway["title"]}
 
-        cso_records[pathway_id] = {"label": label, "data": pathway}
+        ccao_records[pathway_id] = {"label": label, "data": pathway}
 
-    cso_results = tracker.track(records=ccao_records, path=config.CCAO_DIR)
+    cso_results = tracker.track(records=cso_records, path=config.CSO_DIR)
     ccao_results = tracker.track(records=ccao_records, path=config.CCAO_DIR)
 
     _log_results(cso_results, "CSO")

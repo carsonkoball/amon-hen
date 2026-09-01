@@ -17,5 +17,6 @@ def handle(script):
         title=script["name"],
         description=script["description"],
         back_link_visibility="visible",
-        cso_results=cso_results, ccao_results=ccao_results
+        cso_results=cso_results,
+        ccao_results=ccao_results,
     )
