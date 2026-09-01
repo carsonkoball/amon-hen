@@ -369,11 +369,11 @@ def _get_search(start_date, end_date):
     """
     start_date_string = start_date.strftime("%m/%d/%Y")
     end_date_string = end_date.strftime("%m/%d/%Y")
-    
+
     logger.debug(
         "Fetching ELS applications using receipt dates between %s and %s...",
         start_date_string,
-        end_date_string
+        end_date_string,
     )
 
     payload = copy.deepcopy(config.ELS_PAYLOAD)
@@ -381,21 +381,21 @@ def _get_search(start_date, end_date):
     # Search by receipt date
     payload["receipt_date_from"] = start_date_string
     payload["receipt_date_to"] = end_date_string
-    
+
     search_results = []
     from_index = 1
-    
+
     # Continue iterating the search results until the end is reached
-    while True:    
+    while True:
         response = http_post(
             config.ELS_SEARCH_URL,
             data=payload,
         ).text
-        
+
         soup = BeautifulSoup(markup=response, features="html.parser")
 
         listings = soup.find(attrs={"name": "rsTable"})
-    
+
         if listings is None:
             break
 
@@ -405,9 +405,9 @@ def _get_search(start_date, end_date):
         # No more search results
         if len(listings) == 0:
             break
-            
+
         search_results.extend(listings)
-        
+
         from_index += config.MAX_RESULTS
         payload["FromRec"] = str(from_index)
 
@@ -419,7 +419,7 @@ def _fcc_els_parser(start_date, end_date):
     Get the daily ELS page and return relevant information on it.
     """
     data = _get_search(start_date=start_date, end_date=end_date)
-    
+
     results = _parse_search(data=data)
 
     # Parse every application listing found in the search
@@ -477,6 +477,7 @@ def _fcc_els_parser(start_date, end_date):
 
     return results
 
+
 def _validate_arguments(start_date, end_date):
     """
     Ensure that inputted arguments are of valid types, values, etc.
@@ -498,6 +499,7 @@ def _validate_arguments(start_date, end_date):
         raise ValueError("start_date must be on or before end_date.")
 
     return start_date, end_date
+
 
 def run(start_date, end_date):
     """
