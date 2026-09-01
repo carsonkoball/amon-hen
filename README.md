@@ -212,15 +212,15 @@ pip install -r requirements.txt
 - [x] Add fcc_els_parser to UI
 - [x] Add diu_pathway_tracker to UI
 - [x] Update blue_list_tracker to use new list source
+- [x] Modify fcc_els_parser to utilize a search date range
 - [ ] Add fedramp_tracker to UI
-- [ ] Modify fcc_els_parser to utilize a search date range
 - [ ] Update file_tracker to utilize Tracker system
 	
 ### New Additions
 - [x] Add Navy SBIR/STTR parser capability
 - [x] Add Case Studies section
 - [x] Add FedRAMP tracker capability
+- [x] Add a tool example document
 - [ ] Add DIU solutions tracker capability
-- [ ] Add a tool example document
 - [ ] Add tool examples to README
 - [ ] Add LinkedIn tracker capability
