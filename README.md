@@ -209,7 +209,7 @@ pip install -r requirements.txt
 - [x] Update UI with existing tools
 - [x] Add fcc_els_parser to UI
 - [x] Add diu_pathway_tracker to UI
-- [ ] Update blue_list_tracker to use new list source
+- [x] Update blue_list_tracker to use new list source
 - [ ] Add fedramp_tracker to UI
 - [ ] Modify fcc_els_parser to utilize a search date range
 - [ ] Update file_tracker to utilize Tracker system

@@ -1,11 +1,8 @@
-from datetime import datetime, UTC
-from hashlib import sha256
 import json
 import logging
 
 from . import config
-from amon_hen.common.filesystem import ensure_dir, ensure_file, setup_environment
-from amon_hen.common.http import http_get
+from amon_hen.common.http import http_post
 from amon_hen.common.log_config import setup_logging
 from amon_hen.common.tracker import Tracker
 
@@ -15,26 +12,53 @@ logger = logging.getLogger(__name__)
 
 def _get_listings():
     """
-    Initiate GET request for DCMA blue list and return the response in JSON format.
+    Initiate POST requests for DCMA Blue Cleared and Framework lists and return the responses in JSON format.
     """
-    logger.debug("Fetching DCMA blue list...")
+    logger.debug("Fetching X-UserToken-Response header value...")
 
-    response = http_get(config.LISTINGS_URL)
+    # Used to get relevant header value
+    init_response = http_post(url=config.BLUE_LIST_URL, json=config.CLEARED_DATA)
 
-    listings = response.json()
+    header = {"X-UserToken": init_response.headers["X-UserToken-Response"]}
 
-    logger.debug("Retrieved %d listings", len(listings))
+    logger.debug("Retrieved value of %s", header["X-UserToken"])
+    logger.debug("Fetching DMCA Blue Cleared List...")
 
-    return listings
+    # Cleared listings
+    cleared_response = http_post(
+        url=config.BLUE_LIST_URL,
+        json=config.CLEARED_DATA,
+        params=config.CLEARED_PARAMS,
+        headers=header,
+    ).json()
+
+    logger.debug(
+        "Retrieved %d listings", len(cleared_response["result"]["data"]["list"])
+    )
+    logger.debug("Fetching DMCA Blue Framework List...")
+
+    # Framework listings
+    framework_response = http_post(
+        url=config.BLUE_LIST_URL,
+        json=config.FRAMEWORK_DATA,
+        params=config.FRAMEWORK_PARAMS,
+        headers=header,
+    ).json()
+
+    logger.debug(
+        "Retrieved %d listings", len(framework_response["result"]["data"]["list"])
+    )
+
+    return cleared_response, framework_response
 
 
-def _log_results(results):
+def _log_results(results, listing_type):
     """
     Log the results of the tracking process.
     """
     if not results:
-        logger.info("no listing changes found")
-    else:
+        logger.info("no %s listing changes found", listing_type)
+    if results:
         for result in results:
             if result.is_new:
                 status = "added"
@@ -44,39 +68,61 @@ def _log_results(results):
                 status = "modified"
 
             logger.info(
-                "listing %s %s | manufacturer: %s product_name: %s product_type: %s",
+                "%s listing %s %s | manufacturer: %s cmdb_model_category: %s name: %s",
+                result.label["list"],
                 result.identifier,
                 status,
                 result.label["manufacturer"],
-                result.label["product_name"],
-                result.label["product_type"],
+                result.label["cmdb_model_category"],
+                result.label["name"],
             )
 
 
-def blue_list_tracker(tracker):
+def _blue_list_tracker(tracker):
     """
     Find blue list changes and return them.
     """
-    records = {}
+    cleared_records, framework_records = {}, {}
 
-    listings = _get_listings()
+    cleared_listings, framework_listings = _get_listings()
+    cleared_listings = cleared_listings["result"]["data"]["list"]
+    framework_listings = framework_listings["result"]["data"]["list"]
 
-    for listing in listings:
-        listing_id = listing["UXSCore"]["mad_uxscoreid"]
+    # Process Cleared List listings
+    for listing in cleared_listings:
+        listing_id = listing["sys_id"]
 
         label = {
-            "manufacturer": listing["manufacturer"]["mad_id"],
-            "product_name": listing["UXSCore"]["mad_id"],
-            "product_type": listing["UXSCore"]["mad_coretype"],
+            "list": "cleared",
+            "manufacturer": listing["manufacturer"]["display_value"],
+            "cmdb_model_category": listing["cmdb_model_category"]["display_value"],
+            "name": listing["name"]["display_value"],
         }
 
-        records[external_job_id] = {"label": label, "data": listing}
+        cleared_records[listing_id] = {"label": label, "data": listing}
 
-    results = tracker.track(records=records, path=config.DATA_DIR)
+    # Process Framework List listings
+    for listing in framework_listings:
+        listing_id = listing["sys_id"]
 
-    _log_results(results)
+        label = {
+            "list": "framework",
+            "manufacturer": listing["manufacturer"]["display_value"],
+            "cmdb_model_category": listing["cmdb_model_category"]["display_value"],
+            "name": listing["name"]["display_value"],
+        }
 
-    return results
+        framework_records[listing_id] = {"label": label, "data": listing}
+
+    cleared_results = tracker.track(records=cleared_records, path=config.CLEARED_DIR)
+    framework_results = tracker.track(
+        records=framework_records, path=config.FRAMEWORK_DIR
+    )
+
+    _log_results(cleared_results, "cleared")
+    _log_results(framework_results, "framework")
+
+    return cleared_results, framework_results
 
 
 def run():
@@ -90,8 +136,8 @@ def run():
 
     logger.debug("Starting blue_list_tracker")
 
-    results = blue_list_tracker(tracker=tracker)
+    cleared_results, framework_results = _blue_list_tracker(tracker=tracker)
 
     logger.debug("Stopping blue_list_tracker")
 
-    return results
+    return cleared_results, framework_results
