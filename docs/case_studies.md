@@ -1,13 +1,24 @@
-
 # Amon Hen Case Studies
 
 ## Table of Contents
+* [Blue List Tracker](#blue-list_tracker)
+	* [EagleNXT - Plaber](#eaglenxt---plaber)
 * [Dow Parser](#dow-parser)
 	* [Castellum, Inc. - LIIS CMDS MAC IDIQ](#castellum-inc---liis-cmds-mac-idiq)
 	* [Castellum, Inc. - SeaPort-NxG Modification](#castellum-inc---seaport-nxg-modification)
 * [FCC ELS Parser](#fcc-els-parser)
 	* [Ocean Power Technologies, Inc. - Anduril & U.S. Coast Guard](#ocean-power-technologies-inc---anduril--us-coast-guard)
 	* [Qorvo - Amazon Prime Air UWB](#qorvo---amazon-prime-air-uwb)
+
+## Blue List Tracker
+
+### EagleNXT - Plaber
+
+On July 10, 2026, the [DCMA Blue Cleared UAS List added](https://tyrionprod.servicenowservices.com/gsp?id=cleared_list) ([mirror](https://archive.is/gw1q0)) a UAV manufactured by EagleNXT named *Plaber*.
+
+As of August 31, 2026, EagleNXT had no reference to a *Plaber* drone on [their official drone products page](https://eaglenxt.com/products/drones/) ([mirror](https://web.archive.org/web/20260901034315/https://eaglenxt.com/products/drones/)).
+
+*To be continued...*
 
 ## Dow Parser
 
