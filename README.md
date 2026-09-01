@@ -20,9 +20,11 @@ Monitors the Automatic Data Processing, Inc. (ADP) Career Center for a user-spec
 - Archives job postings locally
 
 ### blue_list_tracker
-Monitors the Defense Contract Management Agency (DCMA) Blue Unmanned Aircraft Systems (UAS) Cleared Drone List.
-- Tracks new, removed, and modified listings
-- Archives listings locally
+Monitors the Defense Contract Management Agency (DCMA) Blue Unmanned Aircraft Systems (UAS) List.
+- Tracks new, removed, and modified Blue UAS Cleared listings
+- Archives Blue UAS Cleared listings locally
+- Tracks new, removed, and modified Blue UAS Framework listings
+- Archives Blue UAS Framework listings locally
 
 ### diu_pathway_tracker
 Monitors the Defense Innovation Unit (DIU) solicitation pathways page.

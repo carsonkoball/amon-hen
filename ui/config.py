@@ -7,7 +7,7 @@ SCRIPTS = [
     },
     {
         "name": "Blue List Tracker",
-        "description": "Monitors the Defense Contract Management Agency (DCMA) Blue Unmanned Aircraft Systems (UAS) Cleared Drone List.",
+        "description": "Monitors the Defense Contract Management Agency (DCMA) Blue Unmanned Aircraft Systems (UAS) List.",
         "slug": "blue_list_tracker",
     },
     {
