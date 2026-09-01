@@ -323,20 +323,10 @@ def _parse_search(data):
     """
     Parse information from each listing found on the ELS table.
     """
-    soup = BeautifulSoup(markup=data, features="html.parser")
-
-    listings = soup.find(attrs={"name": "rsTable"})
-
-    if listings is None:
-        return []
-
-    listings = listings.find("tbody")
-    listings = listings.find_all("tr", recursive=False)
-
     search_results = []
 
     # Gather information from each row in the ELS table
-    for listing in listings:
+    for listing in data:
         values = listing.find_all("td")
 
         result = Synopsis(
@@ -373,37 +363,63 @@ def _parse_search(data):
     return search_results
 
 
-def _get_search(search_date):
+def _get_search(start_date, end_date):
     """
-    Initiate an ELS search using a given receipt date.
+    Initiate an ELS search using a given receipt search date range.
     """
+    start_date_string = start_date.strftime("%m/%d/%Y")
+    end_date_string = end_date.strftime("%m/%d/%Y")
+    
     logger.debug(
-        "Fetching ELS applications using %s receipt date...",
-        search_date.strftime("%m/%d/%Y"),
+        "Fetching ELS applications using receipt dates between %s and %s...",
+        start_date_string,
+        end_date_string
     )
-
-    search_date_string = search_date.strftime("%m/%d/%Y")
 
     payload = copy.deepcopy(config.ELS_PAYLOAD)
 
     # Search by receipt date
-    payload["receipt_date_from"] = search_date_string
-    payload["receipt_date_to"] = search_date_string
+    payload["receipt_date_from"] = start_date_string
+    payload["receipt_date_to"] = end_date_string
+    
+    search_results = []
+    from_index = 1
+    
+    # Continue iterating the search results until the end is reached
+    while True:    
+        response = http_post(
+            config.ELS_SEARCH_URL,
+            data=payload,
+        ).text
+        
+        soup = BeautifulSoup(markup=response, features="html.parser")
 
-    response = http_post(
-        config.ELS_SEARCH_URL,
-        data=payload,
-    )
+        listings = soup.find(attrs={"name": "rsTable"})
+    
+        if listings is None:
+            break
 
-    return response.text
+        listings = listings.find("tbody")
+        listings = listings.find_all("tr", recursive=False)
+
+        # No more search results
+        if len(listings) == 0:
+            break
+            
+        search_results.extend(listings)
+        
+        from_index += config.MAX_RESULTS
+        payload["FromRec"] = str(from_index)
+
+    return search_results
 
 
-def _fcc_els_parser(search_date):
+def _fcc_els_parser(start_date, end_date):
     """
     Get the daily ELS page and return relevant information on it.
     """
-    data = _get_search(search_date=search_date)
-
+    data = _get_search(start_date=start_date, end_date=end_date)
+    
     results = _parse_search(data=data)
 
     # Parse every application listing found in the search
@@ -449,20 +465,41 @@ def _fcc_els_parser(search_date):
         result.application_data = processed_form
 
     # Log the found applications
-    logger.info("%d applications found for %s.", len(results), search_date)
+    logger.info("%d found between %s and %s.", len(results), start_date, end_date)
 
     for result in results:
         logger.info(
-            "Type: %s Applicant Name: %s File Number: %s",
-            result.get_type,
-            result.applicant_name,
+            "Date: %s File Number: %s Applicant Name: %s",
+            result.receipt_date,
             result.file_number,
+            result.applicant_name,
         )
 
     return results
 
+def _validate_arguments(start_date, end_date):
+    """
+    Ensure that inputted arguments are of valid types, values, etc.
+    """
+    # end_date must either be datetime.date object or ISO string
+    if isinstance(end_date, str):
+        end_date = date.fromisoformat(end_date)
+    elif not isinstance(end_date, date):
+        raise TypeError("end_date must be a datetime.date object or an ISO string.")
 
-def run(search_date):
+    # start_date must either be datetime.date object or ISO string
+    if isinstance(end_date, str):
+        start_date = date.fromisoformat(start_date)
+    elif not isinstance(start_date, date):
+        raise TypeError("start_date must be a datetime.date object or an ISO string.")
+
+    # start_date can't be after end_date
+    if start_date > end_date:
+        raise ValueError("start_date must be on or before end_date.")
+
+    return start_date, end_date
+
+def run(start_date, end_date):
     """
     Execute the fcc_els_parser workflow.
     """
@@ -470,9 +507,11 @@ def run(search_date):
     setup_logging()
 
     logger.debug("Starting fcc_els_parser")
-    logger.debug("Argument search_date: %s", search_date)
+    logger.debug("Argument start_date: %s", start_date)
+    logger.debug("Argument end_date: %s", end_date)
 
-    results = _fcc_els_parser(search_date)
+    start_date, end_date = _validate_arguments(start_date=start_date, end_date=end_date)
+    results = _fcc_els_parser(start_date=start_date, end_date=end_date)
 
     logger.debug("Stopping fcc_els_parser")
 

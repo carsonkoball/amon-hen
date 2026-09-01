@@ -10,7 +10,8 @@ DATA_DIR = get_script_data_dir(SCRIPT_NAME)
 LOG_DIR = get_script_log_dir(SCRIPT_NAME)
 
 # Default Arguments
-DEFAULT_SEARCH_DATE = date.today()
+DEFAULT_START_DATE = date.today()
+DEFAULT_END_DATE = date.today()
 
 # URLs
 ELS_URL = "https://apps.fcc.gov/"
@@ -18,6 +19,8 @@ ELS_SEARCH_URL = ELS_URL + "oetcf/els/reports/GenericSearchResult.cfm"
 
 # Data
 ELS_HEADERS = {"content-type": "application/x-www-form-urlencoded"}
+
+MAX_RESULTS = 999999
 
 ELS_PAYLOAD = {
     "id_file_num": "",
@@ -58,7 +61,8 @@ ELS_PAYLOAD = {
     "medical_license": "Y",
     "compliance_license": "Y",
     "conventional_license": "Y",
-    "show_records": "1000",
+    "FromRec": "1",
+    "show_records": str(MAX_RESULTS),
     "fetchfrom": "0",
 }
 

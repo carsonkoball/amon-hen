@@ -13,16 +13,28 @@ def main():
     )
 
     parser.add_argument(
-        "--search-date",
+        "--start-date",
         type=date.fromisoformat,
         required=False,
-        default=config.DEFAULT_SEARCH_DATE,
-        help="Search date (YYYY-MM-DD).",
+        default=config.DEFAULT_START_DATE,
+        help="Search start date (YYYY-MM-DD).",
+    )
+
+    parser.add_argument(
+        "--end-date",
+        type=date.fromisoformat,
+        required=False,
+        default=config.DEFAULT_END_DATE,
+        help="Search end date (YYYY-MM-DD).",
     )
 
     args = parser.parse_args()
 
-    run(search_date=args.search_date)
+    # Start date can't be after end date
+    if args.start_date > args.end_date:
+        parser.error("--start-date must be on or before --end-date.")
+
+    run(start_date=args.start_date, end_date=args.end_date)
 
 
 if __name__ == "__main__":
