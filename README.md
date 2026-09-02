@@ -27,11 +27,16 @@ Monitors the Defense Contract Management Agency (DCMA) Blue Unmanned Aircraft Sy
 - Archives Blue UAS Framework listings locally
 
 ### diu_pathway_tracker
-Monitors the Defense Innovation Unit (DIU) solicitation pathways page.
+Monitors the Defense Innovation Unit (DIU) Solicitation Pathways page.
 - Tracks new, removed, and modified Commercial Solutions Openings (CSO) pathways
 - Archives CSO pathways locally
 - Tracks new, removed, and modified Challenges or Commercial Acceleration Opportunities (CCAO) pathways
 - Archives CCAO pathways locally
+
+### diu_solution_tracker
+Monitors the Defense Innovation Unit (DIU) Commercial Solutions Catalog.
+- Tracks new, removed, and modified Commercial Solutions
+- Archives Commercial Solutions locally
 
 ### dow_parser
 Monitors the Department of War (DoW) daily contract announcements page.
@@ -107,6 +112,11 @@ amon-hen/
 │           │   ├── __main__.py
 │           │   ├── config.py
 │           │   └── diu_pathway_tracker.py
+│           ├── diu_solution_tracker/
+│           │   ├── __init__.py
+│           │   ├── __main__.py
+│           │   ├── config.py
+│           │   └── diu_solution_tracker.py
 │           ├── dow_parser/
 │           │   ├── __init__.py
 │           │   ├── __main__.py
@@ -221,6 +231,6 @@ pip install -r requirements.txt
 - [x] Add Case Studies section
 - [x] Add FedRAMP tracker capability
 - [x] Add a tool example document
-- [ ] Add DIU solutions tracker capability
+- [x] Add DIU solution tracker capability
 - [ ] Add tool examples to README
 - [ ] Add LinkedIn tracker capability
