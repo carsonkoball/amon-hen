@@ -284,6 +284,7 @@ class Tracker:
         self.active = set()
         self._set_paths(path=path, identifier=None)
 
+        # Process active records
         for identifier, record in records.items():
             self._set_paths(path=path, identifier=identifier)
 
@@ -305,6 +306,7 @@ class Tracker:
             if track.has_changed:
                 self._append_history(new_hash)
                 self._save_version(new_hash, new_data)
+                
 
                 if track.is_new:
                     self._append_index(
@@ -317,22 +319,38 @@ class Tracker:
 
                 results.append(track)
 
-        # Load previously active objects
+        # Load previously active object IDs
         previous_active = self._load_active()
 
-        # Save current active objects
-        self._save_active()
+        # Save current active objects IDs
+        #self._save_active()
 
-        # Determine removed objects
+        #Determine removed objects IDs
         removed = previous_active - self.active
 
+        # Process removed records
         for identifier in removed:
-            track = tracker.track(identifier=identifier, data=None, path=path)
+            self._set_paths(path=path, identifier=identifier)
 
+            old_hash, old_data = self._get_old()
+            new_hash = None
+            new_data = None
+            
+            track = Track(
+                identifier=identifier,
+                label=record["label"],
+                old_hash=old_hash,
+                old_data=old_data,
+                new_hash=new_hash,
+                new_data=new_data,
+            )
+            
+            self._append_history(new_hash)
+            
             self._append_index(
                 identifier=identifier, label=track.label, event="removed"
             )
 
             results.append(track)
-
+            
         return results
