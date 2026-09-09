@@ -101,7 +101,7 @@ def _log_results(results, listing_type):
 
                 case "assessors" | "advisors":
                     logger.info(
-                        "%s listing %s %s | csp: %s cso: %s",
+                        "%s listing %s %s | name: %s",
                         result.label["type"],
                         result.identifier,
                         status,
