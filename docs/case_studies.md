@@ -1,3 +1,4 @@
+
 # Amon Hen Case Studies
 
 ## Table of Contents
@@ -28,23 +29,19 @@ On June 11, 2026, the [Department of War announced](https://www.war.gov/News/Con
 
 On June 15, 2026, [Castellum Inc. announced](https://investors.castellumus.com/news/news-details/2026/Castellum-Joint-Venture-Wins-Position-on-250-Million-U-S--Navy-Logistics-IT-Multiple-Award-Contract/default.aspx) ([mirror](https://web.archive.org/web/20260701232101/https://investors.castellumus.com/news/news-details/2026/Castellum-Joint-Venture-Wins-Position-on-250-Million-U-S--Navy-Logistics-IT-Multiple-Award-Contract/default.aspx)) the following:
 
-> CTM JV, LLC has been awarded a contract to the Logistics IT Integration and Support (“LIIS”) Capability Modernization, Deployment, and Support (“CMDS”) Multiple Award Contract (“MAC”). The MAC is structured as an indefinite delivery/indefinite quantity (“IDIQ”) contract vehicle, under which the United States Navy will competitively award individual task orders for specific projects, with a total maximum value of approximately $250 million.
+> VIENNA, Va., June 15, 2026 (GLOBE NEWSWIRE) -- Castellum, Inc. (NYSE-American: CTM) (“Castellum” “CTM”, or the “Company”), a cybersecurity, electronic warfare, and software services company focused on the federal government, announced today that its joint venture CTM JV, LLC has been awarded a contract to the Logistics IT Integration and Support (“LIIS”) Capability Modernization, Deployment, and Support (“CMDS”) Multiple Award Contract (“MAC”). The MAC is structured as an indefinite delivery/indefinite quantity (“IDIQ”) contract vehicle, under which the United States Navy will competitively award individual task orders for specific projects, with a total maximum value of approximately $250 million.
 
-The announcement made by the Department of War preceded the announcement made by Castellum Inc. by approximately four days. The following table showcases daily trading data during that period.
-
-| Date | Open | High | Low | Close | Volume |
-|-|-|-|-|-|-|
-| June 11, 2026 | $0.6900 | $0.7050 | $0.6752 | $0.6999 | 575.8K |
-| June 12, 2026 | $0.7020 | $0.7182 | $0.6704 | $0.7014 | 1.03M |
-| June 13, 2026 | - | - | - | - | - |
-| June 14, 2026 | - | - | - | - | - |
-| June 15, 2026 | $0.9426 | $0.9801 | $0.6526 | $0.7157 | 160.84M |
+The announcement made by the Department of War preceded the announcement made by Castellum Inc. by approximately four days.
 
 ### Castellum, Inc. - SeaPort-NxG Modification
 
 On August 26, 2026, the [Department of War announced](https://www.war.gov/News/Contracts/Contract/Article/4583752/contracts-for-aug-26-2026/) ([mirror](https://web.archive.org/web/20260826221054/https://www.war.gov/News/Contracts/Contract/Article/4583752/contracts-for-aug-26-2026/)) that Global Technology and Management Resources, a subsidiary of Castellum Inc., was awarded a $32.8 million, non-competed contract modification to an existing SeaPort-NxG order, with work expected to conclude in March 2027.
 
-*To be continued...*
+On August 31, 2026, [Castellum Inc. announced](https://investors.castellumus.com/news/news-details/2026/Castellum-Announces-32-8-Million-NAVAIR-Contract-Modification-Increasing-GTMRs-PMA-290-Special-Missions-Contract-Ceiling-to-136-2-Million/default.aspx) ([mirror](https://web.archive.org/web/20260831133247/https://investors.castellumus.com/news/news-details/2026/Castellum-Announces-32-8-Million-NAVAIR-Contract-Modification-Increasing-GTMRs-PMA-290-Special-Missions-Contract-Ceiling-to-136-2-Million/default.aspx)) the following:
+
+> VIENNA, Va., Aug. 31, 2026 (GLOBE NEWSWIRE) -- Castellum, Inc. (NYSE-American: CTM) (“Castellum,” “CTM,” or the “Company”), a cybersecurity, electronic warfare, and software services company focused on the federal government, today announced that its Global Technology and Management Resources, Inc. (“GTMR”) subsidiary has been awarded a $32.8 million modification to its existing cost-plus-fixed-fee order supporting the Naval Air Systems Command (“NAVAIR”) Program Office 290 (“PMA-290”) Special Missions. The modification expands the order’s scope and increases its total contract ceiling to $136.2 million.
+
+The announcement made by the Department of War preceded the announcement made by Castellum Inc. by approximately five days.
 
 ## FCC ELS Parser
 
