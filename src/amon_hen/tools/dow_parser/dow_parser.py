@@ -1,6 +1,7 @@
 from dataclasses import dataclass, asdict
 from datetime import date, datetime
 import logging
+import re
 
 from bs4 import BeautifulSoup
 
@@ -20,6 +21,7 @@ class Announcement:
     announcement_type: str
     companies: list | None
     url: str
+    footnotes: dict | None
     text: str
 
     @property
@@ -27,29 +29,15 @@ class Announcement:
         return asdict(self)
 
 
-def _split_on_phrases(text, phrases):
-    """
-    Split text on the phrase closest to the start from inputted list of phrases.
-    """
-    min_index = len(text)
-    min_phrase = ""
-
-    for phrase in phrases:
-        index = text.find(phrase)
-
-        if index < min_index and index > -1:
-            min_index = index
-            min_phrase = phrase
-
-    if min_phrase:
-        return text.split(min_phrase)
-
-    return []
+@dataclass
+class Company:
+    name: str
+    designation: str
 
 
 def _get_daily_links(start_date, end_date):
     """
-    Recovera all contract announcement page links for a given search date range.
+    Recover all contract announcement page links for a given search date range.
     """
     start_date_year = start_date.strftime("%Y")
     start_date_month = start_date.strftime("%m")
@@ -100,51 +88,6 @@ def _get_daily_links(start_date, end_date):
     return links
 
 
-def _process_section(text, branch):
-    """
-    Retrieve relevant information from a DoW announcement section of text.
-    """
-    branch = branch
-    companies = []
-
-    # Correction section
-    if text.startswith("CORRECTION"):
-        announcement_type = "correction"
-    # Update Section
-    elif text.startswith("UPDATE"):
-        announcement_type = "update"
-    # Award section
-    else:
-        # Single-Award
-        split = _split_on_phrases(text=text, phrases=config.SINGULAR_PHRASES)
-        if split:
-            announcement_type = "single_award"
-
-            company = split[0].strip().rstrip(",")
-            companies.append(company)
-        # Multi-Award
-        else:
-            split = _split_on_phrases(text=text, phrases=config.PLURAL_PHRASES)
-
-            announcement_type = "multi_award"
-
-            for c in split[0].split(";"):
-                company = c.split("(")[0].strip().removeprefix("and ")
-
-                companies.append(company)
-
-    result = Announcement(
-        date=None,
-        branch=branch,
-        announcement_type=announcement_type,
-        companies=companies,
-        url=None,
-        text=text,
-    )
-
-    return result
-
-
 def _extract_date(link):
     """
     Parse an inputted DoW announcement link to create a valid datetime object.
@@ -156,71 +99,206 @@ def _extract_date(link):
     return datetime.strptime(date_string, "%b-%d-%Y")
 
 
+def _process_companies(text, footnotes):
+    """
+    Retrieve relevant information from a string containing company names and other information.
+    """
+    company_names = text.split(";")
+
+    companies = []
+
+    for company_name in company_names:
+        # Filter unnecessary information off of company string
+        leading_filter = r"^\s*(:?for|and)\s*"
+        code_filter = (
+            r"[(\s,]*"
+            + "(:?"
+            + r".*?\)|".join(config.AWARD_CODES)
+            + r".*?\)"
+            + ")"
+            + r"[)\s,]*"
+        )
+        trailing_filter = r"[\s,]*$"
+        combined_filter = leading_filter + "|" + code_filter + "|" + trailing_filter
+
+        filtered_company_name = re.sub(combined_filter, "", company_name)
+
+        # Find the asterisks
+        asterisks = re.search(r"\*+", filtered_company_name)
+        asterisks = None if asterisks is None else asterisks.group()
+
+        if asterisks is None or asterisks not in footnotes:
+            designation = None
+        else:
+            designation = footnotes[asterisks]
+
+        # Remove them
+        sanitized_company_name = re.sub(r"\*+", "", filtered_company_name).strip()
+
+        company = Company(
+            name=sanitized_company_name,
+            designation=designation,
+        )
+
+        companies.append(company)
+
+    return companies
+
+
+def _process_footnote_section(text, footnotes):
+    """
+    Retrieve relevant information from a DoW announcement footnote section of text.
+    """
+    for line in text.strip().splitlines():
+        # Leading asterisks ignoring spaces and capture the second half
+        match = re.match(r"^\s*(?:\*\s*)*(.*)", text)
+        asterisk_count = match.group(0).count("*")
+        designation = match.group(1).strip()
+
+        footnotes["*" * asterisk_count] = designation
+
+    return footnotes
+
+
+def _get_paragraphs(link):
+    """
+    Get body paragraphs from a DoW daily announcement page.
+    """
+    response = http_get(url=link)
+
+    if response is None or not response.ok:
+        logger.error("Failed to fetch page: %s", link)
+
+        return None
+
+    data = response.text
+
+    soup = BeautifulSoup(data, "html.parser")
+
+    # Scan through every text section
+    body = soup.find(class_="body")
+
+    if body is None:
+        logger.debug("Page has no content")
+
+        return None
+
+    paragraphs = body.find_all("p")
+
+    return paragraphs
+
+
+def _process_paragraphs(paragraphs):
+    """
+    Organize paragraphs by military branch and populate footnotes.
+    """
+    branch_sections, footnotes, branch = {}, {}, None
+
+    # Group sections by branch
+    for paragraph in paragraphs:
+        text = paragraph.text.strip()
+
+        if paragraph.has_attr("style"):
+            branch = text
+        else:
+            for sub_text in text.split("\n"):
+                # Footnote
+                if sub_text.lstrip().startswith("*"):
+                    footnotes = _process_footnote_section(
+                        text=sub_text, footnotes=footnotes
+                    )
+                    pass
+                # Section accidentally separated by newline (Ex: https://www.war.gov/News/Contracts/Contract/Article/4545450/contracts-for-july-14-2026/)
+                elif sub_text[0].islower():
+                    previous_sub_text = branch_sections[branch].pop()
+                    branch_sections.setdefault(branch, []).append(
+                        previous_sub_text + sub_text
+                    )
+                # Actual announcement
+                else:
+                    branch_sections.setdefault(branch, []).append(sub_text)
+
+    return branch_sections, footnotes
+
+
+def _process_branch_sections(branch_sections, footnotes, link):
+    """
+    Retrieve relevant information from each branch announcement.
+    """
+    announcements = []
+
+    # Iterate through each branch
+    for branch, section in branch_sections.items():
+        # Iterate through each announcement
+        for text in section:
+            if not text.strip():
+                logger.debug("Skipping blank text section...")
+
+                continue
+
+            announcement = Announcement(
+                date=_extract_date(link=link),
+                branch=branch,
+                announcement_type="award",
+                companies=[],
+                url=link,
+                footnotes=footnotes,
+                text=text,
+            )
+
+            found = False
+
+            # Identify the type of announcement based on stored patterns
+            for announcement_type, patterns in config.SECTION_PATTERNS.items():
+                if found:
+                    break
+
+                for prefix, suffix in patterns:
+                    match = re.search(
+                        pattern=prefix + r"\s*(.*?)\s*" + suffix,
+                        string=announcement.text,
+                        flags=re.IGNORECASE,
+                    )
+
+                    # Once a match is found, extract relevant information
+                    if match:
+                        announcement.companies = _process_companies(
+                            text=match.group(1), footnotes=footnotes
+                        )
+                        announcement.announcement_type = announcement_type
+
+                        found = True
+
+                        logger.debug("Processed %s section", announcement_type)
+
+                        break
+
+            if not found:
+                logger.debug("Processed unknown section")
+
+            announcements.append(announcement)
+
+    return announcements
+
+
 def _dow_parser(start_date, end_date):
     """
-    Get the daily contract pages for a given search date range and return the announcements on them.
+    Get the daily announcement pages for a given search date range and return the announcements on them.
     """
     results = []
 
     daily_links = _get_daily_links(start_date=start_date, end_date=end_date)
 
     for link in daily_links:
-        response = http_get(url=link)
+        paragraphs = _get_paragraphs(link=link)
 
-        if response is None or not response.ok:
-            logger.error("Failed to fetch page: %s", link)
+        branch_sections, footnotes = _process_paragraphs(paragraphs=paragraphs)
 
-            continue
+        result = _process_branch_sections(
+            branch_sections=branch_sections, footnotes=footnotes, link=link
+        )
 
-        data = response.text
-
-        soup = BeautifulSoup(data, "html.parser")
-
-        branch = None
-
-        # Scan through every text section
-        for i, p in enumerate(soup.find(class_="body").find_all("p")):
-            if p.text.startswith("*"):
-                logger.debug("Footnote in p %s.", str(i + 1))
-            elif p.has_attr("style"):
-                branch = p.text
-
-                logger.debug("Military branch in p %s.", str(i + 1))
-            else:
-                result = _process_section(text=p.text, branch=branch)
-                result.url = link
-                result.date = _extract_date(link=link)
-
-                results.append(result)
-
-                match result.announcement_type:
-                    case "correction":
-                        logger.debug("Correction in p %s.", str(i + 1))
-                    case "update":
-                        logger.debug("Update in p %s.", str(i + 1))
-                    case "single_award":
-                        logger.debug("Single-Award in p %s.", str(i + 1))
-                    case "multi_award":
-                        logger.debug("Multi-Award in p %s.", str(i + 1))
-
-        # Log the found announcements
-        for result in results:
-            if (
-                result.announcement_type == "correction"
-                or result.announcement_type == "update"
-            ):
-                logger.info(
-                    "Date: %s Type: %s",
-                    result.date.strftime("%Y-%m-%d"),
-                    result.announcement_type,
-                )
-            else:
-                logger.info(
-                    "Date: %s Type: %s Companies: %s",
-                    result.date.strftime("%Y-%m-%d"),
-                    result.announcement_type,
-                    result.companies,
-                )
+        results.extend(result)
 
     return results
 
@@ -257,7 +335,7 @@ def run(start_date=None, end_date=None):
     Execute the dow_parser workflow.
     """
     # Setup logging
-    setup_logging()
+    setup_logging(level=None)
 
     logger.debug("Starting dow_parser")
     logger.debug("Argument start_date: %s", start_date)
