@@ -306,7 +306,6 @@ class Tracker:
             if track.has_changed:
                 self._append_history(new_hash)
                 self._save_version(new_hash, new_data)
-                
 
                 if track.is_new:
                     self._append_index(
@@ -323,9 +322,9 @@ class Tracker:
         previous_active = self._load_active()
 
         # Save current active objects IDs
-        #self._save_active()
+        self._save_active()
 
-        #Determine removed objects IDs
+        # Determine removed objects IDs
         removed = previous_active - self.active
 
         # Process removed records
@@ -335,7 +334,7 @@ class Tracker:
             old_hash, old_data = self._get_old()
             new_hash = None
             new_data = None
-            
+
             track = Track(
                 identifier=identifier,
                 label=record["label"],
@@ -344,13 +343,13 @@ class Tracker:
                 new_hash=new_hash,
                 new_data=new_data,
             )
-            
+
             self._append_history(new_hash)
-            
+
             self._append_index(
                 identifier=identifier, label=track.label, event="removed"
             )
 
             results.append(track)
-            
+
         return results

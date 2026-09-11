@@ -51,7 +51,7 @@ def _process_solution(solution_id):
 
     result["company_partner"] = title[0].rstrip(" —")
     result["project"] = title[1]
-    
+
     aside_info = soup.find("aside").find_all("p")
 
     if len(aside_info) == 4:
@@ -65,7 +65,7 @@ def _process_solution(solution_id):
 
     result["problem"] = description[0].find("p").text
     result["solution"] = description[1].find("p").text
-        
+
     return result
 
 
