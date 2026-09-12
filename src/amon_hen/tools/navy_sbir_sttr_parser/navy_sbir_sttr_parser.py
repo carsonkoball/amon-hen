@@ -191,7 +191,7 @@ def _get_listing_links(start_date, end_date, start_index):
     return links
 
 
-def _navy_sbir_parser(start_date, end_date):
+def _navy_sbir_sttr_parser(start_date, end_date):
     """
     Get the daily SBIR/STTR awards and success stories and return relevant information on them.
     """
@@ -267,21 +267,21 @@ def _log_results(results):
 
 def run(start_date, end_date):
     """
-    Execute the navy_sbir_parser workflow.
+    Execute the navy_sbir_sttr_parser workflow.
     """
     # Setup logging
     setup_logging()
 
-    logger.debug("Starting navy_sbir_parser")
+    logger.debug("Starting navy_sbir_sttr_parser...")
     logger.debug("Argument start_date: %s", start_date)
     logger.debug("Argument end_date: %s", end_date)
 
     start_date, end_date = _validate_arguments(start_date=start_date, end_date=end_date)
 
-    results = _navy_sbir_parser(start_date=start_date, end_date=end_date)
+    results = _navy_sbir_sttr_parser(start_date=start_date, end_date=end_date)
 
     _log_results(results)
 
-    logger.debug("Stopping navy_sbir_parser")
+    logger.debug("Stopping navy_sbir_sttr_parser")
 
     return results

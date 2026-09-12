@@ -526,7 +526,7 @@ def run(start_date, end_date):
     # Setup logging
     setup_logging()
 
-    logger.debug("Starting fcc_els_parser")
+    logger.debug("Starting fcc_els_parser...")
     logger.debug("Argument start_date: %s", start_date)
     logger.debug("Argument end_date: %s", end_date)
 

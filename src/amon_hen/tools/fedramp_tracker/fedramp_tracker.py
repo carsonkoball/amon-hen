@@ -192,7 +192,7 @@ def run():
     # Setup logging
     setup_logging()
 
-    logger.debug("Starting fedramp_tracker")
+    logger.debug("Starting fedramp_tracker...")
 
     tracker = Tracker()
 
