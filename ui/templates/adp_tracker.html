@@ -17,6 +17,8 @@
 						type="text"
 						id="cid"
 						name="cid"
+						pattern="^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$"
+						title="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
 						value="{{ cid }}"
 						required
 					>
@@ -27,6 +29,8 @@
 						type="text"
 						id="ccid"
 						name="ccid"
+						pattern="^\d{8}_\d{6}$"
+						title="00000000_000000"
 						value="{{ ccid }}"
 						required
 					>
