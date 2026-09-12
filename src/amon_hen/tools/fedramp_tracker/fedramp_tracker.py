@@ -63,52 +63,6 @@ def _process_listing_index(data, listing_index):
     return listing
 
 
-def _log_results(results, listing_type):
-    """
-    Log the results of the tracking process.
-    """
-    if not results:
-        logger.info("no %s listing changes found", listing_type)
-    else:
-        for result in results:
-            if result.is_new:
-                status = "added"
-            elif result.is_removed:
-                status = "removed"
-            else:
-                status = "modified"
-
-            match result.label["type"]:
-                case "products":
-                    logger.info(
-                        "%s listing %s %s | csp: %s cso: %s",
-                        result.label["type"],
-                        result.identifier,
-                        status,
-                        result.label["csp"],
-                        result.label["cso"],
-                    )
-
-                case "agencies":
-                    logger.info(
-                        "%s listing %s %s | parent: %s sub: %s",
-                        result.label["type"],
-                        result.identifier,
-                        status,
-                        result.label["parent"],
-                        result.label["sub"],
-                    )
-
-                case "assessors" | "advisors":
-                    logger.info(
-                        "%s listing %s %s | name: %s",
-                        result.label["type"],
-                        result.identifier,
-                        status,
-                        result.label["name"],
-                    )
-
-
 def _fedramp_tracker(tracker):
     products_records, agencies_records, assessors_records, advisors_records = (
         {},
@@ -180,12 +134,55 @@ def _fedramp_tracker(tracker):
         records=advisors_records, path=config.LISTING_TYPE_DIR("advisors")
     )
 
-    _log_results(products_results, "products")
-    _log_results(agencies_results, "agencies")
-    _log_results(assessors_results, "assessors")
-    _log_results(advisors_results, "advisors")
-
     return products_results, agencies_results, assessors_results, advisors_results
+
+
+def _log_results(results, listing_type):
+    """
+    Log the results of the tracking process.
+    """
+    if not results:
+        logger.info("no %s listing changes found", listing_type)
+
+        return
+
+    for result in results:
+        if result.is_new:
+            status = "added"
+        elif result.is_removed:
+            status = "removed"
+        else:
+            status = "modified"
+
+        match result.label["type"]:
+            case "products":
+                logger.info(
+                    "%s listing %s %s | csp: %s cso: %s",
+                    result.label["type"],
+                    result.identifier,
+                    status,
+                    result.label["csp"],
+                    result.label["cso"],
+                )
+
+            case "agencies":
+                logger.info(
+                    "%s listing %s %s | parent: %s sub: %s",
+                    result.label["type"],
+                    result.identifier,
+                    status,
+                    result.label["parent"],
+                    result.label["sub"],
+                )
+
+            case "assessors" | "advisors":
+                logger.info(
+                    "%s listing %s %s | name: %s",
+                    result.label["type"],
+                    result.identifier,
+                    status,
+                    result.label["name"],
+                )
 
 
 def run():
@@ -202,6 +199,11 @@ def run():
     products_results, agencies_results, assessors_results, advisors_results = (
         _fedramp_tracker(tracker=tracker)
     )
+
+    _log_results(products_results, "products")
+    _log_results(agencies_results, "agencies")
+    _log_results(assessors_results, "assessors")
+    _log_results(advisors_results, "advisors")
 
     logger.debug("Stopping fedramp_tracker")
 

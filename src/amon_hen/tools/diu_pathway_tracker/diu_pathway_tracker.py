@@ -68,30 +68,6 @@ def _process_pathway(pathway_id, pathway_type):
     return result
 
 
-def _log_results(results, listing_type):
-    """
-    Log the results of the tracking process.
-    """
-    if not results:
-        logger.info("no %s pathway changes found", listing_type)
-    if results:
-        for result in results:
-            if result.is_new:
-                status = "added"
-            elif result.is_removed:
-                status = "removed"
-            else:
-                status = "modified"
-
-            logger.info(
-                "%s pathway %s %s | title: %s",
-                result.label["type"],
-                result.identifier,
-                status,
-                result.label["title"],
-            )
-
-
 def _diu_pathway_tracker(tracker):
     """
     Find DIU pathway changes and return them.
@@ -119,10 +95,33 @@ def _diu_pathway_tracker(tracker):
     cso_results = tracker.track(records=cso_records, path=config.CSO_DIR)
     ccao_results = tracker.track(records=ccao_records, path=config.CCAO_DIR)
 
-    _log_results(cso_results, "CSO")
-    _log_results(ccao_results, "CCAO")
-
     return cso_results, ccao_results
+
+
+def _log_results(results, listing_type):
+    """
+    Log the results of the tracking process.
+    """
+    if not results:
+        logger.info("no %s pathway changes found", listing_type)
+
+        return
+
+    for result in results:
+        if result.is_new:
+            status = "added"
+        elif result.is_removed:
+            status = "removed"
+        else:
+            status = "modified"
+
+        logger.info(
+            "%s pathway %s %s | title: %s",
+            result.label["type"],
+            result.identifier,
+            status,
+            result.label["title"],
+        )
 
 
 def run():
@@ -134,9 +133,12 @@ def run():
 
     tracker = Tracker()
 
-    logger.debug("Starting diu_pathway_tracker")
+    logger.debug("Starting diu_pathway_tracker...")
 
     cso_results, ccao_results = _diu_pathway_tracker(tracker=tracker)
+
+    _log_results(cso_results, "CSO")
+    _log_results(ccao_results, "CCAO")
 
     logger.debug("Stopping diu_pathway_tracker")
 

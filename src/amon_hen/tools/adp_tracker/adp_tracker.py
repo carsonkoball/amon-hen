@@ -63,29 +63,6 @@ def _initialize_company(cid, ccid):
             file.write(json.dumps(obj=entry) + "\n")
 
 
-def _log_results(results):
-    """
-    Log the results of the tracking process.
-    """
-    if not results:
-        logger.info("no listing changes found")
-    else:
-        for result in results:
-            if result.is_new:
-                status = "added"
-            elif result.is_removed:
-                status = "removed"
-            else:
-                status = "modified"
-
-            logger.info(
-                "listing %s %s | title: %s",
-                result.identifier,
-                status,
-                result.label["title"],
-            )
-
-
 def _adp_tracker(cid, ccid, tracker):
     """
     Find newly added and newly removed job postings and return them.
@@ -110,9 +87,32 @@ def _adp_tracker(cid, ccid, tracker):
 
     results = tracker.track(records=records, path=config.COMPANY_DIR(cid=cid))
 
-    _log_results(results)
-
     return results
+
+
+def _log_results(results):
+    """
+    Log the results of the tracking process.
+    """
+    if not results:
+        logger.info("no listing changes found")
+
+        return
+
+    for result in results:
+        if result.is_new:
+            status = "added"
+        elif result.is_removed:
+            status = "removed"
+        else:
+            status = "modified"
+
+        logger.info(
+            "listing %s %s | title: %s",
+            result.identifier,
+            status,
+            result.label["title"],
+        )
 
 
 def run(cid, ccid):
@@ -124,11 +124,13 @@ def run(cid, ccid):
 
     tracker = Tracker()
 
-    logger.debug("Starting adp_tracker")
+    logger.debug("Starting adp_tracker...")
     logger.debug("Argument cid: %s", cid)
     logger.debug("Argument ccid: %s", ccid)
 
     results = _adp_tracker(cid=cid, ccid=ccid, tracker=tracker)
+
+    _log_results(results)
 
     logger.debug("Stopping adp_tracker")
 

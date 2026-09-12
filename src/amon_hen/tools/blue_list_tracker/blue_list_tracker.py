@@ -52,32 +52,6 @@ def _get_listings():
     return cleared_response, framework_response
 
 
-def _log_results(results, listing_type):
-    """
-    Log the results of the tracking process.
-    """
-    if not results:
-        logger.info("no %s listing changes found", listing_type)
-    if results:
-        for result in results:
-            if result.is_new:
-                status = "added"
-            elif result.is_removed:
-                status = "removed"
-            else:
-                status = "modified"
-
-            logger.info(
-                "%s listing %s %s | manufacturer: %s cmdb_model_category: %s name: %s",
-                result.label["list"],
-                result.identifier,
-                status,
-                result.label["manufacturer"],
-                result.label["cmdb_model_category"],
-                result.label["name"],
-            )
-
-
 def _blue_list_tracker(tracker):
     """
     Find blue list changes and return them.
@@ -119,10 +93,35 @@ def _blue_list_tracker(tracker):
         records=framework_records, path=config.FRAMEWORK_DIR
     )
 
-    _log_results(cleared_results, "cleared")
-    _log_results(framework_results, "framework")
-
     return cleared_results, framework_results
+
+
+def _log_results(results, listing_type):
+    """
+    Log the results of the tracking process.
+    """
+    if not results:
+        logger.info("no %s listing changes found", listing_type)
+
+        return
+
+    for result in results:
+        if result.is_new:
+            status = "added"
+        elif result.is_removed:
+            status = "removed"
+        else:
+            status = "modified"
+
+        logger.info(
+            "%s listing %s %s | manufacturer: %s cmdb_model_category: %s name: %s",
+            result.label["list"],
+            result.identifier,
+            status,
+            result.label["manufacturer"],
+            result.label["cmdb_model_category"],
+            result.label["name"],
+        )
 
 
 def run():
@@ -134,9 +133,12 @@ def run():
 
     tracker = Tracker()
 
-    logger.debug("Starting blue_list_tracker")
+    logger.debug("Starting blue_list_tracker...")
 
     cleared_results, framework_results = _blue_list_tracker(tracker=tracker)
+
+    _log_results(cleared_results, "cleared")
+    _log_results(framework_results, "framework")
 
     logger.debug("Stopping blue_list_tracker")
 

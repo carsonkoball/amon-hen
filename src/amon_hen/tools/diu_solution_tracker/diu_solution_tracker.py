@@ -69,32 +69,6 @@ def _process_solution(solution_id):
     return result
 
 
-def _log_results(results):
-    """
-    Log the results of the tracking process.
-    """
-    if not results:
-        logger.info("no solution changes found")
-    if results:
-        for result in results:
-            if result.is_new:
-                status = "added"
-            elif result.is_removed:
-                status = "removed"
-            else:
-                status = "modified"
-
-            logger.info(
-                "%s solution %s %s | company_partner: %s project: %s year_completed: %s",
-                result.label["diu_focus_area"],
-                result.identifier,
-                status,
-                result.label["company_partner"],
-                result.label["project"],
-                result.label["year_completed"],
-            )
-
-
 def _diu_solution_tracker(tracker):
     """
     Find DIU solutions changes and return them.
@@ -118,9 +92,35 @@ def _diu_solution_tracker(tracker):
 
     results = tracker.track(records=records, path=config.SOLUTIONS_DIR)
 
-    _log_results(results)
-
     return results
+
+
+def _log_results(results):
+    """
+    Log the results of the tracking process.
+    """
+    if not results:
+        logger.info("no solution changes found")
+
+        return
+
+    for result in results:
+        if result.is_new:
+            status = "added"
+        elif result.is_removed:
+            status = "removed"
+        else:
+            status = "modified"
+
+        logger.info(
+            "%s solution %s %s | company_partner: %s project: %s year_completed: %s",
+            result.label["diu_focus_area"],
+            result.identifier,
+            status,
+            result.label["company_partner"],
+            result.label["project"],
+            result.label["year_completed"],
+        )
 
 
 def run():
@@ -132,9 +132,11 @@ def run():
 
     tracker = Tracker()
 
-    logger.debug("Starting diu_solution_tracker")
+    logger.debug("Starting diu_solution_tracker...")
 
     results = _diu_solution_tracker(tracker=tracker)
+
+    _log_results(results)
 
     logger.debug("Stopping diu_solution_tracker")
 

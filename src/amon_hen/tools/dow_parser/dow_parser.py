@@ -330,19 +330,42 @@ def _validate_arguments(start_date, end_date):
     return start_date, end_date
 
 
+def _log_results(results):
+    """
+    Log the results of the parsing process.
+    """
+    if not results:
+        logger.info("no announcements found")
+
+        return
+
+    for result in results:
+        companies = [company.name for company in result.companies]
+        logger.info(
+            "%s %s %s announcement | companies: %s",
+            result.date.strftime("%Y-%m-%d"),
+            result.branch,
+            result.announcement_type,
+            companies,
+        )
+
+
 def run(start_date=None, end_date=None):
     """
     Execute the dow_parser workflow.
     """
     # Setup logging
-    setup_logging(level=None)
+    setup_logging()
 
-    logger.debug("Starting dow_parser")
+    logger.debug("Starting dow_parser...")
     logger.debug("Argument start_date: %s", start_date)
     logger.debug("Argument end_date: %s", end_date)
 
     start_date, end_date = _validate_arguments(start_date=start_date, end_date=end_date)
+
     results = _dow_parser(start_date=start_date, end_date=end_date)
+
+    _log_results(results)
 
     logger.debug("Stopping dow_parser")
 

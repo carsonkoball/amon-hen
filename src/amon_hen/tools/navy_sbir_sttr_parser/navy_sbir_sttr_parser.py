@@ -221,19 +221,6 @@ def _navy_sbir_parser(start_date, end_date):
 
         i += 1
 
-    # Log the found awards
-    logger.info(
-        "%d awards found between %s and %s.", len(results), start_date, end_date
-    )
-
-    for result in results:
-        logger.info(
-            "Phase: %s Firm: %s Contract Number: %s",
-            result.phase,
-            result.firm,
-            result.contract_number,
-        )
-
     return results
 
 
@@ -260,6 +247,24 @@ def _validate_arguments(start_date, end_date):
     return start_date, end_date
 
 
+def _log_results(results):
+    """
+    Log the results of the parsing process.
+    """
+    if not results:
+        logger.info("no awards found")
+
+        return
+
+    for result in results:
+        logger.info(
+            "phase %s award %s | firm: %s",
+            result.phase,
+            result.contract_number,
+            result.firm,
+        )
+
+
 def run(start_date, end_date):
     """
     Execute the navy_sbir_parser workflow.
@@ -272,7 +277,10 @@ def run(start_date, end_date):
     logger.debug("Argument end_date: %s", end_date)
 
     start_date, end_date = _validate_arguments(start_date=start_date, end_date=end_date)
+
     results = _navy_sbir_parser(start_date=start_date, end_date=end_date)
+
+    _log_results(results)
 
     logger.debug("Stopping navy_sbir_parser")
 

@@ -1,6 +1,6 @@
 import copy
 from dataclasses import dataclass, asdict
-from datetime import date
+from datetime import date, datetime
 import logging
 
 from bs4 import BeautifulSoup
@@ -21,7 +21,7 @@ class Synopsis:
     grant_link: str | None
     file_number: str
     applicant_name: str
-    receipt_date: str
+    receipt_date: datetime
     status: str
     status_date: str
     application_data: dict | None
@@ -352,7 +352,7 @@ def _parse_search(data):
             ),
             file_number=values[6].text.strip(),
             applicant_name=values[8].text.strip(),
-            receipt_date=values[9].text.strip(),
+            receipt_date=datetime.strptime(values[9].text.strip(), "%m/%d/%Y"),
             status=values[10].text.strip(),
             status_date=values[11].text.strip(),
             application_data=None,
@@ -464,17 +464,6 @@ def _fcc_els_parser(start_date, end_date):
 
         result.application_data = processed_form
 
-    # Log the found applications
-    logger.info("%d found between %s and %s.", len(results), start_date, end_date)
-
-    for result in results:
-        logger.info(
-            "Date: %s File Number: %s Applicant Name: %s",
-            result.receipt_date,
-            result.file_number,
-            result.applicant_name,
-        )
-
     return results
 
 
@@ -500,6 +489,35 @@ def _validate_arguments(start_date, end_date):
 
     return start_date, end_date
 
+    # Log the found applications
+    logger.info("%d found between %s and %s.", len(results), start_date, end_date)
+
+    for result in results:
+        logger.info(
+            "Date: %s File Number: %s Applicant Name: %s",
+            result.receipt_date,
+            result.file_number,
+            result.applicant_name,
+        )
+
+
+def _log_results(results):
+    """
+    Log the results of the parsing process.
+    """
+    if not results:
+        logger.info("no applications found")
+
+        return
+
+    for result in results:
+        logger.info(
+            "%s application %s | applicant_name: %s",
+            result.receipt_date.strftime("%Y-%m-%d"),
+            result.file_number,
+            result.applicant_name,
+        )
+
 
 def run(start_date, end_date):
     """
@@ -513,7 +531,10 @@ def run(start_date, end_date):
     logger.debug("Argument end_date: %s", end_date)
 
     start_date, end_date = _validate_arguments(start_date=start_date, end_date=end_date)
+
     results = _fcc_els_parser(start_date=start_date, end_date=end_date)
+
+    _log_results(results)
 
     logger.debug("Stopping fcc_els_parser")
 
