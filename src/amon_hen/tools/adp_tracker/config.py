@@ -21,7 +21,7 @@ POSTING_URL_TEMPLATE = "https://workforcenow.adp.com/mascsr/default/careercenter
 COMPANY_URL_TEMPLATE = "https://workforcenow.adp.com/mascsr/default/careercenter/public/events/staffing/client-features?cid={cid}&timeStamp={timestamp}&ccId={ccid}&ccId={ccid}&lang=en_US"
 
 # Argument settings
-# XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+# xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 CID_PATTERN = r"^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$"
 
 # 00000000_000000
