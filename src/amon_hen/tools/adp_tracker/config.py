@@ -19,3 +19,10 @@ N_TOP = 999
 POSTINGS_URL_TEMPLATE = "https://workforcenow.adp.com/mascsr/default/careercenter/public/events/staffing/v1/job-requisitions?cid={cid}&timeStamp={timestamp}&ccId={ccid}&lang=en_US&ccId={ccid}&locale=en_US&$top={n_top}"
 POSTING_URL_TEMPLATE = "https://workforcenow.adp.com/mascsr/default/careercenter/public/events/staffing/v1/job-requisitions/{external_job_id}?cid={cid}&timeStamp={timestamp}&ccId={ccid}&lang=en_US&ccId={ccid}&locale=en_US"
 COMPANY_URL_TEMPLATE = "https://workforcenow.adp.com/mascsr/default/careercenter/public/events/staffing/client-features?cid={cid}&timeStamp={timestamp}&ccId={ccid}&ccId={ccid}&lang=en_US"
+
+# Argument settings
+# XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+CID_PATTERN = r"^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$"
+
+# 00000000_000000
+CCID_PATTERN = r"^\d{8}_\d{6}$"

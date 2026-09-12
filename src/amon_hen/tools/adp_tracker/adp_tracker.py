@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 import json
 import logging
+import re
 
 from . import config
 from amon_hen.common.filesystem import ensure_file
@@ -90,6 +91,29 @@ def _adp_tracker(cid, ccid, tracker):
     return results
 
 
+def _validate_arguments(cid, ccid):
+    """
+    Ensure that inputted arguments are of valid types, values, etc.
+    """
+    # cid must be string
+    if not isinstance(cid, str):
+        raise TypeError("cid must be a string.")
+
+    # ccid must be a string
+    if not isinstance(ccid, str):
+        raise TypeError("ccid must be a string.")
+
+    # cid must follow specified format
+    if not re.fullmatch(config.CID_PATTERN, cid):
+        raise ValueError(f"cid must match the pattern r'{config.CID_PATTERN}'")
+
+    # ccid must follow specified format
+    if not re.fullmatch(config.CCID_PATTERN, ccid):
+        raise ValueError(f"ccid must match the pattern r'{config.CCID_PATTERN}'")
+
+    return cid, ccid
+
+
 def _log_results(results):
     """
     Log the results of the tracking process.
@@ -127,6 +151,8 @@ def run(cid, ccid):
     logger.debug("Starting adp_tracker...")
     logger.debug("Argument cid: %s", cid)
     logger.debug("Argument ccid: %s", ccid)
+
+    cid, ccid = _validate_arguments(cid=cid, ccid=ccid)
 
     results = _adp_tracker(cid=cid, ccid=ccid, tracker=tracker)
 
