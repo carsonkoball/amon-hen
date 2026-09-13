@@ -46,7 +46,7 @@
 			
 			{% elif results == [] %}
 			
-				<p>No applications for {{ search_date.strftime("%B") }} {{ search_date.day }}, {{ search_date.year }} found.</p>
+				<p>No applications found between {{ start_date.strftime("%B") }} {{ start_date.day }}, {{ start_date.year }} and {{ end_date.strftime("%B") }} {{ end_date.day }}, {{ end_date.year }}.</p>
 				
 			{% else %}
 
