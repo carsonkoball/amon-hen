@@ -1,4 +1,4 @@
-# Scripts
+# Script information
 SCRIPTS = [
     {
         "name": "ADP Tracker",
@@ -14,6 +14,11 @@ SCRIPTS = [
         "name": "DIU Pathway Tracker",
         "description": "Monitors the Defense Innovation Unit (DIU) solicitation pathways page.",
         "slug": "diu_pathway_tracker",
+    },
+    {
+        "name": "DIU Solution Tracker",
+        "description": "Monitors the Defense Innovation Unit (DIU) Commercial Solutions Catalog.",
+        "slug": "diu_solution_tracker",
     },
     {
         "name": "DoW Parser",
