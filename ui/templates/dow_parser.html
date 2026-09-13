@@ -61,34 +61,45 @@
 								
 								{% if result.announcement_type == "correction" %}
 								
-									<li><p><b>{{ result.branch }} Correction</b></p></li>
-									
-								{% elif result.announcement_type == "update" %}
-								
-									<li><p><b>{{ result.branch }} Update</b></p></li>
-									
-								{% elif result.announcement_type == "single_award" %}
-									
-									<li><p><b>{{ result.branch }} Single-Award Contract:</b></p></li>
-									<ul>
-										<li><p>{{ result.companies[0] }}<p></li>
-									</ul>
-									
-								{% elif result.announcement_type == "multi_award" %}
-								
-									<li><p><b>{{ result.branch }} Multi-Award Contract:</b></p></li>
+									<li><p><b>{{ result.branch }} Correction:</b></p></li>
 									<ul>
 									
 										{% for company in result.companies %}
 										
-											<li><p>{{ company }}<p></li>
+											<li><p>{{ company.name }}<p></li>
 										
 										{% endfor %}
 										
 									</ul>
 									
-								{% endif %}	
-							
+								{% elif result.announcement_type == "update" %}
+								
+									<li><p><b>{{ result.branch }} Update:</b></p></li>
+									<ul>
+									
+										{% for company in result.companies %}
+										
+											<li><p>{{ company.name }}<p></li>
+										
+										{% endfor %}
+										
+									</ul>
+									
+								{% elif result.announcement_type == "award" %}
+									
+									<li><p><b>{{ result.branch }} Award:</b></p></li>
+									<ul>
+									
+										{% for company in result.companies %}
+										
+											<li><p>{{ company.name }}<p></li>
+										
+										{% endfor %}
+										
+									</ul>
+									
+								{% endif %}
+									
 							{% endfor %}
 						
 						<ul>
