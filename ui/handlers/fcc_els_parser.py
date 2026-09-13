@@ -13,7 +13,7 @@ def handle(script):
     if request.method == "POST":
         start_date = date.fromisoformat(request.form["start_date"])
         end_date = date.fromisoformat(request.form["end_date"])
-        
+
         results = fcc_els_parser.run(start_date=start_date, end_date=end_date)
 
     return render_template(
