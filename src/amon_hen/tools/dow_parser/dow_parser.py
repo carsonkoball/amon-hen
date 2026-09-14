@@ -209,7 +209,7 @@ def _process_paragraphs(paragraphs):
                     )
                     pass
                 # Section accidentally separated by newline (Ex: https://www.war.gov/News/Contracts/Contract/Article/4545450/contracts-for-july-14-2026/)
-                elif sub_text[0].islower():
+                elif sub_text[0].islower() or sub_text[0] == "(":
                     previous_sub_text = branch_sections[branch].pop()
                     branch_sections.setdefault(branch, []).append(
                         previous_sub_text + sub_text
