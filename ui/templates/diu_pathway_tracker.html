@@ -40,30 +40,30 @@
 							
 							<p><b>New {{ result["label"]["type"] }} Pathway:</b></p>
 							<ul>
-								<li><p><b>ID:</b> {{ result.new_data["id"] }}</p></li>
-								<li><p><b>Title:</b> {{ result.new_data["title"] }}</p></li>
-								<li><p><b>Due By:</b> {{ result.new_data["due_by"] }}</p></li>
-								<li><p><b>Description:</b> {{ result.new_data["description"] | safe }}</p></li>
+								<li><p><b>ID:</b> {{ result.new_data["data"]["id"] }}</p></li>
+								<li><p><b>Title:</b> {{ result.new_data["data"]["title"] }}</p></li>
+								<li><p><b>Due By:</b> {{ result.new_data["data"]["due_by"] }}</p></li>
+								<li><p><b>Description:</b> {{ result.new_data["data"]["description"] | safe }}</p></li>
 							</ul>
 						
 						{% elif result.is_removed %}
 						
 							<p><b>Removed {{ result["type"] }} Pathway:</b></p>
 							<ul>
-								<li><p><b>ID:</b> {{ result.old_data["id"] }}</p></li>
-								<li><p><b>Title:</b> {{ result.old_data["title"] }}</p></li>
-								<li><p><b>Due By:</b> {{ result.old_data["due_by"] }}</p></li>
-								<li><p><b>Description:</b> {{ result.old_data["description"] | safe }}</p></li>
+								<li><p><b>ID:</b> {{ result.old_data["data"]["id"] }}</p></li>
+								<li><p><b>Title:</b> {{ result.old_data["data"]["title"] }}</p></li>
+								<li><p><b>Due By:</b> {{ result.old_data["data"]["due_by"] }}</p></li>
+								<li><p><b>Description:</b> {{ result.old_data["data"]["description"] | safe }}</p></li>
 							</ul>
 							
 						{% else %}
 						
 							<p><b>Modified {{ result["type"] }} Pathway:</b></p>
 							<ul>
-								<li><p><b>ID:</b> {{ result.new_data["id"] }}</p></li>
-								<li><p><b>Title:</b> {{ result.new_data["title"] }}</p></li>
-								<li><p><b>Due By:</b> {{ result.new_data["due_by"] }}</p></li>
-								<li><p><b>Description:</b> {{ result.new_data["description"] | safe }}</p></li>
+								<li><p><b>ID:</b> {{ result.new_data["data"]["id"] }}</p></li>
+								<li><p><b>Title:</b> {{ result.new_data["data"]["title"] }}</p></li>
+								<li><p><b>Due By:</b> {{ result.new_data["data"]["due_by"] }}</p></li>
+								<li><p><b>Description:</b> {{ result.new_data["data"]["description"] | safe }}</p></li>
 							</ul>
 							
 						{% endif %}
@@ -79,30 +79,30 @@
 							
 							<p><b>New {{ result["label"]["type"] }} Pathway:</b></p>
 							<ul>
-								<li><p><b>ID:</b> {{ result.new_data["id"] }}</p></li>
-								<li><p><b>Title:</b> {{ result.new_data["title"] }}</p></li>
-								<li><p><b>Due By:</b> {{ result.new_data["due_by"] }}</p></li>
-								<li><p><b>Description:</b> {{ result.new_data["description"] | safe }}</p></li>
+								<li><p><b>ID:</b> {{ result.new_data["data"]["id"] }}</p></li>
+								<li><p><b>Title:</b> {{ result.new_data["data"]["title"] }}</p></li>
+								<li><p><b>Due By:</b> {{ result.new_data["data"]["due_by"] }}</p></li>
+								<li><p><b>Description:</b> {{ result.new_data["data"]["description"] | safe }}</p></li>
 							</ul>
 						
 						{% elif result.is_removed %}
 						
 							<p><b>Removed {{ result["type"] }} Pathway:</b></p>
 							<ul>
-								<li><p><b>ID:</b> {{ result.old_data["id"] }}</p></li>
-								<li><p><b>Title:</b> {{ result.old_data["title"] }}</p></li>
-								<li><p><b>Due By:</b> {{ result.old_data["due_by"] }}</p></li>
-								<li><p><b>Description:</b> {{ result.old_data["description"] | safe }}</p></li>
+								<li><p><b>ID:</b> {{ result.old_data["data"]["id"] }}</p></li>
+								<li><p><b>Title:</b> {{ result.old_data["data"]["title"] }}</p></li>
+								<li><p><b>Due By:</b> {{ result.old_data["data"]["due_by"] }}</p></li>
+								<li><p><b>Description:</b> {{ result.old_data["data"]["description"] | safe }}</p></li>
 							</ul>
 							
 						{% else %}
 						
 							<p><b>Modified {{ result["type"] }} Pathway:</b></p>
 							<ul>
-								<li><p><b>ID:</b> {{ result.new_data["id"] }}</p></li>
-								<li><p><b>Title:</b> {{ result.new_data["title"] }}</p></li>
-								<li><p><b>Due By:</b> {{ result.new_data["due_by"] }}</p></li>
-								<li><p><b>Description:</b> {{ result.new_data["description"] | safe }}</p></li>
+								<li><p><b>ID:</b> {{ result.new_data["data"]["id"] }}</p></li>
+								<li><p><b>Title:</b> {{ result.new_data["data"]["title"] }}</p></li>
+								<li><p><b>Due By:</b> {{ result.new_data["data"]["due_by"] }}</p></li>
+								<li><p><b>Description:</b> {{ result.new_data["data"]["description"] | safe }}</p></li>
 							</ul>
 							
 						{% endif %}

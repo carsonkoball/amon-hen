@@ -40,33 +40,33 @@
 						
 							<p><b>New Cleared Listing:</b></p>
 							<ul>
-								<li><p><b>ID:</b> {{ result.new_data["sys_id"] }}</p></li>
-								<li><p><b>Type:</b> {{ result.new_data["cmdb_model_category"]["display_value"] }}</p></li>
-								<li><p><b>Name:</b> {{ result.new_data["name"]["display_value"] }}</p></li>
-								<li><p><b>Manufacturer:</b> {{ result.new_data["manufacturer"]["display_value"] }}</p></li>
-								<li><p><b>Creation Date:</b> {{ result.new_data["sys_created_on"]["display_value"] }}</p></li>
+								<li><p><b>ID:</b> {{ result.new_data["data"]["sys_id"] }}</p></li>
+								<li><p><b>Type:</b> {{ result.new_data["data"]["cmdb_model_category"]["display_value"] }}</p></li>
+								<li><p><b>Name:</b> {{ result.new_data["data"]["name"]["display_value"] }}</p></li>
+								<li><p><b>Manufacturer:</b> {{ result.new_data["data"]["manufacturer"]["display_value"] }}</p></li>
+								<li><p><b>Creation Date:</b> {{ result.new_data["data"]["sys_created_on"]["display_value"] }}</p></li>
 							</ul>
 							
 						{% elif result.is_removed %}
 						
 							<p><b>Removed Cleared Listing:</b></p>
 							<ul>
-								<li><p><b>ID:</b> {{ result.old_data["sys_id"] }}</p></li>
-								<li><p><b>Type:</b> {{ result.old_data["cmdb_model_category"]["display_value"] }}</p></li>
-								<li><p><b>Name:</b> {{ result.old_data["name"]["display_value"] }}</p></li>
-								<li><p><b>Manufacturer:</b> {{ result.old_data["manufacturer"]["display_value"] }}</p></li>
-								<li><p><b>Creation Date:</b> {{ result.old_data["sys_created_on"]["display_value"] }}</p></li>
+								<li><p><b>ID:</b> {{ result.old_data["data"]["sys_id"] }}</p></li>
+								<li><p><b>Type:</b> {{ result.old_data["data"]["cmdb_model_category"]["display_value"] }}</p></li>
+								<li><p><b>Name:</b> {{ result.old_data["data"]["name"]["display_value"] }}</p></li>
+								<li><p><b>Manufacturer:</b> {{ result.old_data["data"]["manufacturer"]["display_value"] }}</p></li>
+								<li><p><b>Creation Date:</b> {{ result.old_data["data"]["sys_created_on"]["display_value"] }}</p></li>
 							</ul>
 							
 						{% else %}
 						
 							<p><b>Modified Cleared Listing:</b></p>
 							<ul>
-								<li><p><b>ID:</b> {{ result.new_data["sys_id"] }}</p></li>
-								<li><p><b>Type:</b> {{ result.new_data["cmdb_model_category"]["display_value"] }}</p></li>
-								<li><p><b>Name:</b> {{ result.new_data["name"]["display_value"] }}</p></li>
-								<li><p><b>Manufacturer:</b> {{ result.new_data["manufacturer"]["display_value"] }}</p></li>
-								<li><p><b>Creation Date:</b> {{ result.new_data["sys_created_on"]["display_value"] }}</p></li>
+								<li><p><b>ID:</b> {{ result.new_data["data"]["sys_id"] }}</p></li>
+								<li><p><b>Type:</b> {{ result.new_data["data"]["cmdb_model_category"]["display_value"] }}</p></li>
+								<li><p><b>Name:</b> {{ result.new_data["data"]["name"]["display_value"] }}</p></li>
+								<li><p><b>Manufacturer:</b> {{ result.new_data["data"]["manufacturer"]["display_value"] }}</p></li>
+								<li><p><b>Creation Date:</b> {{ result.new_data["data"]["sys_created_on"]["display_value"] }}</p></li>
 							</ul>
 							
 						{% endif %}
@@ -82,33 +82,33 @@
 						
 							<p><b>New Framework Listing:</b></p>
 							<ul>
-								<li><p><b>ID:</b> {{ result.new_data["sys_id"] }}</p></li>
-								<li><p><b>Type:</b> {{ result.new_data["cmdb_model_category"]["display_value"] }}</p></li>
-								<li><p><b>Name:</b> {{ result.new_data["name"]["display_value"] }}</p></li>
-								<li><p><b>Manufacturer:</b> {{ result.new_data["manufacturer"]["display_value"] }}</p></li>
-								<li><p><b>Creation Date:</b> {{ result.new_data["sys_created_on"]["display_value"] }}</p></li>
+								<li><p><b>ID:</b> {{ result.new_data["data"]["sys_id"] }}</p></li>
+								<li><p><b>Type:</b> {{ result.new_data["data"]["cmdb_model_category"]["display_value"] }}</p></li>
+								<li><p><b>Name:</b> {{ result.new_data["data"]["name"]["display_value"] }}</p></li>
+								<li><p><b>Manufacturer:</b> {{ result.new_data["data"]["manufacturer"]["display_value"] }}</p></li>
+								<li><p><b>Creation Date:</b> {{ result.new_data["data"]["sys_created_on"]["display_value"] }}</p></li>
 							</ul>
 							
 						{% elif result.is_removed %}
 						
 							<p><b>Removed Framework Listing:</b></p>
 							<ul>
-								<li><p><b>ID:</b> {{ result.old_data["sys_id"] }}</p></li>
-								<li><p><b>Type:</b> {{ result.old_data["cmdb_model_category"]["display_value"] }}</p></li>
-								<li><p><b>Name:</b> {{ result.old_data["name"]["display_value"] }}</p></li>
-								<li><p><b>Manufacturer:</b> {{ result.old_data["manufacturer"]["display_value"] }}</p></li>
-								<li><p><b>Creation Date:</b> {{ result.old_data["sys_created_on"]["display_value"] }}</p></li>
+								<li><p><b>ID:</b> {{ result.old_data["data"]["sys_id"] }}</p></li>
+								<li><p><b>Type:</b> {{ result.old_data["data"]["cmdb_model_category"]["display_value"] }}</p></li>
+								<li><p><b>Name:</b> {{ result.old_data["data"]["name"]["display_value"] }}</p></li>
+								<li><p><b>Manufacturer:</b> {{ result.old_data["data"]["manufacturer"]["display_value"] }}</p></li>
+								<li><p><b>Creation Date:</b> {{ result.old_data["data"]["sys_created_on"]["display_value"] }}</p></li>
 							</ul>
 							
 						{% else %}
 						
 							<p><b>Modified Framework Listing:</b></p>
 							<ul>
-								<li><p><b>ID:</b> {{ result.new_data["sys_id"] }}</p></li>
-								<li><p><b>Type:</b> {{ result.new_data["cmdb_model_category"]["display_value"] }}</p></li>
-								<li><p><b>Name:</b> {{ result.new_data["name"]["display_value"] }}</p></li>
-								<li><p><b>Manufacturer:</b> {{ result.new_data["manufacturer"]["display_value"] }}</p></li>
-								<li><p><b>Creation Date:</b> {{ result.new_data["sys_created_on"]["display_value"] }}</p></li>
+								<li><p><b>ID:</b> {{ result.new_data["data"]["sys_id"] }}</p></li>
+								<li><p><b>Type:</b> {{ result.new_data["data"]["cmdb_model_category"]["display_value"] }}</p></li>
+								<li><p><b>Name:</b> {{ result.new_data["data"]["name"]["display_value"] }}</p></li>
+								<li><p><b>Manufacturer:</b> {{ result.new_data["data"]["manufacturer"]["display_value"] }}</p></li>
+								<li><p><b>Creation Date:</b> {{ result.new_data["data"]["sys_created_on"]["display_value"] }}</p></li>
 							</ul>
 							
 						{% endif %}

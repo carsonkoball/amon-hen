@@ -290,7 +290,11 @@ class Tracker:
 
             old_hash, old_data = self._get_old()
             new_hash = self._hash_data(record["data"])
-            new_data = record["data"]
+            new_data = {
+                "identifier": identifier,
+                "label": record["label"],
+                "data": record["data"],
+            }
 
             track = Track(
                 identifier=identifier,
@@ -337,7 +341,7 @@ class Tracker:
 
             track = Track(
                 identifier=identifier,
-                label=record["label"],
+                label=old_data["label"],
                 old_hash=old_hash,
                 old_data=old_data,
                 new_hash=new_hash,
