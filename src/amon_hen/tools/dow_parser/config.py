@@ -40,6 +40,7 @@ AWARD_PHRASES = [
     "was awarded",
     "was competitively awarded",
     "were awarded",
+    "were each awarded",
     "will be awarded",
     "will compete",
     "will each be awarded",
@@ -87,7 +88,7 @@ AWARD_PATTERNS = [
 CORRECTION_PATTERNS = [
     (
         r".*?(?:contract|modification|delivery order).*?announced.*?on.*?(?:for |to )",
-        r"(?:, for|, was| under solicitation)",
+        r"(?:\) for|, for|, was| under solicitation)",
     ),
     # https://www.war.gov/News/Contracts/Contract/Article/4588178/contracts-for-sept-1-2026/
     (
