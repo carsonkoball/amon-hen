@@ -88,7 +88,7 @@ AWARD_PATTERNS = [
 CORRECTION_PATTERNS = [
     (
         r".*?(?:contract|modification|delivery order).*?announced.*?on.*?(?:for |to )",
-        r"(?:\) for|, for|, was| under solicitation)",
+        r"(?:,? for|, was| under solicitation)",
     ),
     # https://www.war.gov/News/Contracts/Contract/Article/4588178/contracts-for-sept-1-2026/
     (
