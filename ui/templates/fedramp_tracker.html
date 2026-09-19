@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Amon Hen UI - {{ title }}
+{% endblock %}
+
+{% block content %}
+	<section>
+		<div class="section-title">
+			<h2>Input Parameters</h2>
+		</div>
+		<div class="section-content">
+			<form method="POST">
+				<button type="submit">
+					Run
+				</button>
+			</form>
+		</div>
+	</section>
+	<section>
+		<div class="section-title">
+			<h2>Output</h2>
+		</div>
+		<div class="section-content">
+			{% if products_results is none and agencies_results is none and assessors_results is none and advisors_results is none %}
+			
+				<p>No output yet.<p>
+				
+			{% elif products_results == [] and agencies_results == [] and assessors_results == [] and advisors_results == [] %}
+			
+				<p>No changes found.</p>
+				
+			{% else %} 
+			
+				{% for result in products_results %}
+					
+					<div class"output-entry">
+					
+						{% if result.is_new %}
+							
+							<p><b>New Product:</b></p>
+							<ul>
+								<li><p><b>ID:</b> {{ result.new_data["data"]["id"] }}</p></li>
+								<li><p><b>CSP:</b> {{ result.new_data["data"]["csp"] }}</p></li>
+								<li><p><b>CSO:</b> {{ result.new_data["data"]["cso"] }}</p></li>
+								<li><p><b>Description:</b> {{ result.new_data["data"]["service_desc"] }}</p></li>
+							</ul>
+						
+						{% elif result.is_removed %}
+						
+							<p><b>Removed Product:</b></p>
+							<ul>
+								<li><p><b>ID:</b> {{ result.old_data["data"]["id"] }}</p></li>
+								<li><p><b>CSP:</b> {{ result.old_data["data"]["csp"] }}</p></li>
+								<li><p><b>CSO:</b> {{ result.old_data["data"]["cso"] }}</p></li>
+								<li><p><b>Description:</b> {{ result.old_data["data"]["service_desc"] }}</p></li>
+							</ul>
+							
+						{% else %}
+						
+							<p><b>Modified Product:</b></p>
+							<ul>
+								<li><p><b>ID:</b> {{ result.new_data["data"]["id"] }}</p></li>
+								<li><p><b>CSP:</b> {{ result.new_data["data"]["csp"] }}</p></li>
+								<li><p><b>CSO:</b> {{ result.new_data["data"]["cso"] }}</p></li>
+								<li><p><b>Description:</b> {{ result.new_data["data"]["service_desc"] }}</p></li>
+							</ul>
+							
+						{% endif %}
+						
+					</div>
+					
+				{% endfor %}
+				{% for result in agencies_results %}
+					
+					<div class"output-entry">
+					
+						{% if result.is_new %}
+							
+							<p><b>New Agency:</b></p>
+							<ul>
+								<li><p><b>ID:</b> {{ result.new_data["data"]["id"] }}</p></li>
+								<li><p><b>Parent:</b> {{ result.new_data["data"]["parent"] }}</p></li>
+								<li><p><b>Sub:</b> {{ result.new_data["data"]["sub"] }}</p></li>
+							</ul>
+						
+						{% elif result.is_removed %}
+						
+							<p><b>Removed Agency:</b></p>
+							<ul>
+								<li><p><b>ID:</b> {{ result.old_data["data"]["id"] }}</p></li>
+								<li><p><b>Parent:</b> {{ result.old_data["data"]["parent"] }}</p></li>
+								<li><p><b>Sub:</b> {{ result.old_data["data"]["sub"] }}</p></li>
+							</ul>
+							
+						{% else %}
+						
+							<p><b>Modified Agency:</b></p>
+							<ul>
+								<li><p><b>ID:</b> {{ result.new_data["data"]["id"] }}</p></li>
+								<li><p><b>Parent:</b> {{ result.new_data["data"]["parent"] }}</p></li>
+								<li><p><b>Sub:</b> {{ result.new_data["data"]["sub"] }}</p></li>
+							</ul>
+							
+						{% endif %}
+						
+					</div>
+					
+				{% endfor %}
+				{% for result in assessors_results %}
+					
+					<div class"output-entry">
+					
+						{% if result.is_new %}
+							
+							<p><b>New Assessor:</b></p>
+							<ul>
+								<li><p><b>ID:</b> {{ result.new_data["data"]["id"] }}</p></li>
+								<li><p><b>Name:</b> {{ result.new_data["data"]["name"] }}</p></li>
+								<li><p><b>Description:</b> {{ result.new_data["data"]["desc"] }}</p></li>
+								<li><p><b>Services:</b> {{ result.new_data["data"]["services"] }}</p></li>
+							</ul>
+						
+						{% elif result.is_removed %}
+						
+							<p><b>Removed Assessor:</b></p>
+							<ul>
+								<li><p><b>ID:</b> {{ result.old_data["data"]["id"] }}</p></li>
+								<li><p><b>Name:</b> {{ result.old_data["data"]["name"] }}</p></li>
+								<li><p><b>Description:</b> {{ result.old_data["data"]["desc"] }}</p></li>
+								<li><p><b>Services:</b> {{ result.old_data["data"]["services"] }}</p></li>
+							</ul>
+							
+						{% else %}
+						
+							<p><b>Modififed Assessor:</b></p>
+							<ul>
+								<li><p><b>ID:</b> {{ result.new_data["data"]["id"] }}</p></li>
+								<li><p><b>Name:</b> {{ result.new_data["data"]["name"] }}</p></li>
+								<li><p><b>Description:</b> {{ result.new_data["data"]["desc"] }}</p></li>
+								<li><p><b>Services:</b> {{ result.new_data["data"]["services"] }}</p></li>
+							</ul>
+							
+						{% endif %}
+						
+					</div>
+					
+				{% endfor %}
+				{% for result in advisors_results %}
+					
+					<div class"output-entry">
+					
+						{% if result.is_new %}
+							
+							<p><b>New Advisor:</b></p>
+							<ul>
+								<li><p><b>ID:</b> {{ result.new_data["data"]["id"] }}</p></li>
+								<li><p><b>Name:</b> {{ result.new_data["data"]["name"] }}</p></li>
+								<li><p><b>Description:</b> {{ result.new_data["data"]["desc"] }}</p></li>
+								<li><p><b>Services:</b> {{ result.new_data["data"]["services"] }}</p></li>
+							</ul>
+						
+						{% elif result.is_removed %}
+						
+							<p><b>Removed Advisor:</b></p>
+							<ul>
+								<li><p><b>ID:</b> {{ result.old_data["data"]["id"] }}</p></li>
+								<li><p><b>Name:</b> {{ result.old_data["data"]["name"] }}</p></li>
+								<li><p><b>Description:</b> {{ result.old_data["data"]["desc"] }}</p></li>
+								<li><p><b>Services:</b> {{ result.old_data["data"]["services"] }}</p></li>
+							</ul>
+							
+						{% else %}
+						
+							<p><b>Modififed Advisor:</b></p>
+							<ul>
+								<li><p><b>ID:</b> {{ result.new_data["data"]["id"] }}</p></li>
+								<li><p><b>Name:</b> {{ result.new_data["data"]["name"] }}</p></li>
+								<li><p><b>Description:</b> {{ result.new_data["data"]["desc"] }}</p></li>
+								<li><p><b>Services:</b> {{ result.new_data["data"]["services"] }}</p></li>
+							</ul>
+							
+						{% endif %}
+						
+					</div>
+					
+				{% endfor %}
+				
+			{% endif %}
+		</div>
+	</section>
+{% endblock %}

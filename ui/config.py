@@ -31,6 +31,11 @@ SCRIPTS = [
         "slug": "fcc_els_parser",
     },
     {
+        "name": "FedRAMP Tracker",
+        "description": "Monitors the Federal Risk and Authorization Management Program (FedRAMP) marketplace.",
+        "slug": "fedramp_tracker",
+    },
+    {
         "name": "Navy SBIR/STTR Parser",
         "description": "Monitors the Navy Small Business Innovation Research (SBIR) and Small Business Technology Transfer (STTR) awards and success stories page.",
         "slug": "navy_sbir_sttr_parser",
