@@ -32,6 +32,8 @@ Monitors the Defense Innovation Unit (DIU) Solicitation Pathways page.
 - Archives CSO pathways locally
 - Tracks new, removed, and modified Challenges or Commercial Acceleration Opportunities (CCAO) pathways
 - Archives CCAO pathways locally
+- Tracks new, removed, and modified Bridge Program pathways
+- Archives Bridge pathways locally
 
 ### diu_solution_tracker
 Monitors the Defense Innovation Unit (DIU) Commercial Solutions Catalog.

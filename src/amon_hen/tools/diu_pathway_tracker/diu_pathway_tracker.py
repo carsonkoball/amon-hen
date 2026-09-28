@@ -33,14 +33,21 @@ def _get_pathway_ids():
     ccao_pathway_ids = [
         ccao_pathway["href"].split("/")[-1] for ccao_pathway in ccao_pathways
     ]
-
+    
+    # Find Bridge Pathways
+    bridge_pathways = soup.find_all(class_="pathway")[5].find_all("a")
+    bridge_pathway_ids = [
+        bridge_pathway["href"].split("/")[-1] for bridge_pathway in bridge_pathways
+    ]
+    
     logger.debug(
-        "Retrieved %d CSO pathways and %d CCAO pathways",
+        "Retrieved %d CSO pathways, %d CCAO pathways, and %d Bridge pathways",
         len(cso_pathway_ids),
         len(ccao_pathway_ids),
+        len(bridge_pathway_ids)
     )
 
-    return cso_pathway_ids, ccao_pathway_ids
+    return cso_pathway_ids, ccao_pathway_ids, bridge_pathway_ids
 
 
 def _process_pathway(pathway_id, pathway_type):
@@ -72,9 +79,9 @@ def _diu_pathway_tracker(tracker):
     """
     Find DIU pathway changes and return them.
     """
-    cso_records, ccao_records = {}, {}
+    cso_records, ccao_records, bridge_records = {}, {}, {}
 
-    cso_pathway_ids, ccao_pathway_ids = _get_pathway_ids()
+    cso_pathway_ids, ccao_pathway_ids, bridge_pathway_ids = _get_pathway_ids()
 
     # Process CSO pathways
     for pathway_id in cso_pathway_ids:
@@ -91,11 +98,20 @@ def _diu_pathway_tracker(tracker):
         label = {"type": pathway["type"], "title": pathway["title"]}
 
         ccao_records[pathway_id] = {"label": label, "data": pathway}
+        
+    # Process Bridge pathways
+    for pathway_id in bridge_pathway_ids:
+        pathway = _process_pathway(pathway_id, "Bridge")
+        
+        label = {"type": pathway["type"], "title": pathway["title"]}
+        
+        bridge_records[pathway_id] = {"label": label, "data": pathway}
 
     cso_results = tracker.track(records=cso_records, path=config.CSO_DIR)
     ccao_results = tracker.track(records=ccao_records, path=config.CCAO_DIR)
+    bridge_results = tracker.track(records=bridge_records, path=config.BRIDGE_DIR)
 
-    return cso_results, ccao_results
+    return cso_results, ccao_results, bridge_results
 
 
 def _log_results(results, listing_type):
@@ -135,11 +151,12 @@ def run():
 
     logger.debug("Starting diu_pathway_tracker...")
 
-    cso_results, ccao_results = _diu_pathway_tracker(tracker=tracker)
+    cso_results, ccao_results, bridge_results = _diu_pathway_tracker(tracker=tracker)
 
     _log_results(cso_results, "CSO")
     _log_results(ccao_results, "CCAO")
+    _log_results(bridge_results, "Bridge")
 
     logger.debug("Stopping diu_pathway_tracker")
 
-    return cso_results, ccao_results
+    return cso_results, ccao_results, bridge_results

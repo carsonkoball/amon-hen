@@ -7,10 +7,10 @@ from amon_hen.tools import diu_pathway_tracker
 
 
 def handle(script):
-    cso_results, ccao_results = None, None
+    cso_results, ccao_results, bridge_results = None, None, None
 
     if request.method == "POST":
-        cso_results, ccao_results = diu_pathway_tracker.run()
+        cso_results, ccao_results, bridge_results = diu_pathway_tracker.run()
 
     return render_template(
         "diu_pathway_tracker.html",
@@ -19,4 +19,5 @@ def handle(script):
         back_link_visibility="visible",
         cso_results=cso_results,
         ccao_results=ccao_results,
+        bridge_results=bridge_results,
     )

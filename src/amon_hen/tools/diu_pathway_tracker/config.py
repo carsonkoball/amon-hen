@@ -10,6 +10,7 @@ LOG_DIR = get_script_log_dir(SCRIPT_NAME)
 
 CSO_DIR = DATA_DIR / "cso"
 CCAO_DIR = DATA_DIR / "ccao"
+BRIDGE_DIR = DATA_DIR / "bridge"
 
 # URLs
 LISTINGS_URL = "https://www.diu.mil/work-with-us/open-solicitations"
