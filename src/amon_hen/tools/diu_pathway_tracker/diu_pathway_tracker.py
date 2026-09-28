@@ -33,18 +33,18 @@ def _get_pathway_ids():
     ccao_pathway_ids = [
         ccao_pathway["href"].split("/")[-1] for ccao_pathway in ccao_pathways
     ]
-    
+
     # Find Bridge Pathways
     bridge_pathways = soup.find_all(class_="pathway")[5].find_all("a")
     bridge_pathway_ids = [
         bridge_pathway["href"].split("/")[-1] for bridge_pathway in bridge_pathways
     ]
-    
+
     logger.debug(
         "Retrieved %d CSO pathways, %d CCAO pathways, and %d Bridge pathways",
         len(cso_pathway_ids),
         len(ccao_pathway_ids),
-        len(bridge_pathway_ids)
+        len(bridge_pathway_ids),
     )
 
     return cso_pathway_ids, ccao_pathway_ids, bridge_pathway_ids
@@ -98,13 +98,13 @@ def _diu_pathway_tracker(tracker):
         label = {"type": pathway["type"], "title": pathway["title"]}
 
         ccao_records[pathway_id] = {"label": label, "data": pathway}
-        
+
     # Process Bridge pathways
     for pathway_id in bridge_pathway_ids:
         pathway = _process_pathway(pathway_id, "Bridge")
-        
+
         label = {"type": pathway["type"], "title": pathway["title"]}
-        
+
         bridge_records[pathway_id] = {"label": label, "data": pathway}
 
     cso_results = tracker.track(records=cso_records, path=config.CSO_DIR)
