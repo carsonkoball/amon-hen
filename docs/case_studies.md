@@ -4,7 +4,7 @@
 ## Table of Contents
 * [Blue List Tracker](#blue-list_tracker)
 	* [EagleNXT - Plaber](#eaglenxt---plaber)
-* [Dow Parser](#dow-parser)
+* [DoW Parser](#dow-parser)
 	* [Castellum, Inc. - LIIS CMDS MAC IDIQ](#castellum-inc---liis-cmds-mac-idiq)
 	* [Castellum, Inc. - SeaPort-NxG Modification](#castellum-inc---seaport-nxg-modification)
 * [FCC ELS Parser](#fcc-els-parser)
@@ -21,7 +21,7 @@ As of August 31, 2026, EagleNXT had no reference to a *Plaber* drone on [their o
 
 *To be continued...*
 
-## Dow Parser
+## DoW Parser
 
 ### Castellum, Inc. - LIIS CMDS MAC IDIQ
 
