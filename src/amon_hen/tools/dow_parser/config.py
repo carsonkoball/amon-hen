@@ -67,8 +67,9 @@ AWARD_CODES = [
     r"[A-Z0-9]{6}-[A-Z0-9]{2}-[A-Z0-9]-[A-Z0-9]{4}",
     # AA000000A000
     r"[A-Z]{2}\d{6}[A-Z]\d{3}",
-    # AXX00000AX000(/A00000)?
-    r"[A-Z][A-Z0-9]{2}\d{5}[A-Z][A-Z0-9]\d{3}(/[A-Z]\d{5})?",
+    # HDTRA126C0035
+    # AXXXX000AX000(/A00000)?
+    r"[A-Z][A-Z0-9]{4}\d{3}[A-Z][A-Z0-9]\d{3}(/[A-Z]\d{5})?",
     # A00000-00A-X000
     r"[A-Z]\d{5}-\d{2}[A-Z]-[A-Z0-9]\d{3}",
     # A0000000-A-X000
@@ -86,14 +87,14 @@ AWARD_PATTERNS = [
 
 # Patterns for correction sections
 CORRECTION_PATTERNS = [
-    (
-        r".*?(?:contract|modification|delivery order).*?announced.*?on.*?(?:for |to )",
-        r"(?:,? for|, was| under solicitation)",
-    ),
     # https://www.war.gov/News/Contracts/Contract/Article/4588178/contracts-for-sept-1-2026/
     (
         r".*?contract.*?announced.*?on.*?for ",
         r", for",
+    ),
+    (
+        r".*?(?:contract|modification|delivery order).*?announced.*?on.*?(?:for |to )",
+        r"(?:,?, to| for|, was| under solicitation)",
     ),
     (r".*?contract.*?awarded.*?to ", r"(?:(,)? on|, for|, incorrectly)"),
     # https://www.war.gov/News/Contracts/Contract/Article/4406926/contracts-for-feb-13-2026/
