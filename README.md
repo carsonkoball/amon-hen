@@ -229,7 +229,7 @@ pip install -r requirements.txt
 - [x] Add diu_pathway_tracker to UI
 - [x] Update blue_list_tracker to use new list source
 - [x] Modify fcc_els_parser to utilize a search date range
-- [ ] Add fedramp_tracker to UI
+- [x] Add fedramp_tracker to UI
 - [ ] Update file_tracker to utilize Tracker system
 	
 ### New Additions
@@ -238,5 +238,6 @@ pip install -r requirements.txt
 - [x] Add FedRAMP tracker capability
 - [x] Add a tool example document
 - [x] Add DIU solution tracker capability
+- [ ] Add Army xTech Competition tracker capability
 - [ ] Add tool examples to README
 - [ ] Add LinkedIn tracker capability
