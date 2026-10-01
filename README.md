@@ -239,5 +239,6 @@ pip install -r requirements.txt
 - [x] Add a tool example document
 - [x] Add DIU solution tracker capability
 - [ ] Add Army xTech Competition tracker capability
+- [ ] Add FTC Early Termination parser capability
 - [ ] Add tool examples to README
 - [ ] Add LinkedIn tracker capability
