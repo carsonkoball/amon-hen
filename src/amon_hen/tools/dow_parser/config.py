@@ -37,6 +37,7 @@ AWARD_PHRASES = [
     "have each been awarded",
     "is awarded",
     "is being awarded",
+    "is receiving",
     "was awarded",
     "was competitively awarded",
     "were awarded",
@@ -67,9 +68,8 @@ AWARD_CODES = [
     r"[A-Z0-9]{6}-[A-Z0-9]{2}-[A-Z0-9]-[A-Z0-9]{4}",
     # AA000000A000
     r"[A-Z]{2}\d{6}[A-Z]\d{3}",
-    # HDTRA126C0035
-    # AXXXX000AX000(/A00000)?
-    r"[A-Z][A-Z0-9]{4}\d{3}[A-Z][A-Z0-9]\d{3}(/[A-Z]\d{5})?",
+    # AXXXX000AXX00(/A00000)?
+    r"[A-Z][A-Z0-9]{4}\d{3}[A-Z][A-Z0-9]{2}\d{2}(/[A-Z]\d{5})?",
     # A00000-00A-X000
     r"[A-Z]\d{5}-\d{2}[A-Z]-[A-Z0-9]\d{3}",
     # A0000000-A-X000
