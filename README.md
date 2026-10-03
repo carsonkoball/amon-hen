@@ -251,7 +251,7 @@ pip install -r requirements.txt
 - [x] Add FedRAMP tracker capability
 - [x] Add a tool example document
 - [x] Add DIU solution tracker capability
+- [x] Add FTC Early Termination parser capability
 - [ ] Add Army xTech Competition tracker capability
-- [ ] Add FTC Early Termination parser capability
 - [ ] Add tool examples to README
 - [ ] Add LinkedIn tracker capability
