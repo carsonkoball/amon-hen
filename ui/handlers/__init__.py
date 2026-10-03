@@ -5,6 +5,7 @@ from . import diu_solution_tracker
 from . import dow_parser
 from . import fcc_els_parser
 from . import fedramp_tracker
+from . import ftc_etn_parser
 from . import navy_sbir_sttr_parser
 
 HANDLERS = {
@@ -15,5 +16,6 @@ HANDLERS = {
     "dow_parser": dow_parser,
     "fcc_els_parser": fcc_els_parser,
     "fedramp_tracker": fedramp_tracker,
+    "ftc_etn_parser": ftc_etn_parser,
     "navy_sbir_sttr_parser": navy_sbir_sttr_parser,
 }

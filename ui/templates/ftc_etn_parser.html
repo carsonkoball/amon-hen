@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Amon Hen UI - {{ title }}
+{% endblock %}
+
+{% block content %}
+	<section>
+		<div class="section-title">
+			<h2>Input Parameters</h2>
+		</div>
+		<div class="section-content">
+			<form method="POST">
+				<div class="parameter">
+					<label for="start_date">Start Date</label><br>
+					<input
+						type="date"
+						id="start_date"
+						name="start_date"
+						value="{{ start_date.isoformat()  }}"
+					>
+				</div>
+				<div class="parameter">
+					<label for="end_date">End Date</label><br>
+					<input
+						type="date"
+						id="end_date"
+						name="end_date"
+						value="{{ end_date.isoformat()  }}"
+					>
+				</div>
+				<button type="submit">
+					Run
+				</button>
+			</form>
+		</div>
+	</section>
+	<section>
+		<div class="section-title">
+			<h2>Output</h2>
+		</div>
+		<div class="section-content">
+			{% if results is none %}
+			
+				<p> No output yet. </p>
+			
+			{% elif results == [] %}
+			
+				<p>No notices found between {{ start_date.strftime("%B") }} {{ start_date.day }}, {{ start_date.year }} and {{ end_date.strftime("%B") }} {{ end_date.day }}, {{ end_date.year }}.</p>
+				
+			{% else %}
+
+				{% for result in results %}
+				
+					<div class="output-entry">
+						<p><b>{{ result.date.strftime("%B") }} {{ result.date.day }}, {{ result.date.year }} Notice:</b> {{ result.transaction_number }}</p>
+						<ul>
+							<li><p><b>Acquiring Party:</b> {{ result.acquiring_party }}</p></li>
+							<li><p><b>Acquired Party:</b> {{ result.acquired_party }}</p></li>
+							<li><p><b>Acquired Entities:</b></p>
+								<ul>
+									
+									{% for entity in result.acquired_entities %}
+									
+										<li><p>{{ entity }}<p></li>
+									
+									{% endfor %}
+										
+								</ul>
+							</li>	
+							<li><p><b>Notice Link:</b> <a href="{{ result.notice_link }}" target="_blank">{{ result.notice_link }}</a></p></li>
+						</ul>
+					</div>
+
+				{% endfor %}
+
+			{% endif %}
+		</div>
+	</section>
+{% endblock %}

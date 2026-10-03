@@ -36,6 +36,11 @@ SCRIPTS = [
         "slug": "fedramp_tracker",
     },
     {
+        "name": "FTC ETN Parser",
+        "description": "Monitors the Federal Trade Commission (FTC) Early Termination Notices (ETN) database.",
+        "slug": "ftc_etn_parser",
+    },
+    {
         "name": "Navy SBIR/STTR Parser",
         "description": "Monitors the Navy Small Business Innovation Research (SBIR) and Small Business Technology Transfer (STTR) awards and success stories page.",
         "slug": "navy_sbir_sttr_parser",
