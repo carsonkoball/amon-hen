@@ -61,7 +61,7 @@ Monitors the Federal Risk and Authorization Management Program (FedRAMP) marketp
 
 ### ftc_etn_parser
 Monitors the Federal Trade Commission (FTC) Early Termination Notices (ETN) database.
-- Parses notice information
+- Parses early termination notice information
 
 ### navy_sbir_sttr_parser
 Monitors the Navy Small Business Innovation Research (SBIR) and Small Business Technology Transfer (STTR) awards and success stories page.
