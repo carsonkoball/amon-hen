@@ -87,14 +87,11 @@ AWARD_PATTERNS = [
 
 # Patterns for correction sections
 CORRECTION_PATTERNS = [
+    # Possible space before for in prefix:
     # https://www.war.gov/News/Contracts/Contract/Article/4588178/contracts-for-sept-1-2026/
     (
-        r".*?contract.*?announced.*?on.*?for ",
-        r", for",
-    ),
-    (
-        r".*?(?:contract|modification|delivery order).*?announced.*?on.*?(?:for |to )",
-        r"(?:,?, to| for|, was| under solicitation)",
+        r".*?(?:contract|modification|delivery order).*?announced.*?on.*?(?:,\s*for |to )",
+        r"(?:,?, to|, for|, was| under solicitation)",
     ),
     (r".*?contract.*?awarded.*?to ", r"(?:(,)? on|, for|, incorrectly)"),
     # https://www.war.gov/News/Contracts/Contract/Article/4406926/contracts-for-feb-13-2026/
