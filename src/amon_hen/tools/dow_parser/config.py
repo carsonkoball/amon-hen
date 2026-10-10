@@ -12,9 +12,10 @@ LOG_DIR = get_script_log_dir(SCRIPT_NAME)
 # Default Arguments
 DEFAULT_START_DATE = date.today()
 DEFAULT_END_DATE = date.today()
+DEFAULT_SEARCH_TERM = ""
 
 # Base URL
-SEARCH_URL = "https://www.war.gov/News/Contracts/StartDate/{start_date_year}-{start_date_month}-{start_date_day}/EndDate/{end_date_year}-{end_date_month}-{end_date_day}/?Page={page}"
+SEARCH_URL = 'https://www.war.gov/News/Contracts/StartDate/{start_date_year}-{start_date_month}-{start_date_day}/EndDate/{end_date_year}-{end_date_month}-{end_date_day}/?Search="{search_term}"&Page={page}'
 
 # Base headers
 SEARCH_HEADERS = {

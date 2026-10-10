@@ -26,6 +26,16 @@ if __name__ == "__main__":
         help="Search end date (YYYY-MM-DD).",
     )
 
+    parser.add_argument(
+        "--search-term",
+        type=str,
+        required=False,
+        default=config.DEFAULT_SEARCH_TERM,
+        help="Search term.",
+    )
+
     args = parser.parse_args()
 
-    results = run(start_date=args.start_date, end_date=args.end_date)
+    results = run(
+        start_date=args.start_date, end_date=args.end_date, search_term=args.search_term
+    )

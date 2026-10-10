@@ -35,9 +35,9 @@ class Company:
     designation: str
 
 
-def _get_daily_links(start_date, end_date):
+def _get_daily_links(start_date, end_date, search_term):
     """
-    Recover all contract announcement page links for a given search date range.
+    Recover all contract announcement page links for a given search date range and search term.
     """
     start_date_year = start_date.strftime("%Y")
     start_date_month = start_date.strftime("%m")
@@ -59,8 +59,10 @@ def _get_daily_links(start_date, end_date):
             end_date_day=end_date_day,
             end_date_month=end_date_month,
             end_date_year=end_date_year,
+            search_term=search_term.replace(" ", "+"),
             page=page,
         )
+        print(search_url)
 
         response = http_get(url=search_url, headers=config.SEARCH_HEADERS)
 
@@ -281,13 +283,15 @@ def _process_branch_sections(branch_sections, footnotes, link):
     return announcements
 
 
-def _dow_parser(start_date, end_date):
+def _dow_parser(start_date, end_date, search_term):
     """
     Get the daily announcement pages for a given search date range and return the announcements on them.
     """
     results = []
 
-    daily_links = _get_daily_links(start_date=start_date, end_date=end_date)
+    daily_links = _get_daily_links(
+        start_date=start_date, end_date=end_date, search_term=search_term
+    )
 
     for link in daily_links:
         paragraphs = _get_paragraphs(link=link)
@@ -303,7 +307,7 @@ def _dow_parser(start_date, end_date):
     return results
 
 
-def _validate_arguments(start_date, end_date):
+def _validate_arguments(start_date, end_date, search_term):
     """
     Ensure that inputted arguments are of valid types, values, etc.
     """
@@ -327,7 +331,7 @@ def _validate_arguments(start_date, end_date):
     if start_date > end_date:
         raise ValueError("start_date must be on or before end_date.")
 
-    return start_date, end_date
+    return start_date, end_date, search_term
 
 
 def _log_results(results):
@@ -350,7 +354,11 @@ def _log_results(results):
         )
 
 
-def run(start_date=None, end_date=None):
+def run(
+    start_date=config.DEFAULT_START_DATE,
+    end_date=config.DEFAULT_END_DATE,
+    search_term=config.DEFAULT_SEARCH_TERM,
+):
     """
     Execute the dow_parser workflow.
     """
@@ -360,10 +368,15 @@ def run(start_date=None, end_date=None):
     logger.debug("Starting dow_parser...")
     logger.debug("Argument start_date: %s", start_date)
     logger.debug("Argument end_date: %s", end_date)
+    logger.debug("Argument search_term: %s", search_term)
 
-    start_date, end_date = _validate_arguments(start_date=start_date, end_date=end_date)
+    start_date, end_date, search_term = _validate_arguments(
+        start_date=start_date, end_date=end_date, search_term=search_term
+    )
 
-    results = _dow_parser(start_date=start_date, end_date=end_date)
+    results = _dow_parser(
+        start_date=start_date, end_date=end_date, search_term=search_term
+    )
 
     _log_results(results)
 
