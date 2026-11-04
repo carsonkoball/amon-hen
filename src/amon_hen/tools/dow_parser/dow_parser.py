@@ -59,12 +59,13 @@ def _get_daily_links(start_date, end_date, search_term):
             end_date_day=end_date_day,
             end_date_month=end_date_month,
             end_date_year=end_date_year,
-            search_term=search_term.replace(" ", "+"),
-            page=page,
         )
-        print(search_url)
 
-        response = http_get(url=search_url, headers=config.SEARCH_HEADERS)
+        params = {"Search": search_term.replace(" ", "+"), "Page": page}
+
+        response = http_get(
+            url=search_url, params=params, headers=config.SEARCH_HEADERS
+        )
 
         if response is None or not response.ok:
             logger.error("Failed to fetch page: %s", search_url)
@@ -166,7 +167,7 @@ def _get_paragraphs(link):
     """
     Get body paragraphs from a DoW daily announcement page.
     """
-    response = http_get(url=link)
+    response = http_get(url=link, headers=config.SEARCH_HEADERS)
 
     if response is None or not response.ok:
         logger.error("Failed to fetch page: %s", link)

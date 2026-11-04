@@ -15,12 +15,12 @@ DEFAULT_END_DATE = date.today()
 DEFAULT_SEARCH_TERM = ""
 
 # Base URL
-SEARCH_URL = 'https://www.war.gov/News/Contracts/StartDate/{start_date_year}-{start_date_month}-{start_date_day}/EndDate/{end_date_year}-{end_date_month}-{end_date_day}/?Search="{search_term}"&Page={page}'
+SEARCH_URL = "https://www.war.gov/News/Contracts/StartDate/{start_date_year}-{start_date_month}-{start_date_day}/EndDate/{end_date_year}-{end_date_month}-{end_date_day}/"
 
 # Base headers
 SEARCH_HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36",
-    "Accept-Language": "en-US,en;q=0.9",
+    "sec-fetch-dest": "document",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
 }
 
 # Phrases that indicate an award is being received
