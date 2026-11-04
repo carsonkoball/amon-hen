@@ -307,7 +307,7 @@ def _get_form(form_link):
     """
     Initiate GET request for specified form link and return response as text.
     """
-    response = http_get(form_link)
+    response = http_get(url=form_link, headers=config.ELS_HEADERS)
 
     if response is None or not response.ok:
         logger.error("Failed to fetch form page: %s", form_link)
@@ -388,10 +388,12 @@ def _get_search(start_date, end_date):
     # Continue iterating the search results until the end is reached
     while True:
         response = http_post(
-            config.ELS_SEARCH_URL,
+            url=config.ELS_SEARCH_URL,
+            headers=config.ELS_HEADERS,
             data=payload,
-        ).text
-
+        )
+        print(response)
+        response = response.text
         soup = BeautifulSoup(markup=response, features="html.parser")
 
         listings = soup.find(attrs={"name": "rsTable"})

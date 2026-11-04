@@ -18,7 +18,9 @@ ELS_URL = "https://apps.fcc.gov/"
 ELS_SEARCH_URL = ELS_URL + "oetcf/els/reports/GenericSearchResult.cfm"
 
 # Data
-ELS_HEADERS = {"content-type": "application/x-www-form-urlencoded"}
+ELS_HEADERS = headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+}
 
 MAX_RESULTS = 999999
 
