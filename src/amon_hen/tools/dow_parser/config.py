@@ -65,8 +65,8 @@ AWARD_CODES = [
     r"[A-Z]{2}\d{4}-\d{2}--[A-Z]\d4}",
     # XXXXXXXXXXXXXA00000
     r"[A-Z0-9]{13}[A-Z]\d{5}",
-    # XXXXXX-XX-X-XXXX
-    r"[A-Z0-9]{6}-[A-Z0-9]{2}-[A-Z0-9]-[A-Z0-9]{4}",
+    # (A00000, )?XXXXXX-XX-X-XXXX
+    r"([A-Z]\d{5},\s)?[A-Z0-9]{6}-[A-Z0-9]{2}-[A-Z0-9]-[A-Z0-9]{4}",
     # AA000000A000
     r"[A-Z]{2}\d{6}[A-Z]\d{3}",
     # AXXXX000AXX00(/A00000)?
@@ -75,6 +75,7 @@ AWARD_CODES = [
     r"[A-Z]\d{5}-\d{2}[A-Z]-[A-Z0-9]\d{3}",
     # A0000000-A-X000
     r"[A-Z]\d{7}-[A-Z]-[A-Z0-9]\d{3}",
+    # P00006, FA8811-25-D-B002)
 ]
 
 # Patterns for award sections
