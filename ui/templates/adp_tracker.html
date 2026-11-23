@@ -67,6 +67,7 @@
 								<li><p><b>ID:</b> {{ result.new_data["data"]["customFieldGroup"]["stringFields"][0]["stringValue"] }}</p></li>
 								<li><p><b>Title:</b> {{ result.new_data["data"]["requisitionTitle"] }}</p></li>
 								<li><p><b>Post Date:</b> {{ result.new_data["data"]["postDate"] }}</p></li>
+								<li><p><b>Application Count:</b> {{ result.new_data['data']['customFieldGroup']['numberFields'][0]['numberValue'] | int }}</p></li>							
 								<li><p><b>Link:</b> <a href='https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid={{ cid }}&ccId={{ ccid }}&lang=en_US&jobId={{ result.new_data["data"]["customFieldGroup"]["stringFields"][0]["stringValue"] }}' target="_blank">https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid={{ cid }}&ccId={{ ccid }}&lang=en_US&jobId={{ result.new_data["data"]["customFieldGroup"]["stringFields"][0]["stringValue"] }}</a></p></li>
 							</ul>
 							
@@ -77,6 +78,7 @@
 								<li><p><b>ID:</b> {{ result.old_data["data"]["customFieldGroup"]["stringFields"][0]["stringValue"] }}</p></li>
 								<li><p><b>Title:</b> {{ result.old_data["data"]["requisitionTitle"] }}</p></li>
 								<li><p><b>Post Date:</b> {{ result.old_data["data"]["postDate"] }}</p></li>
+								<li><p><b>Application Count:</b> {{ result.old_data['data']['customFieldGroup']['numberFields'][0]['numberValue'] | int }}</p></li>
 							</ul>
 							
 						{% else %}
@@ -86,6 +88,7 @@
 								<li><p><b>ID:</b> {{ result.new_data["data"]["customFieldGroup"]["stringFields"][0]["stringValue"] }}</p></li>
 								<li><p><b>Title:</b> {{ result.new_data["data"]["requisitionTitle"] }}</p></li>
 								<li><p><b>Post Date:</b> {{ result.new_data["data"]["postDate"] }}</p></li>
+								<li><p><b>Application Count:</b> {{ result.new_data['data']['customFieldGroup']['numberFields'][0]['numberValue'] | int }}</p></li>
 								<li><p><b>Link:</b> <a href='https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid={{ cid }}&ccId={{ ccid }}&lang=en_US&jobId={{ result.new_data["data"]["customFieldGroup"]["stringFields"][0]["stringValue"] }}' target="_blank">https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid={{ cid }}&ccId={{ ccid }}&lang=en_US&jobId={{ result.new_data["data"]["customFieldGroup"]["stringFields"][0]["stringValue"] }}</a></p></li>
 							</ul>
 							
