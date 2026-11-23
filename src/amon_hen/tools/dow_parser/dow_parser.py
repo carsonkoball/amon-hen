@@ -201,6 +201,10 @@ def _process_paragraphs(paragraphs):
     for paragraph in paragraphs:
         text = paragraph.text.strip()
 
+        # Skip empty paragraphs
+        if not text:
+            continue
+
         if paragraph.has_attr("style"):
             branch = text
         else:
