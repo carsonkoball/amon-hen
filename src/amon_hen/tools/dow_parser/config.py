@@ -93,7 +93,7 @@ CORRECTION_PATTERNS = [
     # https://www.war.gov/News/Contracts/Contract/Article/4588178/contracts-for-sept-1-2026/
     (
         r".*?(?:contract|modification|delivery order).*?announced.*?on.*?(?:,\s*for |to )",
-        r"(?:,?, to|, for|, was| under solicitation)",
+        r"(?:,?, to| for|, for|, was| under solicitation)",
     ),
     (r".*?contract.*?awarded.*?to ", r"(?:(,)? on|, for|, incorrectly)"),
     # https://www.war.gov/News/Contracts/Contract/Article/4406926/contracts-for-feb-13-2026/
