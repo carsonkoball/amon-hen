@@ -100,6 +100,11 @@ CORRECTION_PATTERNS = [
         r"^",
         r", contract announced on",
     ),
+    # https://www.war.gov/News/Contracts/Contract/Article/4660152/contracts-for-nov-25-2026/
+    (
+        r"contract for ",
+        r", was announced on.*?correct.*?date",
+    ),
 ]
 
 # Patterns for update sections
